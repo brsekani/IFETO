@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --font-inter: var(--font-inter);
+  --font-nunito: var(--font-nunito);
+
+  --color-dark: rgba(42, 42, 42, 1);
+  --color-light: rgba(120, 120, 120, 1);
+  --color-light-active: rgba(213, 213, 213, 1);
+  --color-primary: rgba(39, 174, 96, 1);
+
+  --shadow-custom: 0px 5px 3px -2px #eb501705, --container-;
+}
+
+body {
+  font-family: var(--font-nunito);
+  color: var(--color-dark);
+}
+
+/* Bullet color */
+.auth-slider .swiper-pagination-bullet {
+  background: #ffffff !important; /* default color */
+  opacity: 0.5;
+}
+
+/* Active bullet color */
+.auth-slider .swiper-pagination-bullet-active {
+  background: #1d8348 !important; /* active color */
+  opacity: 1;
+}
+.auth-slider-mobile .swiper-pagination-bullet-active {
+  background: #1d8348 !important; /* active color */
+  opacity: 1;
+}
+
+.auth-slider .swiper-pagination {
+  position: absolute !important;
+  bottom: 0 !important; /* lock at the bottom */
+  left: 0 !important; /* lock to the left */
+  width: auto !important;
+  text-align: left !important;
+  padding-top: 0rem; /* optional padding */
+}
+.swiper-main {
+  padding-bottom: 2.5rem !important; /* space for pagination */
+}
