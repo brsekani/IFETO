@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-const AuthSliderDesktop = () => {
+
+interface AuthSliderDesktopProps {
+  onIndexChange?: (index: number) => void;
+}
+
+const AuthSliderDesktop = ({ onIndexChange }: AuthSliderDesktopProps) => {
   const [index, setIndex] = useState(0);
 
   const slides = [
@@ -23,6 +28,11 @@ const AuthSliderDesktop = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Notify parent component when index changes
+  useEffect(() => {
+    onIndexChange?.(index);
+  }, [index, onIndexChange]);
+
   return (
     <div className="relative w-full h-[200px] flex items-center">
       <AnimatePresence mode="wait">
@@ -43,7 +53,10 @@ const AuthSliderDesktop = () => {
         {slides.map((_, idx) => (
           <button
             key={idx}
-            onClick={() => setIndex(idx)}
+            onClick={() => {
+              setIndex(idx);
+              onIndexChange?.(idx);
+            }}
             className={`w-2 h-2 rounded-full transition-colors duration-500 ${
               idx === index ? "bg-[#1D8348]" : "bg-[#52525B]"
             }`}

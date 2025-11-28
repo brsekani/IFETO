@@ -7,6 +7,8 @@ const useVerify = () => {
   const router = useRouter();
   const [resendTimer, setResendTimer] = useState(0);
   const [isResending, setIsResending] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+
 
   const formik = useFormik({
     initialValues: {
@@ -21,8 +23,7 @@ const useVerify = () => {
     onSubmit: (values) => {
       const code = Object.values(values).join("");
       console.log("Verification code", code);
-      // TODO: Add API call to verify code
-      // router.push("/next-step");
+      setIsVerified(true);
     },
   });
 
@@ -61,7 +62,7 @@ const useVerify = () => {
 
   const isResendDisabled = resendTimer > 0 || isResending;
 
-  return { formik, resendTimer, handleResendCode, isResendDisabled };
+  return { formik, resendTimer, handleResendCode, isResendDisabled, isVerified, setIsVerified, router };
 };
 
 export default useVerify;

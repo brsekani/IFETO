@@ -1,15 +1,25 @@
 import * as Yup from "yup";
 
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+const passwordMessage =
+  "Password must be 8+ chars and include upper, lower, number & special character.";
+
 export const SignupSchema = Yup.object({
   firstName: Yup.string().required("First Name is required"),
   lastName: Yup.string().required("Last Name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   phone: Yup.string().required("Phone number is required"),
   password: Yup.string()
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-      "Please use only letters, numbers, and the allowed special characters (@, $, !, %, , ?, &)."
-    )
+    .matches(passwordRegex, passwordMessage)
+    .required("Password is required"),
+});
+
+export const LoginSchema = Yup.object({
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  password: Yup.string()
+    .matches(passwordRegex, passwordMessage)
     .required("Password is required"),
 });
 
