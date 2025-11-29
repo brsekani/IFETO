@@ -13,11 +13,11 @@ const useSignup = () => {
 
   const formik = useFormik({
     initialValues: {
-      firstName: "lawal",
-      lastName: "temidayo",
-      email: "lawalarts+100@gmail.com",
+      firstName: "",
+      lastName: "",
+      email: "",
       phone: "",
-      password: "Testpass123!",
+      password: "",
     },
     validationSchema: SignupSchema,
     onSubmit: async (values) => {
