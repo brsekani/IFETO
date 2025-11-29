@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Logo from "@/assets/images/IFETO-Logo-1.png";
@@ -10,19 +10,45 @@ import AuthSliderDesktop from "@/components/auth/AuthSliderDesktop";
 import VerifyCodeForm from "@/components/auth/VerifyCodeForm";
 import useVerify from "@/hooks/form-hooks/useVerify";
 import verifyImg from "@/assets/images/verify.png";
+import { useRouter, useSearchParams } from "next/navigation";
+import useRedirectIfAuthenticated from "@/hooks/useRedirectIfAuthenticated";
 
 const Verify = () => {
+  const { loading } = useRedirectIfAuthenticated();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Retrieve the parameters
+  const userId = searchParams.get("userId");
+  console.log(userId);
+
+  useEffect(() => {
+    if (!userId) {
+      // Use replace to prevent the user from hitting the back button to land on this error page again
+      router.replace("/auth/signup");
+    }
+  }, [userId, router]);
+
   const {
     formik,
     resendTimer,
     handleResendCode,
     isResendDisabled,
     isVerified,
-    router,
-  } = useVerify();
+    isLoading,
+    isResending,
+  } = useVerify(userId);
   const [backgroundIndex, setBackgroundIndex] = useState(0);
 
   const backgroundImages = [authImage, authImage2];
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <section className="w-full min-h-screen flex flex-col lg:flex-row overflow-hidden lg:bg-[#F9F9F9] bg-white">
@@ -40,7 +66,7 @@ const Verify = () => {
               Your account has been verified successfully.
             </p>
             <button
-              onClick={() => router.push("/auth/login")}
+              onClick={() => router.replace("/auth/login")}
               className="bg-primary h-12 w-full rounded-md px-5 mt-12 text-white font-semibold text-lg cursor-pointer"
             >
               Continue to Login
@@ -62,6 +88,8 @@ const Verify = () => {
               resendTimer={resendTimer}
               onResendCode={handleResendCode}
               isResendDisabled={isResendDisabled}
+              isLoading={isLoading}
+              isResending={isResending}
             />
           </div>
         )}

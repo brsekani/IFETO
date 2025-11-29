@@ -1,11 +1,14 @@
 "use client";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, KeyboardEvent, ClipboardEvent } from "react";
 
 interface VerifyCodeFormProps {
   formik: any;
   resendTimer: number;
-  onResendCode: () => void;
+  onResendCode: (email: string) => void | Promise<void>;
   isResendDisabled: boolean;
+  isLoading: boolean;
+  isResending: boolean;
 }
 
 const VerifyCodeForm = ({
@@ -13,8 +16,16 @@ const VerifyCodeForm = ({
   resendTimer,
   onResendCode,
   isResendDisabled,
+  isLoading,
+  isResending,
 }: VerifyCodeFormProps) => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const searchParams = useSearchParams();
+
+  // Retrieve the parameters
+  const email = decodeURIComponent(searchParams.get("email") ?? "");
+
+  console.log(email);
 
   // Handle paste event
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
@@ -139,22 +150,22 @@ const VerifyCodeForm = ({
             <span className="text-light text-sm">Didn't receive a code?</span>
             <button
               type="button"
-              onClick={onResendCode}
+              onClick={() => onResendCode(email)}
               disabled={isResendDisabled}
               className="text-primary text-sm font-semibold hover:underline disabled:text-light disabled:cursor-not-allowed"
             >
-              {resendLabel}
+              {isResending ? "Resending" : resendLabel}
             </button>
           </div>
           <div className="mt-8">
             <button
               type="submit"
-              disabled={!canSubmit}
+              disabled={!canSubmit || isLoading}
               className={`w-full h-12 rounded-md text-center text-lg font-semibold cursor-pointer ${
                 !canSubmit ? "bg-[#C7D3CC] text-white" : "bg-primary text-white"
               }`}
             >
-              Verify
+              {isLoading ? "Verifying..." : "Verify"}
             </button>
           </div>
         </form>

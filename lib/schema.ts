@@ -46,3 +46,21 @@ export const VerifyCodeSchema = Yup.object({
     return codes.every((code) => code && /^\d$/.test(code));
   }
 );
+
+export const ForgotPasswordSchema = Yup.object({
+  email: Yup.string().email("Invalid email").required("Email is required"),
+});
+
+export const ResetPasswordSchema = Yup.object({
+  password: Yup.string()
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[A-Z]/, "Must contain at least 1 uppercase letter")
+    .matches(/[a-z]/, "Must contain at least 1 lowercase letter")
+    .matches(/[0-9]/, "Must contain at least 1 number")
+    .matches(/[@*#$%]/, "Must contain at least 1 special character (@ * # $ %)")
+    .required("Password is required"),
+
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password"), undefined], "Passwords do not match")
+    .required("Confirm password is required"),
+});

@@ -2,13 +2,20 @@ import { useFormik } from "formik";
 import { VerifyCodeSchema } from "@/lib/schema";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import {
+  useResendVerificationCodeMutation,
+  useVerifyAuthCodeMutation,
+} from "@/lib/api/auth";
+import { showErrorToast, showSuccessToast } from "@/app/utils/toastHelpers";
 
-const useVerify = () => {
+const useVerify = (userId: string | null) => {
+  const [verify, { isLoading }] = useVerifyAuthCodeMutation();
+  const [resend, { isLoading: isResending }] =
+    useResendVerificationCodeMutation();
+
   const router = useRouter();
   const [resendTimer, setResendTimer] = useState(0);
-  const [isResending, setIsResending] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
-
 
   const formik = useFormik({
     initialValues: {
@@ -20,10 +27,31 @@ const useVerify = () => {
       code6: "",
     },
     validationSchema: VerifyCodeSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       const code = Object.values(values).join("");
-      console.log("Verification code", code);
-      setIsVerified(true);
+
+      const payload = {
+        code,
+        userId: userId ?? "",
+      };
+
+      try {
+        const result = await verify(payload).unwrap();
+        console.log(result);
+
+        if (result.success) {
+          showSuccessToast(result.message);
+          setIsVerified(true);
+        }
+      } catch (err: any) {
+        console.error("Verification Failed:", err);
+
+        const errorMessage =
+          err?.data?.message ||
+          err?.error ||
+          "An unexpected error occurred during Verification.";
+        showErrorToast(errorMessage);
+      }
     },
   });
 
@@ -43,26 +71,44 @@ const useVerify = () => {
     return () => clearInterval(interval);
   }, [resendTimer]);
 
-  const handleResendCode = async () => {
+  const handleResendCode = async (email: string) => {
     if (resendTimer > 0 || isResending) return;
-
-    setIsResending(true);
+    const payload = {
+      email,
+    };
     setResendTimer(59);
 
     try {
-      // TODO: Dispatch resend verification API request
-      console.log("Dispatching resend verification code request");
-    } catch (error) {
-      console.error("Failed to resend verification code", error);
+      const result = await resend(payload).unwrap();
+      console.log(result);
+
+      if (result.success) {
+        showSuccessToast(result.message);
+      }
+    } catch (err: any) {
+      console.error("Resend Verification Failed:", err);
       setResendTimer(0);
-    } finally {
-      setIsResending(false);
+
+      const errorMessage =
+        err?.data?.message ||
+        err?.error ||
+        "Failed to resend verification code.";
+      showErrorToast(errorMessage);
     }
   };
 
   const isResendDisabled = resendTimer > 0 || isResending;
 
-  return { formik, resendTimer, handleResendCode, isResendDisabled, isVerified, setIsVerified, router };
+  return {
+    formik,
+    resendTimer,
+    handleResendCode,
+    isResendDisabled,
+    isVerified,
+    setIsVerified,
+    isLoading,
+    isResending,
+  };
 };
 
 export default useVerify;

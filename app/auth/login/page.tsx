@@ -9,12 +9,23 @@ import AuthSliderMobile from "@/components/auth/AuthSliderMobile";
 import AuthSliderDesktop from "@/components/auth/AuthSliderDesktop";
 import LoginForm from "@/components/auth/LoginForm";
 import useLogin from "@/hooks/form-hooks/useLogin";
+import useRedirectIfAuthenticated from "@/hooks/useRedirectIfAuthenticated";
 
 const page = () => {
-  const { formik } = useLogin();
+  const { loading } = useRedirectIfAuthenticated();
+
+  const { formik, isLogining } = useLogin();
   const [backgroundIndex, setBackgroundIndex] = useState(0);
 
   const backgroundImages = [authImage, authImage2];
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <section className="w-full min-h-screen flex flex-col lg:flex-row overflow-hidden lg:bg-[#F9F9F9] bg-white">
@@ -29,7 +40,7 @@ const page = () => {
         <AuthSliderMobile />
 
         {/* forms */}
-        <LoginForm formik={formik} />
+        <LoginForm formik={formik} isLogining={isLogining} />
       </div>
 
       {/* right side desktop*/}

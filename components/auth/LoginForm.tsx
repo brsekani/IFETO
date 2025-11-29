@@ -4,7 +4,13 @@ import { Eye, EyeOff, MoveRight } from "lucide-react";
 import { useState } from "react";
 import emailIcon from "@/assets/icons/mail.svg";
 
-const LoginForm = ({ formik }: { formik: any }) => {
+const LoginForm = ({
+  formik,
+  isLogining,
+}: {
+  formik: any;
+  isLogining: boolean;
+}) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const emailHasError = formik.touched.email && formik.errors.email;
@@ -115,14 +121,14 @@ const LoginForm = ({ formik }: { formik: any }) => {
           <div className="mt-14 lg:mt-8">
             <button
               type="submit"
-              disabled={!formik.isValid || !formik.dirty}
+              disabled={!formik.isValid || !formik.dirty || isLogining}
               className={`w-full h-12 rounded-md text-center px-5 text-lg font-semibold cursor-pointer ${
                 !formik.isValid || !formik.dirty
                   ? "bg-[#C7D3CC] text-white"
                   : "bg-primary text-white"
               }`}
             >
-              Proceed
+              {isLogining ? "Proceeding..." : "Proceed"}
             </button>
             <div className="flex items-center gap-2 w-full justify-center mt-2.5 text-base lg:text-lg font-semibold">
               <span className="">New on IFETO?</span>

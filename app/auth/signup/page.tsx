@@ -10,10 +10,20 @@ import AuthSliderDesktop from "@/components/auth/AuthSliderDesktop";
 import SignupForm from "@/components/auth/SignupForm";
 import CreatePasswordForm from "@/components/auth/CreatePasswordForm";
 import useSignup from "@/hooks/form-hooks/useSignup";
+import useRedirectIfAuthenticated from "@/hooks/useRedirectIfAuthenticated";
 
 const signup = () => {
-  const { formik, secondForm, setSecondForm } = useSignup();
+  const { loading } = useRedirectIfAuthenticated();
+  const { formik, secondForm, setSecondForm, isLoading } = useSignup();
   const [backgroundIndex, setBackgroundIndex] = useState(0);
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
 
   const backgroundImages = [authImage, authImage2];
   return (
@@ -30,7 +40,7 @@ const signup = () => {
 
         {/* forms */}
         {secondForm ? (
-          <CreatePasswordForm formik={formik} />
+          <CreatePasswordForm formik={formik} isLoading={isLoading} />
         ) : (
           <SignupForm formik={formik} setsecondForm={setSecondForm} />
         )}

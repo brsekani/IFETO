@@ -1,7 +1,9 @@
+import useSignup from "@/hooks/form-hooks/useSignup";
+import { useSignupMutation } from "@/lib/api/auth";
 import { Check, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
-const CreatePasswordForm = ({ formik }: any) => {
+const CreatePasswordForm = ({ formik, isLoading }: any) => {
   const password = formik.values.password;
   const [showPassword, setshowPassword] = useState(false);
 
@@ -158,13 +160,14 @@ const CreatePasswordForm = ({ formik }: any) => {
             <div className="">
               <button
                 type="submit"
+                disabled={isLoading}
                 className={` w-full h-12 rounded-md text-center px-5 text-lg  font-semibold cursor-pointer ${
                   !formik.isValid || !formik.dirty
                     ? "bg-[#C7D3CC] text-white"
                     : "bg-primary text-white"
                 }`}
               >
-                Proceed
+                {isLoading ? "Proceeding..." : "Proceed"}
               </button>
             </div>
           </div>
