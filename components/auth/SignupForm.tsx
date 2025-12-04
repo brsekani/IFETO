@@ -16,7 +16,7 @@ const SignupForm = ({ formik, setsecondForm }: any) => {
     formik.values.phone &&
     !formik.errors.phone;
   return (
-    <div className="mt-7 lg:mt-0 lg:px-8 px-6 bg-white lg:shadow-custom rounded-2xl">
+    <div className="mt-7 lg:mt-0 lg:px-8  lg:py-6 px-6 bg-white lg:shadow-custom rounded-2xl">
       <div className="text-center">
         <h2 className="font-bold font-inter text-2xl text-center">
           Create an Account
