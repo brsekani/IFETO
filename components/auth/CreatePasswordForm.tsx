@@ -6,6 +6,7 @@ import { useState } from "react";
 const CreatePasswordForm = ({ formik, isLoading }: any) => {
   const password = formik.values.password;
   const [showPassword, setshowPassword] = useState(false);
+  const [showConfirmPassword, setshowConfirmPassword] = useState(false);
 
   const checks = {
     length: password.length >= 8,
@@ -15,7 +16,7 @@ const CreatePasswordForm = ({ formik, isLoading }: any) => {
     special: /[@$!%*?&]/.test(password),
   };
   return (
-    <div className="lg:py-10 mt-7 lg:px-8 px-6 bg-white lg:shadow-custom rounded-2xl">
+    <div className="mt-7 lg:mt-0 lg:px-8 px-6 bg-white lg:shadow-custom rounded-2xl">
       <div className="text-center">
         <h2 className="font-bold font-inter text-2xl text-center">
           Create Your Password
@@ -24,7 +25,7 @@ const CreatePasswordForm = ({ formik, isLoading }: any) => {
           Create a strong password to secure your account
         </p>
       </div>
-      <div className="mt-8">
+      <div className="mt-4">
         <form className="" onSubmit={formik.handleSubmit}>
           <div className="">
             <label className="block font-medium text-sm" htmlFor="password">
@@ -35,7 +36,7 @@ const CreatePasswordForm = ({ formik, isLoading }: any) => {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 id="password"
-                placeholder="Enter your first name"
+                placeholder="Enter your password"
                 className="w-full outline-none border-none h-14 px-4 text-sm placeholder:text-light-aborder-light-active"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -43,14 +44,16 @@ const CreatePasswordForm = ({ formik, isLoading }: any) => {
               />
               {showPassword ? (
                 <button
-                  className="mr-4"
+                  type="button"
+                  className="mr-4 cursor-pointer"
                   onClick={() => setshowPassword((prev) => !prev)}
                 >
                   <Eye className="w-5" />
                 </button>
               ) : (
                 <button
-                  className="mr-4"
+                  type="button"
+                  className="mr-4 cursor-pointer"
                   onClick={() => setshowPassword((prev) => !prev)}
                 >
                   <EyeOff className="w-5" />
@@ -62,6 +65,49 @@ const CreatePasswordForm = ({ formik, isLoading }: any) => {
                 {formik.errors.password}
               </div>
             )}
+          </div>
+          <div className="mt-4">
+            <label
+              className="block font-medium text-sm"
+              htmlFor="confirmPassword"
+            >
+              Confirm Password
+            </label>
+            <div className="w-full border border-light-active rounded-md flex items-center">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                id="confirmPassword"
+                placeholder="Confirm your password"
+                className="w-full outline-none border-none h-14 px-4 text-sm placeholder:text-light-aborder-light-active"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.confirmPassword}
+              />
+              {showConfirmPassword ? (
+                <button
+                  type="button"
+                  className="mr-4 cursor-pointer"
+                  onClick={() => setshowConfirmPassword((prev) => !prev)}
+                >
+                  <Eye className="w-5" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="mr-4 cursor-pointer"
+                  onClick={() => setshowConfirmPassword((prev) => !prev)}
+                >
+                  <EyeOff className="w-5" />
+                </button>
+              )}
+            </div>
+            {formik.touched.confirmPassword &&
+              formik.errors.confirmPassword && (
+                <div className="text-red-600 text-xs mt-1">
+                  {formik.errors.confirmPassword}
+                </div>
+              )}
           </div>
 
           <div className="mt-4 flex flex-col gap-1">

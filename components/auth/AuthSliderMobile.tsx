@@ -24,45 +24,6 @@ const AuthSliderMobile = () => {
   }, []);
   return (
     <div className="relative lg:hidden mt-3">
-      {/* <Swiper
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
-        effect={"fade"}
-        pagination={{
-          clickable: true,
-        }}
-        speed={1000}
-        loop={true}
-        slidesPerView={1}
-        initialSlide={1}
-        autoHeight
-        className="w-full max-w-xl swiper-main"
-        modules={[Pagination, Autoplay]}
-      >
-        <SwiperSlide className="relative">
-          <div className="w-full text-center">
-            <h2 className="font-bold text-lg ">
-              Naturally African. Globally Delivered
-            </h2>
-            <p className="mt-1 text-sm">
-              Seamless worldwide shipping, straight from the source{" "}
-            </p>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide className="relative">
-          <div className="w-full text-center">
-            <h2 className="font-bold text-lg ">
-              Ethical Goods, Direct from the Source
-            </h2>
-            <p className="mt-1 text-sm">
-              Bringing you natural goods with honest origins
-            </p>
-          </div>
-        </SwiperSlide>
-      </Swiper> */}
-
       <AnimatePresence mode="wait">
         <motion.div
           key={index}
