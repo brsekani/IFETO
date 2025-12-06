@@ -9,7 +9,9 @@
   --color-light-active: rgba(213, 213, 213, 1);
   --color-primary: rgba(39, 174, 96, 1);
 
-  --shadow-custom: 0px 5px 3px -2px #eb501705, --container-;
+  --shadow-custom: 0px 5px 3px -2px #eb501705;
+  --shadow-custom1: 0px 4px 12px 0px #00000014;
+  --shadow-custom2: 0px 4px 24px 0px #0000000a;
 }
 
 body {

@@ -1,27 +1,17 @@
 import aboutImg from "@/assets/images/about-img2.png";
 import AboutSlider from "@/components/general/AboutSlider";
-import Image from "next/image";
-import Link from "next/link";
+import BannerContainer from "@/components/general/BannerContainer";
+
 const Page = () => {
   return (
     <div className="min-h-screen">
-      <div
-        className="bg-cover bg-center bg-no-repeat relative h-[502px]"
-        style={{ backgroundImage: `url(${aboutImg.src})` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t  from-black/95 via-black/40 to-transparent"></div>
+      <BannerContainer
+        bannerImg={aboutImg}
+        text="Get to know us"
+        subtext="Where african quality meets global convenience"
+      />
 
-        <div className="absolute lg:bottom-12 md:bottom-8 bottom-4 lg:left-20 md:left-14 left-6 text-white font-medium ">
-          <h2 className="tracking-wide lg:text-5xl md:text-4xl text-2xl">
-            Get to know us
-          </h2>
-          <h4 className="lg:text-[32px] lg:mt-2 md:mt-1 md:text-2xl text-sm">
-            Where african quality meets global convenience
-          </h4>
-        </div>
-      </div>
-
-      <div className="lg:mt-20 md:mt-14 mt-6 lg:px-20">
+      <div className="lg:mt-20 md:mt-14 mt-6 lg:px-20 max-w-[1440px] mx-auto">
         <div className="lg:flex gap-9 w-full h-fit">
           <div className="lg:w-1/2 lg:my-14 my-6 lg:px-0 md:px-14 px-6">
             <h2 className="font-semibold lg:text-4xl md:text-2xl text-lg">
@@ -56,7 +46,7 @@ const Page = () => {
         </div>
       </div>
 
-      <div className="lg:mt-20 md:mt-14 mt-6">
+      <div className="lg:mt-20 md:mt-14 mt-6 max-w-[1440px] mx-auto">
         <div className="lg:px-20 md:px-14 px-6">
           <h2 className="font-semibold lg:text-4xl md:text-md text-xl text-center">
             Our Services
