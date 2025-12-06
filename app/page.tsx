@@ -7,6 +7,16 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { logOut } from "@/lib/authSlice";
 import { showErrorToast, showSuccessToast } from "./utils/toastHelpers";
+import Header from "@/components/Header";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Nav from "@/components/Nav";
+import HeroSection from "@/components/HeroSection";
+import Shopbycategory from "@/components/Shopbycategory";
+import ProductSection from "@/components/ProductSection";
+import HowItworks from "@/components/HowItworks";
+import AppDownload from "@/components/AppDownload";
+import Footer from "@/components/Footer";
+import RightDrawer from "@/components/RightDrawer";
 
 export default function Home() {
   const [token, setToken] = useState<string | null>(null);
@@ -49,41 +59,63 @@ export default function Home() {
     );
   }
 
+  const products = [
+    {
+      id: 1,
+      name: "Irish Potatoes",
+      price: 24.99,
+      category: "Tubers & Nuts",
+      description:
+        "Premium Irish potatoes with a mild, earthy flavor. Excellent for mashing, roasting, or boiling.",
+      image: "/images/products/irish-potatoes.png",
+    },
+    {
+      id: 2,
+      name: "Cabbage",
+      price: 24.99,
+      category: "Fruits & Vegetables",
+      description:
+        "Fresh, firm heads perfect for coleslaw, stir-fries, or steaming. Adds bulk and crunch to any meal.",
+      image: "/images/products/cabbage.png",
+    },
+    {
+      id: 3,
+      name: "Okro",
+      price: 24.99,
+      category: "Fruits & Vegetables",
+      description:
+        "Perfect for soups, stews, and thickening sauces. Essential for traditional Nigerian dishes.",
+      image: "/images/products/irish-potatoes.png",
+    },
+    {
+      id: 4,
+      name: "Yellow Garri",
+      price: 24.99,
+      category: "Grains",
+      description:
+        "Toasted fermented cassava flakes. Suitable for soaking or making Eba.",
+      image: "/images/products/irish-potatoes.png",
+    },
+  ];
+
   return (
-    <div className="w-full h-screen flex flex-col justify-center items-center text-center px-4">
-      <h2 className="text-5xl font-inter font-bold">Welcome to EFETO</h2>
-      <p className="font-semibold mt-3 text-2xl text-gray-600">
-        An e-commerce platform
-      </p>
-
-      {!token && (
-        <div className="mt-10 flex gap-4">
-          <Link
-            href="/auth/login"
-            className="px-8 py-3 rounded-lg bg-black text-white text-lg font-medium hover:bg-gray-800 transition"
-          >
-            Login
-          </Link>
-
-          <Link
-            href="/auth/signup"
-            className="px-8 py-3 rounded-lg border border-black text-black text-lg font-medium hover:bg-black hover:text-white transition"
-          >
-            Sign Up
-          </Link>
-        </div>
-      )}
-
-      {token && (
-        <div className="mt-10">
-          <button
-            onClick={handleLogout}
-            className="px-8 py-3 rounded-lg bg-green-600 text-white text-lg font-medium hover:bg-green-700 transition cursor-pointer"
-          >
-            {isLoading ? "loging out.." : "logout"}
-          </button>
-        </div>
-      )}
+    <div className="space-y-20 bg-[#F9F9F9]">
+      <HeroSection />
+      <Shopbycategory />
+      <div className="space-y-6">
+        <ProductSection
+          title={"Featured Products"}
+          products={products}
+          link={"/"}
+        />
+        <ProductSection
+          title={"Recommended For You"}
+          products={products}
+          link={"/"}
+        />
+      </div>
+      <HowItworks />
+      <AppDownload />
     </div>
   );
 }
