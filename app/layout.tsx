@@ -8,6 +8,11 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { ReduxProvider } from "@/components/ReduxProvider";
 import { Toaster } from "react-hot-toast";
+import Footer from "@/components/Footer";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import Header from "@/components/Header";
+import Nav from "@/components/Nav";
+import LayoutControls from "@/components/LayoutControls";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -51,7 +56,9 @@ export default function RootLayout({
             duration: 4000,
           }}
         />
-        <ReduxProvider>{children}</ReduxProvider>
+        <ReduxProvider>
+          <LayoutControls>{children}</LayoutControls>
+        </ReduxProvider>
       </body>
     </html>
   );

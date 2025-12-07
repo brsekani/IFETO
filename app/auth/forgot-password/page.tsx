@@ -55,23 +55,28 @@ export default function Page() {
 
   return (
     <div
-      className="h-screen w-full bg-cover bg-no-repeat flex items-start justify-center relative"
+      className="min-h-screen w-full bg-cover bg-no-repeat flex items-start justify-center relative"
       style={{
         backgroundImage: "url('/images/forgotPaswordBgImage.png')",
-        backgroundPosition: "20% 75%",
       }}
     >
       <div className="absolute inset-0 bg-[#00000080]" />
 
-      <div className="relative bg-white w-full md:max-w-[542px] h-full md:h-fit py-10 md:px-8 px-6 md:rounded-2xl md:mt-[120px] md:text-center text-start space-y-8 ">
-        <Image src={back} alt="back" className="md:absolute hidden md:block" />
+      <div className="relative bg-white w-full md:max-w-[542px] min-h-screen md:min-h-fit py-10 md:px-8 px-6 md:rounded-2xl md:mt-[120px] md:text-center text-start space-y-8 ">
+        <Image
+          src={back}
+          alt="back"
+          className="md:absolute hidden md:block cursor-pointer"
+          onClick={() => router.back()}
+        />
         <div className="flex w-full justify-between flex-col h-full">
           <div className="space-y-8">
             <div className="space-y-2 md:pb-[29px] md:px-7">
               <Image
                 src={back}
                 alt="back"
-                className="md:absolute block md:hidden mb-4"
+                className="md:absolute block md:hidden mb-4 cursor-pointer"
+                onClick={() => router.back()}
               />
               <h6 className="text-[24px] leading-8 font-bold text-[#2A2A2A]">
                 Forgot Your Password?

@@ -22,7 +22,7 @@ const LoginForm = ({
     "w-full outline-none border-none h-14 px-4 text-sm placeholder:text-light-aborder-light-active";
 
   return (
-    <div className="lg:py-10 mt-7 lg:px-8 px-6 bg-white lg:shadow-custom rounded-2xl">
+    <div className="mt-7 lg:mt-0 lg:px-8 lg:py-6 px-6 bg-white lg:shadow-custom rounded-2xl">
       <div className="text-center">
         <h2 className="font-bold font-inter text-2xl text-center">
           Login to Your Account

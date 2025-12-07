@@ -18,11 +18,14 @@ const useSignup = () => {
       email: "",
       phone: "",
       password: "",
+      confirmPassword: "",
     },
     validationSchema: SignupSchema,
     onSubmit: async (values) => {
       try {
-        const result = await signup(values).unwrap();
+        const { confirmPassword, ...signupValues } = values;
+        
+        const result = await signup(signupValues).unwrap();
         console.log(result);
 
         if (result.success) {

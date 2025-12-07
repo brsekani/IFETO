@@ -14,6 +14,9 @@ export const SignupSchema = Yup.object({
   password: Yup.string()
     .matches(passwordRegex, passwordMessage)
     .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
 });
 
 export const LoginSchema = Yup.object({
@@ -63,4 +66,13 @@ export const ResetPasswordSchema = Yup.object({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password"), undefined], "Passwords do not match")
     .required("Confirm password is required"),
+});
+
+
+export const ContactFormSchema = Yup.object({
+  firstName: Yup.string().required("First Name is required"),
+  lastName: Yup.string().required("Last Name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  phone: Yup.string().required("Phone number is required"),
+  message: Yup.string().required("Message is required"),
 });

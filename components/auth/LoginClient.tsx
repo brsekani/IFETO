@@ -30,10 +30,10 @@ const LoginClient = () => {
   return (
     <section className="w-full min-h-screen flex flex-col lg:flex-row overflow-hidden lg:bg-[#F9F9F9] bg-white">
       {/* left side */}
-      <div className="w-full lg:w-1/2 lg:px-[45px] lg:py-20 mt-3 mb-10">
+      <div className="w-full lg:w-1/2 lg:px-[45px] lg:py-4 mt-3 lg:mt-0 mb-10 lg:mb-6">
         {/* logo */}
         <div className="flex justify-center items-center">
-          <Image src={Logo} alt="logo" className="lg:w-[266px] w-[152px]" />
+          <Image src={Logo} alt="logo" className="lg:w-[246px] w-[152px]" />
         </div>
 
         {/* mobile slider */}
