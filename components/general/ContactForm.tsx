@@ -111,6 +111,9 @@ const ContactForm = () => {
             id="message"
             className="w-full outline-none border-none h-[120px] px-4 py-2 resize-none text-sm placeholder:text-[#CFCFCF]"
             placeholder="Write a message"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.message}
           ></textarea>
         </div>
         {formik.touched.message && formik.errors.message && (

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Mail, PhoneCall } from "lucide-react";
+import { Mail, MapPin, PhoneCall } from "lucide-react";
 import BannerContainer from "@/components/general/BannerContainer";
 import contactImg from "@/assets/images/contact-img.png";
 import phoneImg from "@/assets/images/iPhone 17.png";
@@ -54,7 +54,7 @@ const Contact = () => {
             <div className="bg-white shadow-custom2 rounded-2xl px-7 py-11 flex items-center gap-4">
               <div className="w-fit">
                 <div className="rounded-full h-12 w-12 bg-primary text-white flex items-center justify-center">
-                  <PhoneCall className="" />
+                  <MapPin className="" />
                 </div>
               </div>
               <div className="w-full">

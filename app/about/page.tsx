@@ -1,4 +1,5 @@
-import aboutImg from "@/assets/images/about-img2.png";
+import aboutImg2 from "@/assets/images/about-img2.png";
+import aboutImg from "@/assets/images/aboutImg.png";
 import AboutSlider from "@/components/general/AboutSlider";
 import BannerContainer from "@/components/general/BannerContainer";
 
@@ -41,7 +42,7 @@ const Page = () => {
 
           <div
             className="lg:w-1/2 bg-cover bg-center bg-no-repeat h-[430px] lg:h-auto"
-            style={{ backgroundImage: `url(${aboutImg.src})` }}
+            style={{ backgroundImage: `url(${aboutImg2.src})` }}
           ></div>
         </div>
       </div>
