@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Nav from "@/components/Nav";
+import LayoutControls from "@/components/LayoutControls";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -56,15 +57,7 @@ export default function RootLayout({
           }}
         />
         <ReduxProvider>
-          <div className="fixed top-0 left-0 w-full z-50">
-            <AnnouncementBar />
-            <Header />
-            <Nav />
-          </div>
-
-          <div className="md:pt-[172px] pt-[100px]">{children}</div>
-
-          <Footer />
+          <LayoutControls>{children}</LayoutControls>
         </ReduxProvider>
       </body>
     </html>

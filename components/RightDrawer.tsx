@@ -1,17 +1,27 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
+
+interface RightDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: ReactNode;
+  widthClass?: string;
+}
 
 export default function RightDrawer({
   isOpen,
   onClose,
   children,
   widthClass = "w-[90%] md:w-[400px]", // responsive widths
-}) {
+}: RightDrawerProps) {
   // Close on ESC
   useEffect(() => {
-    const handleEsc = (e) => e.key === "Escape" && onClose();
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
     document.addEventListener("keydown", handleEsc);
     return () => document.removeEventListener("keydown", handleEsc);
   }, [onClose]);
@@ -19,7 +29,9 @@ export default function RightDrawer({
   // Lock / unlock scroll when drawer opens/closes
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => (document.body.style.overflow = "");
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   return (

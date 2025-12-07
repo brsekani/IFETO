@@ -99,7 +99,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="space-y-20 bg-[#F9F9F9]">
+    <div className="md:space-y-20 space-y-6 bg-[#F9F9F9]">
       <HeroSection />
       <Shopbycategory />
       <div className="space-y-6">

@@ -11,7 +11,7 @@ import user from "@/assets/icons/user.svg";
 import location from "@/assets/icons/location.svg";
 import logout from "@/assets/icons/logout.svg";
 
-export default function MyAccountDrawer({ onClose }) {
+export default function MyAccountDrawer({ onClose }: { onClose: () => void }) {
   const router = useRouter();
 
   const links = [

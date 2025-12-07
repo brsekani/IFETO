@@ -2,8 +2,19 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import ProductCard from "./ProductCard";
 import Link from "next/link";
+import { Product } from "@/types/product";
 
-export default function ProductSection({ title, products, link }) {
+interface ProductSectionProps {
+  title: string;
+  link: string;
+  products: Product[];
+}
+
+export default function ProductSection({
+  title,
+  products,
+  link,
+}: ProductSectionProps) {
   return (
     <section className="w-full max-w-[1440px] mx-auto px-6 md:px-20">
       {/* HEADER */}

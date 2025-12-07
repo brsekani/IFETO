@@ -1,7 +1,13 @@
 import Image from "next/image";
-import React from "react";
+import shoppingCart from "@/assets/icons/shopping-cart.svg";
 
-export default function ProductCardShop({ product, index }) {
+export default function ProductCardShop({
+  product,
+  index,
+}: {
+  product: any;
+  index: number;
+}) {
   return (
     <div
       key={index}
@@ -25,7 +31,7 @@ export default function ProductCardShop({ product, index }) {
           <h3 className="md:text-[20px] text-[14px] md:leading-[30px] leading-5 font-medium text-[#2A2A2A]">
             {product.name}
           </h3>
-          <p className="md:text-[15px] text-[11.89px] md:leading-5  text-[#787878] ">
+          <p className="text-[11.89px] md:text-[15px] md:leading-5 text-[#787878] line-clamp-3">
             {product.description}
           </p>
         </div>
@@ -34,7 +40,12 @@ export default function ProductCardShop({ product, index }) {
           <p className="md:text-[20px] text-[12px] leading-[18px] md:leading-[30px] md:font-medium font-semibold text-[#2A2A2A]">
             ${product.price}
           </p>
-          <button className="bg-[#27AE60] hover:bg-[#1F8A4E] text-[#FFFFFF] md:text-[18px] text-[14px] leading-7 font-semibold cursor-pointer w-full md:w-fit md:px-5 md:py-2.5 py-1.5 rounded-[6px]">
+          <button className="bg-[#27AE60] hover:bg-[#1F8A4E] text-[#FFFFFF] md:text-[18px] text-[14px] leading-7 font-semibold cursor-pointer w-full md:w-fit md:px-5 md:py-2.5 py-1.5 rounded-[6px] flex items-center gap-1 justify-center">
+            <Image
+              src={shoppingCart}
+              alt=""
+              className="w-3.5 h-3.5 block md:hidden"
+            />{" "}
             Add to Cart
           </button>
         </div>

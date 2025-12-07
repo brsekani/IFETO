@@ -6,7 +6,7 @@ import close from "@/assets/icons/Close.svg";
 import MobilePlayStorebadge from "@/assets/icons/MobilePlayStorebadge.svg";
 import MobileAppStorebadge from "@/assets/icons/MobileAppStorebadge.svg";
 
-export default function MenuDrawer({ onClose }) {
+export default function MenuDrawer({ onClose }: { onClose: () => void }) {
   const router = useRouter();
 
   const links = [

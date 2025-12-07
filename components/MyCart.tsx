@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import EmptyCart from "./EmptyCart";
 
-export default function MyCart({ onClose }) {
+export default function MyCart({ onClose }: { onClose: () => void }) {
   const [cart, setCart] = useState([
     {
       id: 1,
@@ -39,7 +39,7 @@ export default function MyCart({ onClose }) {
   const allChecked = cart.length > 0 && cart.every((item) => item.checked);
   const anyChecked = cart.some((item) => item.checked);
 
-  const toggleItem = (id) => {
+  const toggleItem = (id: number) => {
     setCart((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, checked: !item.checked } : item
@@ -51,7 +51,7 @@ export default function MyCart({ onClose }) {
     setCart((prev) => prev.map((item) => ({ ...item, checked: !allChecked })));
   };
 
-  const increaseQty = (id) => {
+  const increaseQty = (id: number) => {
     setCart((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, qty: item.qty + 1 } : item
@@ -59,7 +59,7 @@ export default function MyCart({ onClose }) {
     );
   };
 
-  const decreaseQty = (id) => {
+  const decreaseQty = (id: number) => {
     setCart((prev) =>
       prev.map((item) =>
         item.id === id && item.qty > 1 ? { ...item, qty: item.qty - 1 } : item
@@ -67,7 +67,7 @@ export default function MyCart({ onClose }) {
     );
   };
 
-  const deleteItem = (id) => {
+  const deleteItem = (id: number) => {
     setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
@@ -197,10 +197,10 @@ export default function MyCart({ onClose }) {
             </div>
 
             <div className="p-4 flex flex-col gap-2">
-              <button className="w-full h-12 border border-[#27AE60] rounded-[6px] text-[18px] font-semibold text-[#27AE60]">
+              <button className="w-full h-12 border border-[#27AE60] rounded-[6px] text-[18px] leading-7 font-semibold text-[#27AE60]">
                 View Cart
               </button>
-              <button className="w-full h-12 bg-[#27AE60] rounded-[6px] text-[18px] font-semibold text-white">
+              <button className="w-full h-12 bg-[#27AE60] rounded-[6px] text-[18px] leading-7 font-semibold text-white">
                 Checkout
               </button>
             </div>
