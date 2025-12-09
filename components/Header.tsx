@@ -93,7 +93,7 @@ export default function Header() {
               />
             </SelectTrigger>
 
-            <SelectContent>
+            <SelectContent modal={false}>
               {languages.map((lang) => (
                 <SelectItem key={lang.code} value={lang.code}>
                   <div className="flex items-center gap-2">{lang.label}</div>
@@ -135,7 +135,7 @@ export default function Header() {
               // onClick={() => setOpenProfile(true)}
             />
 
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               {/* TRIGGER */}
               <DropdownMenuTrigger className="md:flex hidden items-center gap-1 bg-transparent text-sm outline-none border-none">
                 <span className="hidden md:inline text-[#2A2A2A]">
