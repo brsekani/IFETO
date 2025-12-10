@@ -45,46 +45,27 @@ export default function AnnouncementBar() {
           <div className="flex items-center gap-2">
             {/* Flag (always visible) */}
             <Image
-              src={selectedCountry.flag}
+              src={usa}
               width={20}
               height={20}
-              alt={selectedCountry.label}
+              alt={usa}
               className="rounded-sm"
             />
 
-            {/* Country Select */}
-            <Select
-              defaultValue={selectedCountry.code}
-              onValueChange={(value) => {
-                const lang = countries.find((lang) => lang.code === value);
-                if (lang) setSelectedCountry(lang);
-              }}
-            >
-              <SelectTrigger
-                className="
+            <div
+              className="
         w-fit p-0 h-auto text-sm
         bg-transparent border-none shadow-none 
         focus:ring-0 focus:outline-none
         [&>svg]:hidden [&>span>svg]:hidden
         flex items-center gap-1
       "
-              >
-                {/* Hide text on mobile, show on md+ */}
-                <span className="hidden md:inline">
-                  <SelectValue placeholder="Select Country" />
-                </span>
+            >
+              {/* Hide text on mobile, show on md+ */}
+              <span className="hidden md:inline">United States</span>
 
-                {/* Dropdown arrow */}
-              </SelectTrigger>
-
-              <SelectContent>
-                {countries.map((lang) => (
-                  <SelectItem key={lang.code} value={lang.code}>
-                    <div className="flex items-center gap-2">{lang.label}</div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              {/* Dropdown arrow */}
+            </div>
           </div>
         </div>
       </div>

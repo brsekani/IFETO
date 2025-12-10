@@ -1,7 +1,7 @@
 import emptyState from "@/assets/icons/emptyState.svg";
 import Image from "next/image";
 
-export default function EmptyCart() {
+export default function EmptyCart({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex items-center justify-center flex-col">
       <Image
@@ -13,7 +13,10 @@ export default function EmptyCart() {
         Your cart is empty
       </p>
 
-      <button className="w-full max-w-[280px] h-12 bg-[#27AE60] rounded-[6px] text-[18px]  leading-7 font-semibold text-white cursor-pointer">
+      <button
+        onClick={onClose}
+        className="w-full max-w-[280px] h-12 bg-[#27AE60] rounded-[6px] text-[18px]  leading-7 font-semibold text-white cursor-pointer"
+      >
         Continue Shopping
       </button>
     </div>

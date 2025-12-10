@@ -6,6 +6,8 @@ import x from "@/assets/icons/Tw.svg";
 import fb from "@/assets/icons/Fb.svg";
 import insta from "@/assets/icons/Ig.svg";
 import ln from "@/assets/icons/Ln.svg";
+import { categories } from "@/app/constants/categories";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -36,14 +38,16 @@ export default function Footer() {
                 Categories
               </h6>
               <ul className="text-[14px] leading-5 text-[#FAFAFA] space-y-4">
-                <li>Grains & Cereals</li>
-                <li>Fruits & Vegetables</li>
-                <li>Proteins</li>
-                <li>Attires</li>
-                <li>Oil & Butters</li>
-                <li>Tubers & Nuts</li>
-                <li>Seafood</li>
-                <li>Herbs & Spice</li>
+                {categories.map((cat) => (
+                  <li key={cat}>
+                    <Link
+                      href={`/shop?filters=${encodeURIComponent(cat)}`}
+                      className="block hover:text-[#41B079] transition"
+                    >
+                      {cat}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 

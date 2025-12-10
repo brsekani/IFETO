@@ -85,7 +85,8 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
         <Image src={close} alt="close" onClick={onClose} />
       </div>
 
-      {cart.length >= 1 ? (
+      {/* change <= to >= */}
+      {cart.length <= 1 ? (
         <>
           <div className="px-6 py-[18px] flex items-center gap-3 text-[18px] text-[#5A5A5A]">
             <label className="relative inline-flex items-center cursor-pointer">
@@ -207,7 +208,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
           </div>
         </>
       ) : (
-        <EmptyCart />
+        <EmptyCart onClose={onClose} />
       )}
     </div>
   );
