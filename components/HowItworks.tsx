@@ -48,14 +48,10 @@ export default function HowItworks() {
 
               <div className="max-w-[736px] w-full bg-[#EFEEEE] p-4 space-y-4 rounded-2xl">
                 <h6 className="md:text-[24px] text-[18px] md:leading-8 leading-7 text-[#2A2A2A] font-semibold">
-                  Shop Directly from Nigerian Producers
+                  {d.title}
                 </h6>
                 <p className="md:text-[18px] text-[14px] md:leading-7 leading-5 text-[#787878] md:pr-5">
-                  Gain direct access to high-quality products sourced straight
-                  from Nigeria’s most trusted factories, farmers, and
-                  manufacturers. IFETO removes unnecessary middlemen, giving you
-                  transparent pricing, authentic goods, and a clear view of
-                  where every product comes from.
+                  {d.desc}
                 </p>
               </div>
             </div>

@@ -21,17 +21,17 @@ export default function HeroSection() {
     {
       title: "Pure, Natural, Traceable Ingredients",
       desc: "Shop spices, grains, herbs, and handcrafted goods made with natural methods and full transparency from farm to shipment.",
-      img: "/images/african-man-harvesting-vegetables.png",
+      img: "/images/basketOfStuff.png",
     },
     {
       title: "Quality You Can Trust, From Verified Vendors",
       desc: "Every item is vetted for safety, freshness, and authenticity — giving you confidence with every order.",
-      img: "/images/african-man-harvesting-vegetables.png",
+      img: "/images/menAndCassava.png",
     },
     {
       title: "Global Delivery, Straight From the Source",
       desc: "Experience fast, reliable worldwide delivery powered by modern logistics and ethical sourcing practices.",
-      img: "/images/african-man-harvesting-vegetables.png",
+      img: "/images/madeInAfrica.png",
     },
   ];
 
@@ -48,11 +48,24 @@ export default function HeroSection() {
     });
   }, [api]);
 
+  React.useEffect(() => {
+    if (!api) return;
+
+    const autoplay = setInterval(() => {
+      api.scrollNext();
+    }, 5000);
+
+    return () => clearInterval(autoplay);
+  }, [api]);
+
   return (
     <section className="w-full bg-[#27AE60] relative overflow-hidden md:h-[540px] h-[476px] ">
       <Carousel
         className="w-full max-w-[1440px] mx-auto h-full"
         setApi={setApi}
+        opts={{
+          loop: true,
+        }}
       >
         <CarouselContent className="h-full">
           {slides.map((slide, index) => (
@@ -76,7 +89,7 @@ export default function HeroSection() {
                     width={540}
                     height={540}
                     alt="Hero"
-                    className="object-contain md:max-h-[540px] max-h-[200px]"
+                    className="object-contain h-[200px] md:h-[540px]"
                     priority
                   />
                 </div>
