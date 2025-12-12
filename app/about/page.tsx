@@ -47,7 +47,7 @@ const Page = () => {
         </div>
       </div>
 
-      <div className="lg:mt-20 md:mt-14 mt-6 max-w-[1440px] mx-auto">
+      <div className="lg:mt-20 md:mt-14 mt-6 max-w-7xl mx-auto ">
         <div className="lg:px-20 md:px-14 px-6">
           <h2 className="font-semibold lg:text-4xl md:text-md text-xl text-center">
             Our Services

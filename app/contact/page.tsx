@@ -24,8 +24,8 @@ const Contact = () => {
       />
 
       <div className="">
-        <div className="bg-[#f8f8f8] lg:py-20 md:py-14 py-6  lg:px-20 md:px-14 px-6">
-          <div className="grid max-w-[1440px] mx-auto gap-6 grid-cols-[repeat(auto-fit,minmax(320px,1fr))]">
+        <div className="bg-[#f8f8f8] lg:py-20 md:py-14 py-6  lg:px-20 md:px-14 px-6 max-w-7xl mx-auto ">
+          <div className="grid max-w-7xl mx-auto gap-6 grid-cols-[repeat(auto-fit,minmax(320px,1fr))]">
             <div className="bg-white shadow-custom2 rounded-2xl px-7 py-11 flex items-center gap-4">
               <div className="rounded-full h-12 w-12 bg-primary text-white flex items-center justify-center">
                 <Mail className="" />
@@ -69,8 +69,8 @@ const Contact = () => {
           </div>
         </div>
 
-        <div className="bg-[#F4F4F5] lg:py-10 md:py-8 py-6  lg:px-20 md:px-14 px-6">
-          <div className="flex flex-col-reverse lg:flex-row gap-9 max-w-[1440px] mx-auto">
+        <div className="bg-[#F4F4F5] lg:py-10 md:py-8 py-6 lg:px-20 md:px-14 px-6 max-w-7xl mx-auto ">
+          <div className="flex flex-col-reverse lg:flex-row gap-9 max-w-7xl mx-auto ">
             <div className="lg:w-5/12">
               <div className="bg-[#E3FFEF] py-1 px-4 rounded-2xl flex items-center justify-center gap-1.5 w-fit">
                 <div className="lg:w-2.5 w-[7px] lg:h-2.5 h-[7px] rounded-full bg-primary" />

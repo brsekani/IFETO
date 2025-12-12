@@ -1,7 +1,7 @@
 const BannerContainer = ({ bannerImg, text, subtext }: any) => {
   return (
     <div
-      className="bg-cover bg-center bg-no-repeat relative lg:h-[502px] md:h-[306px] h-[220px] "
+      className="max-w-7xl mx-auto bg-cover bg-center bg-no-repeat relative lg:h-[502px] md:h-[306px] h-[220px] "
       style={{ backgroundImage: `url(${bannerImg.src})` }}
     >
       <div className="absolute inset-0 bg-gradient-to-t  from-black/95 via-black/40 to-transparent"></div>
