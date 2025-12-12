@@ -22,6 +22,8 @@ export default function LayoutControls({
     pathname.startsWith("/reset-pass") ||
     pathname.startsWith("/signup");
 
+  const isDashboard =  pathname.startsWith("/account");
+
   return (
     <>
       {!isAuthRoute && (
@@ -36,7 +38,7 @@ export default function LayoutControls({
         {children}
       </div>
 
-      {!isAuthRoute && <Footer />}
+      {!isAuthRoute || !isDashboard && <Footer />}
     </>
   );
 }

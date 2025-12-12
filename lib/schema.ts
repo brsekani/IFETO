@@ -68,11 +68,32 @@ export const ResetPasswordSchema = Yup.object({
     .required("Confirm password is required"),
 });
 
-
 export const ContactFormSchema = Yup.object({
   firstName: Yup.string().required("First Name is required"),
   lastName: Yup.string().required("Last Name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   phone: Yup.string().required("Phone number is required"),
   message: Yup.string().required("Message is required"),
+});
+
+export const ProfileEditSchema = Yup.object({
+  name: Yup.string().required("Name is required"),
+  phone: Yup.string().required("Phone number is required"),
+  country: Yup.string().required("Country is required"),
+});
+
+export const SecuritySchema = Yup.object({
+  currentPassword: Yup.string()
+    .matches(passwordRegex, passwordMessage)
+    .required("Current password is required"),
+  newPassword: Yup.string()
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[A-Z]/, "Must contain at least 1 uppercase letter")
+    .matches(/[a-z]/, "Must contain at least 1 lowercase letter")
+    .matches(/[0-9]/, "Must contain at least 1 number")
+    .matches(/[@*#$%]/, "Must contain at least 1 special character (@ * # $ %)")
+    .required("New password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("newPassword"), undefined], "Passwords do not match")
+    .required("Confirm password is required"),
 });
