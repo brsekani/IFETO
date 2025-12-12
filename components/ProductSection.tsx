@@ -4,6 +4,9 @@ import ProductCard from "./ProductCard";
 import Link from "next/link";
 import { Product } from "@/types/product";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+
 interface ProductSectionProps {
   title: string;
   link: string;
@@ -31,11 +34,25 @@ export default function ProductSection({
       </div>
 
       {/* GRID */}
-      <div className="flex items-center overflow-x-scroll gap-6">
+      <Swiper
+        modules={[Navigation]}
+        spaceBetween={20}
+        slidesPerView="auto"
+        navigation={{
+          nextEl: ".swiper-next",
+          prevEl: ".swiper-prev",
+        }}
+        className="w-full"
+      >
         {products.map((product, index) => (
-          <ProductCard product={product} index={index} />
+          <SwiperSlide
+            key={product.id || index}
+            className="!w-auto" // allows variable width cards
+          >
+            <ProductCard product={product} index={index} />
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
     </section>
   );
 }
