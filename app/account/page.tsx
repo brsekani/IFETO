@@ -7,11 +7,11 @@ const account = () => {
   const accountLinks = [
     { href: "/account/profile", label: "My Profile", Icon: UserRound },
     { href: "/account/security", label: "Security", Icon: LockKeyhole },
-    {
-      href: "/account/notification",
-      label: "Notification",
-      Icon: Bell,
-    },
+    // {
+    //   href: "/account/notification",
+    //   label: "Notification",
+    //   Icon: Bell,
+    // },
   ];
   useEffect(() => {
     if (window.innerWidth >= 768) {

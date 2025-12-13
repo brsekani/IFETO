@@ -8,11 +8,11 @@ const DesktopAccountNav = () => {
   const accountLinks = [
     { href: "/account/profile", label: "My Profile", Icon: UserRound },
     { href: "/account/security", label: "Security", Icon: LockKeyhole },
-    {
-      href: "/account/notification",
-      label: "Notification",
-      Icon: Bell,
-    },
+    // {
+    //   href: "/account/notification",
+    //   label: "Notification",
+    //   Icon: Bell,
+    // },
   ];
   return (
     <div className="w-[305px] shadow-custom2 bg-white p-4 rounded-2xl">

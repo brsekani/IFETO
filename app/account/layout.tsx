@@ -1,5 +1,6 @@
 "use client";
 import DesktopAccountNav from "@/components/general/DesktopAccountNav";
+import AuthGuard from "@/components/auth/AuthGuard";
 import React from "react";
 
 const layout = ({
@@ -13,7 +14,9 @@ const layout = ({
         <div className="hidden lg:block">
           <DesktopAccountNav />
         </div>
-        <div className="w-full">{children}</div>
+        <div className="w-full">
+          <AuthGuard>{children}</AuthGuard>
+        </div>
       </div>
     </div>
   );

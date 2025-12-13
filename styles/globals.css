@@ -181,3 +181,11 @@ input[type="checkbox"].custom-checkbox:checked {
     @apply bg-background text-foreground;
   }
 }
+
+/* Remove default focus ring for radio buttons */
+input[type="radio"]:focus, 
+input[type="radio"]:focus-visible, 
+input[type="radio"]:active {
+  outline: none !important;
+  box-shadow: none !important;
+}

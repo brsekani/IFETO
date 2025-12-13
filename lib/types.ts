@@ -87,3 +87,53 @@ export interface ForgotPasswordResponse {
   };
   statusCode: 201; // Or whatever status code your server returns (e.g., 200)
 }
+
+// Profile & Account Types
+
+export interface GetProfileResponse {
+  success: true;
+  message: string;
+  data: User;
+  statusCode: 200;
+}
+
+export interface UpdateProfileRequest {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  // Add other updatable fields as necessary
+}
+
+export interface UpdateProfileResponse {
+  success: true;
+  message: string;
+  data: {
+    user: User;
+  };
+  statusCode: 200;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+}
+
+export interface ChangePasswordResponse {
+  success: true;
+  message: string;
+  data: null | {};
+  statusCode: 200;
+}
+
+export interface DeleteAccountRequest {
+  reason: string;
+  password: string;
+}
+
+export interface DeleteAccountResponse {
+  success: true;
+  message: string;
+  data: null | {};
+  statusCode: 200;
+}

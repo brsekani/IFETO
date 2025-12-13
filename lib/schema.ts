@@ -77,9 +77,9 @@ export const ContactFormSchema = Yup.object({
 });
 
 export const ProfileEditSchema = Yup.object({
-  name: Yup.string().required("Name is required"),
+  firstName: Yup.string().required("First Name is required"),
+  lastName: Yup.string().required("Last Name is required"),
   phone: Yup.string().required("Phone number is required"),
-  country: Yup.string().required("Country is required"),
 });
 
 export const SecuritySchema = Yup.object({
@@ -96,4 +96,11 @@ export const SecuritySchema = Yup.object({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("newPassword"), undefined], "Passwords do not match")
     .required("Confirm password is required"),
+});
+export const DeleteAccountSchema = Yup.object({
+  reason: Yup.string().required("Reason is required"),
+  otherReason: Yup.string(),
+  password: Yup.string()
+    .matches(passwordRegex, passwordMessage)
+    .required("Password is required"),
 });
