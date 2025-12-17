@@ -14,12 +14,12 @@ const account = () => {
     // },
   ];
   useEffect(() => {
-    if (window.innerWidth >= 768) {
+    if (window.innerWidth >= 1024) {
       window.location.href = "/account/profile";
     }
   }, []);
   return (
-    <div className="px-6 mt-4 md:hidden">
+    <div className="px-6 mt-4 lg:hidden">
       <h2 className="text-lg font-semibold py-2">My Account</h2>
 
       <div className="">
