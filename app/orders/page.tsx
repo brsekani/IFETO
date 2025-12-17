@@ -156,20 +156,29 @@ const page = () => {
       </div>
 
       <div className="my-6 grid gap-6">
-        {filteredOrders.length < 0 ? (
+        {filteredOrders.length > 0 ? (
           filteredOrders.map((order) => (
             <OrderCard key={order.id} order={order} />
           ))
         ) : (
           <div className="text-center min-h-[20vh] flex flex-col justify-center items-center w-full">
-            <Image src={emptyImg} alt="empty" className="w-[164px] h-[156px] lg:w-[250px] lg:h-[240px]" />
-            <p className="lg:text-lg text-base font-semibold mt-1">No orders yet</p>
+            <Image
+              src={emptyImg}
+              alt="empty"
+              className="w-[164px] h-[156px] lg:w-[250px] lg:h-[240px]"
+            />
+            <p className="lg:text-lg text-base font-semibold mt-1">
+              No orders yet
+            </p>
             <p className="text-[#5A5A5A] lg:text-lg text-sm mt-3">
               When you make a purchase, your order history will appear here.
             </p>
-            <button className="mt-8 w-[280px] h-12 rounded-[6px] bg-primary text-white font-medium text-lg">
+            <Link
+              href="/shop"
+              className="mt-8 w-[280px] h-12 rounded-[6px] bg-primary text-white font-medium text-lg flex justify-center items-center"
+            >
               Continue Shopping
-            </button>
+            </Link>
           </div>
         )}
       </div>

@@ -2,6 +2,7 @@ import aboutImg2 from "@/assets/images/about-img2.png";
 import aboutImg from "@/assets/images/aboutImg.png";
 import AboutSlider from "@/components/general/AboutSlider";
 import BannerContainer from "@/components/general/BannerContainer";
+import FAQ from "@/components/general/FAQ";
 
 const Page = () => {
   return (
@@ -47,20 +48,9 @@ const Page = () => {
         </div>
       </div>
 
-      <div className="lg:mt-20 md:mt-14 mt-6 max-w-7xl mx-auto ">
-        <div className="lg:px-20 md:px-14 px-6">
-          <h2 className="font-semibold lg:text-4xl md:text-md text-xl text-center">
-            Our Services
-          </h2>
-          <p className="lg:text-xl md:text-base text-xs leading-5 md:leading-normal text-[#606060] text-center md:mt-5 mt-4">
-            We offer a wide range of ethically sourced goods, including fresh
-            raw foods, spices, and traditional African attire. Our platform
-            ensures every item meets quality standards and is delivered globally
-            with care
-          </p>
-        </div>
 
-        <AboutSlider />
+      <div className="lg:mt-20 md:mt-14 mt-6 max-w-[1440px] mx-auto px-6 lg:px-20 mb-20">
+        <FAQ />
       </div>
     </div>
   );

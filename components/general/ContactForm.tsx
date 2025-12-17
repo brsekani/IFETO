@@ -4,7 +4,7 @@ import emailIcon from "@/assets/icons/mail.svg";
 import Image from "next/image";
 import useContactForm from "@/hooks/form-hooks/useContactForm";
 const ContactForm = () => {
-  const { formik } = useContactForm();
+  const { formik, isLoading } = useContactForm();
   return (
     <form className="mt-8" onSubmit={formik.handleSubmit}>
       <div className="">
@@ -126,13 +126,14 @@ const ContactForm = () => {
         <div className="">
           <button
             type="submit"
+            disabled={!formik.dirty || !formik.isValid || isLoading}
             className={` w-full h-12 rounded-md text-center px-5 text-lg  font-semibold cursor-pointer ${
-              !formik.dirty || !formik.isValid
+              !formik.dirty || !formik.isValid || isLoading
                 ? "bg-[#C7D3CC] text-white"
                 : "bg-primary text-white"
             }`}
           >
-            Submit
+            {isLoading ? "Sending..." : "Submit"}
           </button>
         </div>
       </div>
