@@ -1,4 +1,4 @@
-import { apiSlice } from "./auth";
+import { api } from "./api";
 import {
   ChangePasswordRequest,
   ChangePasswordResponse,
@@ -9,23 +9,29 @@ import {
   UpdateProfileResponse,
 } from "../types";
 
-export const profileApi = apiSlice.injectEndpoints({
+export const profileApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getProfile: builder.query<GetProfileResponse, void>({
       query: () => "/profile", // Adjusted endpoint to likely correct path based on auth prefix
-      providesTags: ["User"],
+      providesTags: ["profile"],
     }),
 
-    updateProfile: builder.mutation<UpdateProfileResponse, UpdateProfileRequest>({
+    updateProfile: builder.mutation<
+      UpdateProfileResponse,
+      UpdateProfileRequest
+    >({
       query: (data) => ({
-        url: "/profile", 
+        url: "/profile",
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ["profile"],
     }),
 
-    changePassword: builder.mutation<ChangePasswordResponse, ChangePasswordRequest>({
+    changePassword: builder.mutation<
+      ChangePasswordResponse,
+      ChangePasswordRequest
+    >({
       query: (passwords) => ({
         url: "/profile/password",
         method: "PATCH",
@@ -33,7 +39,10 @@ export const profileApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    deleteAccount: builder.mutation<DeleteAccountResponse, DeleteAccountRequest>({
+    deleteAccount: builder.mutation<
+      DeleteAccountResponse,
+      DeleteAccountRequest
+    >({
       query: (data) => ({
         url: "/profile",
         method: "DELETE",

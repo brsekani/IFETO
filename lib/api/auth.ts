@@ -1,5 +1,3 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "./baseQueryWithReauth";
 import {
   ForgotPasswordRequest,
   ForgotPasswordResponse,
@@ -11,12 +9,10 @@ import {
   SignupResponse,
   VerifyEmailRequestByCode,
   VerifyEmailResponseByCode,
-} from "../types";
+} from "../../app/features/auth/auth.types";
+import { api } from "./api";
 
-export const apiSlice = createApi({
-  reducerPath: "api",
-  baseQuery: baseQueryWithReauth,
-  tagTypes: ["User", "Data"],
+export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     signup: builder.mutation<SignupResponse, SignupRequest>({
       query: (credentials) => ({
@@ -73,20 +69,14 @@ export const apiSlice = createApi({
         body: credentials,
       }),
     }),
-
-    getProtectedData: builder.query<string[], void>({
-      query: () => "/data/protected",
-      providesTags: ["Data"],
-    }),
   }),
 });
 
 export const {
   useLoginMutation,
   useLogoutMutation,
-  useGetProtectedDataQuery,
   useSignupMutation,
   useVerifyAuthCodeMutation,
   useResendVerificationCodeMutation,
   useForgotPasswordMutation,
-} = apiSlice;
+} = authApi;

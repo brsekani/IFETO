@@ -16,13 +16,15 @@ const useLogin = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: "",
-      password: "",
+      email: "lawaltemidayo06+4@gmail.com",
+      password: "Testpass123",
     },
     validationSchema: LoginSchema,
     onSubmit: async (values) => {
       try {
+        console.log(values);
         const result = await login(values).unwrap();
+        console.log(result);
 
         if (result.success) {
           showSuccessToast(result.message);
@@ -42,6 +44,7 @@ const useLogin = () => {
           }
         }
       } catch (err: any) {
+        console.log(err);
         const errorMessage =
           err?.data?.message ||
           err?.error ||

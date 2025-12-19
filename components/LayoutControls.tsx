@@ -5,12 +5,14 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AnnouncementBar from "./AnnouncementBar";
 import Nav from "./Nav";
+import { useSyncCartAfterLogin } from "@/lib/cart/useSyncCartAfterLogin";
 
 export default function LayoutControls({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  useSyncCartAfterLogin();
   const pathname = usePathname() ?? "";
 
   // Adjust these rules to match your auth routes exactly:
@@ -22,7 +24,7 @@ export default function LayoutControls({
     pathname.startsWith("/reset-pass") ||
     pathname.startsWith("/signup");
 
-  const isDashboard =  pathname.startsWith("/account");
+  const isDashboard = pathname.startsWith("/account");
 
   return (
     <>
@@ -38,7 +40,7 @@ export default function LayoutControls({
         {children}
       </div>
 
-      {!isAuthRoute || !isDashboard && <Footer />}
+      {!isAuthRoute && !isDashboard && <Footer />}
     </>
   );
 }

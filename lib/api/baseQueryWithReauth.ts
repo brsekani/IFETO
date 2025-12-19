@@ -1,3 +1,4 @@
+import { getCookie } from "@/utils/cookies";
 import {
   fetchBaseQuery,
   BaseQueryFn,
@@ -12,12 +13,20 @@ export const baseQueryWithReauth: BaseQueryFn<
 > = async (args, api, extraOptions) => {
   const baseQuery = fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+    // credentials: "include",
     prepareHeaders: (headers) => {
       const token =
         typeof window !== "undefined"
           ? localStorage.getItem("IFETOAccessToken")
           : null;
       if (token) headers.set("Authorization", `Bearer ${token}`);
+
+      const country = getCookie("country_code");
+      console.log(`country: ${country}`);
+      if (country) {
+        headers.set("X-Country", country);
+      }
+
       return headers;
     },
   });

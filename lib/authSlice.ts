@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
-import { AuthState } from "./types";
+import { AuthState } from "../app/features/auth/auth.types";
 
 // Load token from localStorage on first load
 const storedToken =

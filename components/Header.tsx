@@ -40,7 +40,6 @@ const items = [
 ];
 
 export default function Header() {
-  // const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [openCart, setOpenCart] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
