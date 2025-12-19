@@ -23,6 +23,8 @@ import { useGetAllProductsQuery } from "@/lib/api/products";
 import ProductCardSkeleton from "@/components/loaders/ProductCardShop";
 import FilterDropdownSkeleton from "@/components/loaders/FilterDropdownSkeleton";
 import { FilterDropdownListSkeleton } from "@/components/loaders/FilterDropdownListSkeleton";
+import { Product } from "@/types/product";
+import { Category } from "@/types/category";
 
 export default function ShopClient() {
   const searchParams = useSearchParams();
@@ -53,7 +55,7 @@ export default function ShopClient() {
   });
   console.log(productsRes);
 
-  const categoriesFromApi = data?.data ?? [];
+  const categoriesFromApi: Category[] = data?.data ?? [];
 
   const products = productsRes?.data.data ?? [];
   const meta = productsRes?.data?.meta;
@@ -207,7 +209,7 @@ export default function ShopClient() {
             ? Array.from({ length: 20 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))
-            : products.map((product) => (
+            : products.map((product: Product) => (
                 <ProductCardShop
                   product={product}
                   index={product.id}

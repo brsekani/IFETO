@@ -7,6 +7,7 @@ import "swiper/css";
 
 import { useGetAllCategoriesQuery } from "@/lib/api/categories";
 import { useRouter } from "next/navigation";
+import { Category } from "@/types/category";
 
 export default function Shopbycategory() {
   const router = useRouter();
@@ -53,7 +54,7 @@ export default function Shopbycategory() {
 
         {/* 🔹 Real categories */}
         {!isLoading &&
-          categories.map((category) => (
+          categories.map((category: Category) => (
             <SwiperSlide
               key={category.id}
               className="!w-[124px] md:!w-[257px] shrink-0 cursor-pointer"

@@ -17,7 +17,6 @@ import CartSkeleton from "./loaders/CartSkeleton";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   getLocalCart,
-  LocalCartItem,
   removeFromLocalCart,
   updateLocalCartQty,
 } from "@/lib/cart/localCart";
@@ -25,25 +24,18 @@ import { useAppSelector } from "./auth/AuthGuard";
 import { selectIsAuthenticated } from "@/lib/authSlice";
 import { useDispatch } from "react-redux";
 import { api } from "@/lib/api/api";
+import { LocalCartItem, UICartItem } from "@/types/cart";
+import { productsApi } from "@/lib/api/products";
+import { AppDispatch } from "@/lib/store";
 
 const getNumericPrice = (price: string): number =>
   Number.parseFloat(price.replace(/[^\d.]/g, "")) || 0;
 
 const getCurrency = (price: string) => price.match(/[₦$£€]/)?.[0] ?? "₦";
 
-type UICartItem = {
-  id: string;
-  quantity: number;
-  price: string;
-  product: {
-    name: string;
-    images: string[];
-  };
-};
-
 export default function MyCart({ onClose }: { onClose: () => void }) {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
@@ -55,7 +47,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
   const [updateQty, { isLoading: isUpdatingQty }] = useUpdateCartItemMutation();
   const [removeItem] = useRemoveCartItemMutation();
 
-  const [localItems, setLocalItems] = useState<LocalCartItem[]>([]);
+  const [localItems, setLocalItems] = useState<UICartItem[]>([]);
   const [loadingLocal, setLoadingLocal] = useState(!isAuthenticated);
 
   const formatSubtotal = (currency: string, total: number) =>
@@ -145,18 +137,17 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
       }
 
       try {
-        // fetch products by ID
-        const productRequests = cart.map((item) =>
-          dispatch(
-            api.endpoints.getProductById.initiate(item.productId)
-          ).unwrap()
+        const responses = await Promise.all(
+          cart.map((item) =>
+            dispatch(
+              productsApi.endpoints.getProductById.initiate(item.productId)
+            ).unwrap()
+          )
         );
 
-        const responses = await Promise.all(productRequests);
-
-        const hydratedItems = cart.map((item) => {
+        const hydratedItems: UICartItem[] = cart.map((item) => {
           const product = responses.find(
-            (res) => res.data.id === item.productId
+            (p) => p.data.id === item.productId
           )?.data;
 
           return {
@@ -165,17 +156,16 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
             price: product?.price ?? "₦0.00",
             product: {
               name: product?.name ?? "Product",
-              images:
-                product?.images?.length > 0
-                  ? product.images
-                  : ["/placeholder.png"],
+              images: product?.images?.length
+                ? product.images
+                : ["/placeholder.png"],
             },
           };
         });
 
         setLocalItems(hydratedItems);
-      } catch (error) {
-        console.error("Failed to hydrate local cart", error);
+      } catch (err) {
+        console.error("Failed to hydrate local cart", err);
       } finally {
         setLoadingLocal(false);
       }
@@ -185,9 +175,16 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
   }, [isAuthenticated, dispatch]);
 
   useEffect(() => {
-    setCheckedIds((prev) =>
-      prev.filter((id) => cartItems.some((item) => item.id === id))
-    );
+    setCheckedIds((prev) => {
+      const next = prev.filter((id) =>
+        cartItems.some((item) => item.id === id)
+      );
+
+      // 🔑 Prevent unnecessary state updates
+      if (next.length === prev.length) return prev;
+
+      return next;
+    });
   }, [cartItems]);
 
   if (isLoading || loadingLocal) return <CartSkeleton />;

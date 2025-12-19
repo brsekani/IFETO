@@ -9,13 +9,10 @@ import ln from "@/assets/icons/Ln.svg";
 import Link from "next/link";
 import { useGetAllCategoriesQuery } from "@/lib/api/categories";
 import { useGetAllProductsQuery } from "@/lib/api/products";
+import { Category } from "@/types/category";
 
 export default function Footer() {
   const { data, isLoading } = useGetAllCategoriesQuery();
-  const { data: p, error, isError } = useGetAllProductsQuery();
-
-  console.log(p);
-  console.log(isError);
 
   const categories = data?.data ?? [];
   return (
@@ -56,7 +53,7 @@ export default function Footer() {
 
                 {/* 🔹 Real categories */}
                 {!isLoading &&
-                  categories.map((cat) => (
+                  categories.map((cat: Category) => (
                     <li key={cat.id}>
                       <Link
                         href={`/shop?filters=${encodeURIComponent(cat.id)}`}

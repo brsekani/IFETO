@@ -1,4 +1,4 @@
-import { apiSlice } from "./auth";
+import { apiSlice } from "./categories";
 
 export interface ContactMessageRequest {
   firstName: string;
