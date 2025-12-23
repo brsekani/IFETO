@@ -6,10 +6,15 @@ import x from "@/assets/icons/Tw.svg";
 import fb from "@/assets/icons/Fb.svg";
 import insta from "@/assets/icons/Ig.svg";
 import ln from "@/assets/icons/Ln.svg";
-import { categories } from "@/app/constants/categories";
 import Link from "next/link";
+import { useGetAllCategoriesQuery } from "@/lib/api/categories";
+import { useGetAllProductsQuery } from "@/lib/api/products";
+import { Category } from "@/types/category";
 
 export default function Footer() {
+  const { data, isLoading } = useGetAllCategoriesQuery();
+
+  const categories = data?.data ?? [];
   return (
     <div className="bg-[#0E3D22] text-[#FFFFFF]">
       <div className="max-w-[1440px] mx-auto md:px-20 px-6 md:pt-[100px] pt-10 md:pb-[200px] pb-[100px] space-y-6 ">
@@ -38,16 +43,26 @@ export default function Footer() {
                 Categories
               </h6>
               <ul className="text-[14px] leading-5 text-[#FAFAFA] space-y-4">
-                {categories.map((cat) => (
-                  <li key={cat}>
-                    <Link
-                      href={`/shop?filters=${encodeURIComponent(cat)}`}
-                      className="block hover:text-[#41B079] transition"
-                    >
-                      {cat}
-                    </Link>
-                  </li>
-                ))}
+                {/* 🔹 Skeleton loader */}
+                {isLoading &&
+                  Array.from({ length: 10 }).map((_, i) => (
+                    <li key={i} className="animate-pulse">
+                      <div className="h-4 w-32 bg-white/20 rounded" />
+                    </li>
+                  ))}
+
+                {/* 🔹 Real categories */}
+                {!isLoading &&
+                  categories.map((cat: Category) => (
+                    <li key={cat.id}>
+                      <Link
+                        href={`/shop?filters=${encodeURIComponent(cat.id)}`}
+                        className="block hover:text-[#41B079] transition"
+                      >
+                        {cat.name}
+                      </Link>
+                    </li>
+                  ))}
               </ul>
             </div>
 

@@ -27,11 +27,17 @@ import {
   SelectValue,
 } from "./ui/select";
 import greenArrowDown from "@/assets/icons/green-arrow-down.svg";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import RightDrawer from "./RightDrawer";
 import MyCart from "./MyCart";
 import MenuDrawer from "./MenuDrawer";
 import MyAccountDrawer from "./MyAccountDrawer";
+import { UICartItem } from "@/types/cart";
+import { selectIsAuthenticated } from "@/lib/authSlice";
+import { useAppSelector } from "./auth/AuthGuard";
+import { useGetCartQuery } from "@/lib/api/cart";
+import { getLocalCart } from "@/lib/cart/localCart";
+import { useGetLocalCartQuery } from "@/lib/api/localCartApi";
 
 const items = [
   { label: "My Order", icon: box },
@@ -40,11 +46,33 @@ const items = [
 ];
 
 export default function Header() {
-  // const [selectedCountry, setSelectedCountry] = useState(countries[0]);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
+  const { data, isLoading } = useGetCartQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
+  const { data: localCart = [] } = useGetLocalCartQuery(undefined, {
+    skip: isAuthenticated,
+  });
+
+  console.log(localCart);
+
   const [openCart, setOpenCart] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
-  const numberOfItemsInCart = 0;
+  const numberOfItemsInCart = useMemo(() => {
+    if (isAuthenticated) {
+      return (
+        data?.data?.items?.reduce(
+          (total: number, item: UICartItem) => total + item.quantity,
+          0
+        ) ?? 0
+      );
+    }
+
+    return localCart.reduce((total, item) => total + item.quantity, 0);
+  }, [isAuthenticated, data, localCart]);
 
   return (
     <section className="bg-[#FAFAFA] w-full">
@@ -136,7 +164,7 @@ export default function Header() {
             <div className="relative w-6 h-6">
               {numberOfItemsInCart >= 1 && (
                 <p className="absolute w-4 h-4 bg-[#27AE60] rounded-2xl text-center flex items-center justify-center text-[12px] leading-[18px] font-semibold text-[#FFFFFF] left-2.5 -top-1">
-                  2
+                  {numberOfItemsInCart}
                 </p>
               )}
               <Image src={cart} alt="cart" width={24} height={24} />

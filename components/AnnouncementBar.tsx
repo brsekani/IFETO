@@ -1,72 +1,41 @@
 "use client";
-import { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-import phone from "@/assets/icons/phone.svg";
-import arrowDown from "@/assets/icons/arrow-down.svg";
-import usa from "@/assets/icons/flags/usa.svg";
 import Image from "next/image";
-
-const countries = [
-  { code: "us", label: "United States", flag: usa },
-  { code: "fr", label: "France", flag: usa },
-  { code: "ng", label: "Nigeria", flag: usa },
-];
-
-const languages = [
-  { code: "en", label: "English" },
-  { code: "fr", label: "French" },
-  { code: "yo", label: "Yoruba" },
-];
+import phone from "@/assets/icons/phone.svg";
+import { useGetMyCountryQuery } from "@/lib/api/countries";
 
 export default function AnnouncementBar() {
-  const [selectedCountry, setSelectedCountry] = useState(countries[0]);
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
+  const { data, isLoading, error } = useGetMyCountryQuery();
 
   return (
     <section className="bg-[#0E3D22] w-full">
-      <div className="w-full max-w-[1440px] mx-auto md:px-20 px-6 text-[#FFFFFF] py-1.5 flex items-center justify-between md:text-[14px] text-[12px] leading-5 font-medium">
+      <div className="w-full max-w-[1440px] mx-auto md:px-20 px-6 text-white py-1.5 flex items-center justify-between md:text-[14px] text-[12px] font-medium">
         <div className="flex items-center gap-1">
           <Image src={phone} alt="phone" className="w-4 h-4" />
-          <p>
-            <span className="hidden">Call</span> +447 223456789
-          </p>
+          <p>+447 223456789</p>
         </div>
 
         <p>🔥 Discount offers</p>
 
-        <div className="flex items-center md:gap-8 gap-2">
-          <div className="flex items-center gap-2">
-            {/* Flag (always visible) */}
-            <Image
-              src={usa}
-              width={20}
-              height={20}
-              alt={usa}
-              className="rounded-sm"
-            />
+        <div className="flex items-center gap-2">
+          {isLoading ? (
+            <>
+              <div className="w-5 h-5 rounded-full bg-white/30 animate-pulse" />
 
-            <div
-              className="
-        w-fit p-0 h-auto text-sm
-        bg-transparent border-none shadow-none 
-        focus:ring-0 focus:outline-none
-        [&>svg]:hidden [&>span>svg]:hidden
-        flex items-center gap-1
-      "
-            >
-              {/* Hide text on mobile, show on md+ */}
-              <span className="hidden md:inline">United States</span>
+              <div className="hidden md:block w-24 h-3 rounded bg-white/30 animate-pulse" />
+            </>
+          ) : (
+            <>
+              <Image
+                src={data?.data?.logo}
+                width={20}
+                height={20}
+                alt={data?.data?.name}
+                className="object-cover"
+              />
 
-              {/* Dropdown arrow */}
-            </div>
-          </div>
+              <span className="hidden md:inline">{data?.data?.name}</span>
+            </>
+          )}
         </div>
       </div>
     </section>
