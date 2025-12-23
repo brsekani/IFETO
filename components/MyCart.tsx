@@ -15,18 +15,9 @@ import { formatPriceKeepSymbol } from "@/utils/formatPrice";
 import QtySpinner from "./loaders/QtySpinner";
 import CartSkeleton from "./loaders/CartSkeleton";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  getLocalCart,
-  removeFromLocalCart,
-  updateLocalCartQty,
-} from "@/lib/cart/localCart";
 import { useAppSelector } from "./auth/AuthGuard";
 import { selectIsAuthenticated } from "@/lib/authSlice";
-import { useDispatch } from "react-redux";
-import { api } from "@/lib/api/api";
-import { LocalCartItem, UICartItem } from "@/types/cart";
-import { productsApi } from "@/lib/api/products";
-import { AppDispatch } from "@/lib/store";
+import { UICartItem } from "@/types/cart";
 import ConfirmDeleteCartModal from "./modals/ConfirmDeleteCartModal";
 import {
   useGetLocalCartQuery,
@@ -41,7 +32,6 @@ const getCurrency = (price: string) => price.match(/[₦$£€]/)?.[0] ?? "₦";
 
 export default function MyCart({ onClose }: { onClose: () => void }) {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const dispatch = useDispatch<AppDispatch>();
 
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
@@ -117,13 +107,10 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
         await updateQty({ itemId: id, quantity }).unwrap();
       } else {
         // local → productId
-        updateLocalCartQty(id, quantity);
-
-        // setLocalItems((prev) =>
-        //   prev.map((item) =>
-        //     item.productId === id ? { ...item, quantity } : item
-        //   )
-        // );
+        updateLocalQty({
+          productId: id,
+          quantity,
+        });
       }
     } finally {
       setUpdatingItemId(null);
@@ -143,13 +130,6 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
       setRemovingItemId(null);
     }
   };
-
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     setLocalItems(getLocalCart());
-  //     setLoadingLocal(false);
-  //   }
-  // }, [isAuthenticated]);
 
   useEffect(() => {
     setCheckedIds((prev) => {
