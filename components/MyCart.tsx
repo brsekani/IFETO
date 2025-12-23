@@ -27,9 +27,15 @@ import { api } from "@/lib/api/api";
 import { LocalCartItem, UICartItem } from "@/types/cart";
 import { productsApi } from "@/lib/api/products";
 import { AppDispatch } from "@/lib/store";
+import ConfirmDeleteCartModal from "./modals/ConfirmDeleteCartModal";
+import {
+  useGetLocalCartQuery,
+  useRemoveLocalItemMutation,
+  useUpdateLocalQtyMutation,
+} from "@/lib/api/localCartApi";
 
 const getNumericPrice = (price: string): number =>
-  Number.parseFloat(price.replace(/[^\d.]/g, "")) || 0;
+  Number?.parseFloat(price?.replace(/[^\d.]/g, "")) || 0;
 
 const getCurrency = (price: string) => price.match(/[₦$£€]/)?.[0] ?? "₦";
 
@@ -40,15 +46,24 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
   const [removingItemId, setRemovingItemId] = useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   const { data, isLoading } = useGetCartQuery(undefined, {
     skip: !isAuthenticated,
   });
-  const [updateQty, { isLoading: isUpdatingQty }] = useUpdateCartItemMutation();
-  const [removeItem] = useRemoveCartItemMutation();
+  const { data: localItems = [], isLoading: loadingLocal } =
+    useGetLocalCartQuery(undefined, {
+      skip: isAuthenticated,
+    });
 
-  const [localItems, setLocalItems] = useState<UICartItem[]>([]);
-  const [loadingLocal, setLoadingLocal] = useState(!isAuthenticated);
+  const [updateQty, { isLoading: isUpdatingQty }] = useUpdateCartItemMutation();
+  const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
+  const [updateLocalQty] = useUpdateLocalQtyMutation();
+  const [removeLocalItem] = useRemoveLocalItemMutation();
+
+  // const [localItems, setLocalItems] = useState<UICartItem[]>([]);
+  // const [loadingLocal, setLoadingLocal] = useState(!isAuthenticated);
 
   const formatSubtotal = (currency: string, total: number) =>
     `${currency}${total.toLocaleString(undefined, {
@@ -91,19 +106,24 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
     setCheckedIds(allChecked ? [] : cartItemIds);
   };
 
-  const handleUpdateQty = async (itemId: string, quantity: number) => {
+  const handleUpdateQty = async (id: string, quantity: number) => {
     if (quantity < 1) return;
 
-    setUpdatingItemId(itemId);
+    setUpdatingItemId(id);
 
     try {
       if (isAuthenticated) {
-        await updateQty({ itemId, quantity }).unwrap();
+        // server → cart item id
+        await updateQty({ itemId: id, quantity }).unwrap();
       } else {
-        updateLocalCartQty(itemId, quantity);
-        setLocalItems((prev) =>
-          prev.map((i) => (i.id === itemId ? { ...i, quantity } : i))
-        );
+        // local → productId
+        updateLocalCartQty(id, quantity);
+
+        // setLocalItems((prev) =>
+        //   prev.map((item) =>
+        //     item.productId === id ? { ...item, quantity } : item
+        //   )
+        // );
       }
     } finally {
       setUpdatingItemId(null);
@@ -113,66 +133,23 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
   const handleRemoveItem = async (itemId: string) => {
     setRemovingItemId(itemId);
 
-    if (isAuthenticated) {
-      await removeItem(itemId).unwrap();
-    } else {
-      removeFromLocalCart(itemId);
-      setLocalItems((prev) => prev.filter((i) => i.id !== itemId));
+    try {
+      if (isAuthenticated) {
+        await removeItem(itemId).unwrap();
+      } else {
+        await removeLocalItem(itemId);
+      }
+    } finally {
+      setRemovingItemId(null);
     }
-
-    setRemovingItemId(null);
   };
 
-  useEffect(() => {
-    if (isAuthenticated) return;
-
-    const hydrateGuestCart = async () => {
-      setLoadingLocal(true);
-
-      const cart = getLocalCart();
-      if (!cart.length) {
-        setLocalItems([]);
-        setLoadingLocal(false);
-        return;
-      }
-
-      try {
-        const responses = await Promise.all(
-          cart.map((item) =>
-            dispatch(
-              productsApi.endpoints.getProductById.initiate(item.productId)
-            ).unwrap()
-          )
-        );
-
-        const hydratedItems: UICartItem[] = cart.map((item) => {
-          const product = responses.find(
-            (p) => p.data.id === item.productId
-          )?.data;
-
-          return {
-            id: item.productId,
-            quantity: item.quantity,
-            price: product?.price ?? "₦0.00",
-            product: {
-              name: product?.name ?? "Product",
-              images: product?.images?.length
-                ? product.images
-                : ["/placeholder.png"],
-            },
-          };
-        });
-
-        setLocalItems(hydratedItems);
-      } catch (err) {
-        console.error("Failed to hydrate local cart", err);
-      } finally {
-        setLoadingLocal(false);
-      }
-    };
-
-    hydrateGuestCart();
-  }, [isAuthenticated, dispatch]);
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     setLocalItems(getLocalCart());
+  //     setLoadingLocal(false);
+  //   }
+  // }, [isAuthenticated]);
 
   useEffect(() => {
     setCheckedIds((prev) => {
@@ -253,7 +230,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
                   <div className="bg-[#EFEEEE] px-3 py-4 rounded">
                     <Image
                       src={item?.product?.images[0]}
-                      alt={item.product.name}
+                      alt={item?.product?.name}
                       width={80}
                       height={58}
                       className="w-20 h-[58px] object-contain"
@@ -275,7 +252,10 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() =>
-                          handleUpdateQty(item.id, item.quantity - 1)
+                          handleUpdateQty(
+                            isAuthenticated ? item.id : item.productId,
+                            item.quantity - 1
+                          )
                         }
                         disabled={item.quantity === 1}
                         className="bg-[#EFEEEE] w-6 h-6 flex items-center justify-center rounded disabled:cursor-default transition active:scale-90 disabled:opacity-40"
@@ -302,7 +282,10 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
 
                       <button
                         onClick={() =>
-                          handleUpdateQty(item.id, item.quantity + 1)
+                          handleUpdateQty(
+                            isAuthenticated ? item.id : item.productId,
+                            item.quantity + 1
+                          )
                         }
                         className="bg-[#EFEEEE] w-6 h-6 flex items-center justify-center rounded cursor-pointer transition active:scale-90 disabled:opacity-40"
                       >
@@ -314,7 +297,14 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
                       <QtySpinner />
                     ) : (
                       <Image
-                        onClick={() => handleRemoveItem(item.id)}
+                        onClick={() => {
+                          console.log(item);
+                          isAuthenticated
+                            ? setItemToDelete(item.id)
+                            : setItemToDelete(item.productId);
+
+                          setDeleteModalOpen(true);
+                        }}
                         src={trash}
                         alt="Delete"
                         className="w-6 h-6 opacity-70 cursor-pointer
@@ -359,6 +349,18 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
       ) : (
         <EmptyCart onClose={onClose} />
       )}
+
+      <AnimatePresence>
+        {deleteModalOpen && (
+          <ConfirmDeleteCartModal
+            setDeleteModalOpen={setDeleteModalOpen}
+            setItemToDelete={setItemToDelete}
+            itemToDelete={itemToDelete}
+            handleRemoveItem={handleRemoveItem}
+            loading={isRemoving}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

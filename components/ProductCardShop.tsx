@@ -1,13 +1,20 @@
 import Image from "next/image";
 import shoppingCart from "@/assets/icons/shopping-cart.svg";
 import { formatPriceKeepSymbol } from "@/utils/formatPrice";
-import { useAddCartItemMutation } from "@/lib/api/cart";
-import { addToLocalCart } from "@/lib/cart/localCart";
+import { useAddCartItemMutation, useGetCartQuery } from "@/lib/api/cart";
+import { addToLocalCart, getLocalCart } from "@/lib/cart/localCart";
 import toast from "react-hot-toast";
 import { useAppSelector } from "./auth/AuthGuard";
 import { selectIsAuthenticated } from "@/lib/authSlice";
 import ButtonLoader from "./loaders/ButtonLoader";
 import { showSuccessToast } from "@/app/utils/toastHelpers";
+import { isItemInCart } from "@/lib/cart/isItemInCart";
+import { useEffect, useRef, useState } from "react";
+import { LocalCartItem } from "@/types/cart";
+import {
+  useAddLocalItemMutation,
+  useGetLocalCartQuery,
+} from "@/lib/api/localCartApi";
 
 export default function ProductCardShop({
   product,
@@ -17,23 +24,78 @@ export default function ProductCardShop({
   index: number;
 }) {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const lastActionRef = useRef<number>(0);
+
+  // const [localCart, setLocalCart] = useState<LocalCartItem[]>([]);
+
+  const { data } = useGetCartQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
+  const { data: localCart = [] } = useGetLocalCartQuery(undefined, {
+    skip: isAuthenticated,
+  });
+
+  const [addLocalItem] = useAddLocalItemMutation();
+
+  const cartItems = data?.data?.items ?? [];
+
+  const alreadyInCart = isItemInCart(
+    product.id,
+    isAuthenticated,
+    cartItems, // server cart items
+    localCart
+  );
 
   const [addCartItem, { isLoading }] = useAddCartItemMutation();
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
+    const now = Date.now();
+    if (now - lastActionRef.current < 500) return;
+    lastActionRef.current = now;
+
     if (!isAuthenticated) {
-      addToLocalCart(product.id, 1);
-      showSuccessToast("Product added successfully");
+      addLocalItem({
+        productId: product.id,
+        quantity: 1,
+        price: product.price,
+        product: {
+          name: product.name,
+          images: product.images?.length
+            ? product.images
+            : ["/placeholder.png"],
+        },
+        id: product.id,
+      });
+
+      // 🔥 OPTIMISTIC LOCAL STATE UPDATE
+
+      showSuccessToast(
+        alreadyInCart
+          ? "Product quantity updated in cart"
+          : "Product added successfully"
+      );
       return;
     }
 
-    await addCartItem({
+    // 🔥 Fire-and-forget for auth users
+    addCartItem({
       productId: product.id,
       quantity: 1,
     });
 
-    showSuccessToast("Product added successfully");
+    showSuccessToast(
+      alreadyInCart
+        ? "Product quantity updated in cart"
+        : "Product added successfully"
+    );
   };
+
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     setLocalCart(getLocalCart());
+  //   }
+  // }, [isAuthenticated]);
 
   return (
     <div
@@ -72,29 +134,21 @@ export default function ProductCardShop({
             {formatPriceKeepSymbol(product.price)}
           </p>
           <button
-            disabled={isLoading}
             onClick={handleAddToCart}
+            disabled={isAuthenticated && isLoading}
             className={`bg-[#27AE60] hover:bg-[#1F8A4E] text-[#FFFFFF]
     md:text-[18px] text-[14px] leading-7 font-semibold
     w-full md:w-fit md:px-5 md:py-2.5 py-1.5 rounded-[6px]
-    flex items-center gap-2 justify-center
-    ${isLoading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
+    flex items-center gap-2 justify-center cursor-pointer`}
           >
-            {isLoading ? (
-              <>
-                <ButtonLoader />
-                <span>Adding...</span>
-              </>
-            ) : (
-              <>
-                <Image
-                  src={shoppingCart}
-                  alt=""
-                  className="w-3.5 h-3.5 block md:hidden"
-                />
-                <span>Add to Cart</span>
-              </>
-            )}
+            <>
+              <Image
+                src={shoppingCart}
+                alt=""
+                className="w-3.5 h-3.5 block md:hidden"
+              />
+              <span>{alreadyInCart ? "Add More" : "Add to Cart"}</span>
+            </>
           </button>
         </div>
       </div>

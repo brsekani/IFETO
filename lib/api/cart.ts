@@ -7,13 +7,41 @@ export const cartApi = api.injectEndpoints({
       providesTags: ["Cart"],
     }),
 
-    addCartItem: builder.mutation({
-      query: ({ productId, quantity }) => ({
+    addCartItem: builder.mutation<
+      any,
+      { productId: string; quantity?: number }
+    >({
+      query: ({ productId, quantity = 1 }) => ({
         url: "/cart/items",
         method: "POST",
         body: { productId, quantity },
       }),
+
       invalidatesTags: ["Cart"],
+
+      onQueryStarted({ productId, quantity = 1 }, { dispatch }) {
+        // 🔥 Instant UI update (NO waiting)
+        dispatch(
+          cartApi.util.updateQueryData("getCart", undefined, (draft: any) => {
+            const item = draft.data.items.find(
+              (i: any) => i.product.id === productId
+            );
+
+            if (item) {
+              item.quantity += quantity;
+            } else {
+              draft.data.items.push({
+                id: crypto.randomUUID(),
+                quantity,
+                product: { id: productId },
+              });
+            }
+          })
+        );
+
+        // ❌ No await queryFulfilled
+        // ❌ No rollback
+      },
     }),
 
     updateCartItem: builder.mutation({
