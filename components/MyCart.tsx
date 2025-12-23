@@ -104,7 +104,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
     try {
       if (isAuthenticated) {
         // server → cart item id
-        await updateQty({ itemId: id, quantity }).unwrap();
+        updateQty({ itemId: id, quantity }).unwrap();
       } else {
         // local → productId
         updateLocalQty({

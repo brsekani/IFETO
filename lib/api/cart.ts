@@ -20,7 +20,6 @@ export const cartApi = api.injectEndpoints({
       invalidatesTags: ["Cart"],
 
       onQueryStarted({ productId, quantity = 1 }, { dispatch }) {
-        // 🔥 Instant UI update (NO waiting)
         dispatch(
           cartApi.util.updateQueryData("getCart", undefined, (draft: any) => {
             const item = draft.data.items.find(
@@ -38,19 +37,31 @@ export const cartApi = api.injectEndpoints({
             }
           })
         );
-
-        // ❌ No await queryFulfilled
-        // ❌ No rollback
       },
     }),
 
-    updateCartItem: builder.mutation({
+    updateCartItem: builder.mutation<
+      void,
+      { itemId: string; quantity: number }
+    >({
       query: ({ itemId, quantity }) => ({
         url: `/cart/items/${itemId}`,
         method: "PATCH",
         body: { quantity },
       }),
-      invalidatesTags: ["Cart"],
+
+      onQueryStarted({ itemId, quantity }, { dispatch }) {
+        // 🔥 instant UI update
+        dispatch(
+          cartApi.util.updateQueryData("getCart", undefined, (draft: any) => {
+            const item = draft.data.items.find((i: any) => i.id === itemId);
+
+            if (item) {
+              item.quantity = quantity;
+            }
+          })
+        );
+      },
     }),
 
     removeCartItem: builder.mutation({
