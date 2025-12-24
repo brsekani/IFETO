@@ -6,31 +6,30 @@ import {
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 
+const baseQuery = fetchBaseQuery({
+  baseUrl: 'https://ifeto-backend-1.onrender.com/api/v1',
+  credentials: "include",
+  prepareHeaders: (headers) => {
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("IFETOAccessToken")
+        : null;
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+
+    const country = getCookie("country_code");
+    console.log(`country: ${country}`);
+    if (country) {
+      headers.set("X-Country", country);
+    }
+    return headers;
+  },
+});
+
 export const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs, // args
   unknown, // result
   FetchBaseQueryError // error
 > = async (args, api, extraOptions) => {
-  const baseQuery = fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-    // credentials: "include",
-    prepareHeaders: (headers) => {
-      const token =
-        typeof window !== "undefined"
-          ? localStorage.getItem("IFETOAccessToken")
-          : null;
-      if (token) headers.set("Authorization", `Bearer ${token}`);
-
-      const country = getCookie("country_code");
-      console.log(`country: ${country}`);
-      if (country) {
-        headers.set("X-Country", country);
-      }
-
-      return headers;
-    },
-  });
-
   let result = await baseQuery(args, api, extraOptions);
 
   // If token expired (401)
