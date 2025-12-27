@@ -81,7 +81,6 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
     ? data?.data?.subtotalPrice ?? "₦0.00"
     : guestSubtotalPrice;
 
-  console.log(data.data);
   const allChecked =
     cartItems.length > 0 && checkedIds.length === cartItems.length;
 
