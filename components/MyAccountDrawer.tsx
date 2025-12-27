@@ -11,8 +11,17 @@ import user from "@/assets/icons/user.svg";
 import location from "@/assets/icons/location.svg";
 import logout from "@/assets/icons/logout.svg";
 
-export default function MyAccountDrawer({ onClose }: { onClose: () => void }) {
+export default function MyAccountDrawer({
+  onClose,
+  onlogout,
+  isLoggingOut,
+}: {
+  onClose: () => void;
+  onlogout: () => Promise<boolean>;
+  isLoggingOut: boolean;
+}) {
   const router = useRouter();
+  console.log(isLoggingOut);
 
   const links = [
     {
@@ -89,14 +98,28 @@ export default function MyAccountDrawer({ onClose }: { onClose: () => void }) {
             <div
               key={i}
               className={`py-2.5 text-[${l.textColor}] text-[14px] leading-5 flex items-center justify-between`}
-              onClick={() => {
+              onClick={async () => {
+                if (l.name === "Logout") {
+                  if (isLoggingOut) return;
+
+                  const success = await onlogout();
+
+                  if (success) {
+                    onClose();
+                  }
+
+                  return;
+                }
+
                 onClose();
                 router.replace(l.to);
               }}
             >
               <div className="flex items-center gap-2">
                 <Image src={l.icon} alt="" />
-                <p>{l.name}</p>
+                {l.name === "Logout" && isLoggingOut
+                  ? "Logging out..."
+                  : l.name}
               </div>
 
               <Image src={rightWard} alt="rightWard" />

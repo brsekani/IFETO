@@ -89,7 +89,7 @@ export default function Header() {
     return localCart.reduce((total, item) => total + item.quantity, 0);
   }, [isAuthenticated, data, localCart]);
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<boolean> => {
     try {
       await logoutUser().unwrap();
       dispatch(logOut());
@@ -97,8 +97,10 @@ export default function Header() {
       showSuccessToast("Logged out successfully");
       setOpenProfile(false);
       setOpenMenu(false);
+      return true;
     } catch (err) {
       showErrorToast("Logout failed");
+      return false;
     }
   };
 
@@ -257,7 +259,11 @@ export default function Header() {
         onClose={() => setOpenProfile(false)}
         widthClass="max-w-[380px] w-full"
       >
-        <MyAccountDrawer onClose={() => setOpenProfile(false)} />
+        <MyAccountDrawer
+          onClose={() => setOpenProfile(false)}
+          onlogout={handleLogout}
+          isLoggingOut={isLoggingOut}
+        />
       </RightDrawer>
     </section>
   );
