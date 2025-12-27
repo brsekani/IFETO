@@ -53,7 +53,7 @@ export default function HeroSection() {
 
     const autoplay = setInterval(() => {
       api.scrollNext();
-    }, 5000);
+    }, 10000);
 
     return () => clearInterval(autoplay);
   }, [api]);
