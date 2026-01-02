@@ -10,20 +10,20 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-export default function ProductImageCarousel() {
-  const images = [
-    "/images/african-man-harvesting-vegetables.png",
-    "/images/african-man-harvesting-vegetables.png",
-    "/images/african-man-harvesting-vegetables.png",
-  ];
+interface ProductImageCarouselProps {
+  images: string[];
+}
 
+export default function ProductImageCarousel({
+  images,
+}: ProductImageCarouselProps) {
   return (
-    <div className="relative max-w-[570px] w-full p-[30px]">
+    <div className="relative max-w-[570px] w-full md:p-[30px] px-5 md:py-[89px] py-[60px] border-[0.6px] border-[#EFEEEE] rounded-xl shadow-[0px_4px_24px_0px_#0000000A]">
       <Carousel opts={{ loop: true }} className="w-full">
         <CarouselContent>
           {images.map((img, i) => (
             <CarouselItem key={i} className="flex items-center justify-center">
-              <div className="">
+              <div className="px-[29px]">
                 <Image
                   src={img}
                   width={372}
