@@ -41,7 +41,6 @@ export default function ShopClient() {
     isLoading: categoriesLoading,
     error,
   } = useGetAllCategoriesQuery();
-  console.log(data);
 
   const {
     data: productsRes,
