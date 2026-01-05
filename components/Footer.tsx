@@ -82,8 +82,12 @@ export default function Footer() {
                 Support
               </h6>
               <ul className="text-[14px] leading-5 text-[#FAFAFA] space-y-4">
-                <li>FAQ</li>
-                <li>Contact</li>
+                <li>
+                  <Link href="/about">FAQ</Link>
+                </li>
+                <li>
+                  <Link href="/contact">Contact</Link>
+                </li>
               </ul>
             </div>
           </div>
