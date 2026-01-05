@@ -27,18 +27,22 @@ import {
   SelectValue,
 } from "./ui/select";
 import greenArrowDown from "@/assets/icons/green-arrow-down.svg";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import RightDrawer from "./RightDrawer";
 import MyCart from "./MyCart";
 import MenuDrawer from "./MenuDrawer";
 import MyAccountDrawer from "./MyAccountDrawer";
 import { UICartItem } from "@/types/cart";
-import { selectIsAuthenticated } from "@/lib/authSlice";
+import { logOut, selectIsAuthenticated } from "@/lib/authSlice";
 import { useAppSelector } from "./auth/AuthGuard";
 import { useGetCartQuery } from "@/lib/api/cart";
 import { getLocalCart } from "@/lib/cart/localCart";
 import { useGetLocalCartQuery } from "@/lib/api/localCartApi";
 import Link from "next/link";
+import { useGetProfileQuery } from "@/lib/api/profile";
+import { useLogoutMutation } from "@/lib/api/auth";
+import { showErrorToast, showSuccessToast } from "@/app/utils/toastHelpers";
+import { useDispatch } from "react-redux";
 
 const items = [
   { label: "My Order", icon: box, to: "/orders" },
@@ -48,6 +52,14 @@ const items = [
 
 export default function Header() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const dispatch = useDispatch();
+  const {
+    data: profileData,
+    isLoading: isLoadingProfileData,
+    error,
+  } = useGetProfileQuery(undefined, {
+    skip: !isAuthenticated,
+  });
 
   const { data, isLoading } = useGetCartQuery(undefined, {
     skip: !isAuthenticated,
@@ -57,11 +69,13 @@ export default function Header() {
     skip: isAuthenticated,
   });
 
-  console.log(localCart);
+  const [logoutUser, { isLoading: isLoggingOut }] = useLogoutMutation();
 
   const [openCart, setOpenCart] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
   const numberOfItemsInCart = useMemo(() => {
     if (isAuthenticated) {
       return (
@@ -74,6 +88,25 @@ export default function Header() {
 
     return localCart.reduce((total, item) => total + item.quantity, 0);
   }, [isAuthenticated, data, localCart]);
+
+  const handleLogout = async (): Promise<boolean> => {
+    try {
+      await logoutUser().unwrap();
+      dispatch(logOut());
+
+      showSuccessToast("Logged out successfully");
+      setOpenProfile(false);
+      setOpenMenu(false);
+      return true;
+    } catch (err) {
+      showErrorToast("Logout failed");
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <section className="bg-[#FAFAFA] w-full">
@@ -100,66 +133,85 @@ export default function Header() {
             alt={search}
             className="w-6 h-6 md:w-5 md:h-5 block md:hidden"
           />
-          <div className="flex items-center gap-2">
-            {/* Flag (always visible) */}
-            <Image
-              src={user}
-              alt={user}
-              className="w-6 h-6 md:w-5 md:h-5 block md:hidden"
-              onClick={() => setOpenProfile(true)}
-            />
 
-            <Image
-              src={user}
-              alt={user}
-              className="w-6 h-6 md:w-5 md:h-5 hidden md:block"
-              // onClick={() => setOpenProfile(true)}
-            />
+          {mounted && isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              {/* Flag (always visible) */}
+              <Image
+                src={user}
+                alt={user}
+                className="w-6 h-6 md:w-5 md:h-5 block md:hidden"
+                onClick={() => setOpenProfile(true)}
+              />
 
-            <DropdownMenu modal={false}>
-              {/* TRIGGER */}
-              <DropdownMenuTrigger className="md:flex hidden items-center gap-1 bg-transparent text-sm outline-none border-none">
-                <span className="hidden md:inline text-[#2A2A2A]">
-                  Elizabeth Odiai
-                </span>
+              <Image
+                src={user}
+                alt={user}
+                className="w-6 h-6 md:w-5 md:h-5 hidden md:block"
+                // onClick={() => setOpenProfile(true)}
+              />
 
-                <Image src={arrowDown} alt="arrow" width={18} height={18} />
-              </DropdownMenuTrigger>
+              <DropdownMenu modal={false}>
+                {/* TRIGGER */}
+                <DropdownMenuTrigger className="md:flex hidden items-center gap-1 bg-transparent text-sm outline-none border-none">
+                  <span className="hidden md:inline">
+                    {isLoading ? (
+                      <span className="inline-block h-5 mt-1 w-[120px] animate-pulse rounded bg-gray-200" />
+                    ) : (
+                      <span className="max-w-[140px] truncate text-[#2A2A2A]">
+                        {`${profileData?.data.firstName} ${profileData?.data.lastName}`}
+                      </span>
+                    )}
+                  </span>
 
-              {/* CONTENT */}
-              <DropdownMenuContent
-                align="end"
-                className="
-          w-60 bg-white rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)]
-          py-4 border-none
-        "
-              >
-                {/* Menu Items */}
-                <div className="flex flex-col gap-4 px-6">
-                  {items.map((item) => (
-                    <Link href={item.to} className="">
+                  <Image src={arrowDown} alt="arrow" width={18} height={18} />
+                </DropdownMenuTrigger>
+
+                {/* CONTENT */}
+                <DropdownMenuContent
+                  align="end"
+                  className="w-60 bg-white rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)] py-4 border-none"
+                >
+                  {/* Menu Items */}
+                  <div className="flex flex-col gap-4 px-6">
+                    {items.map((item) => (
                       <DropdownMenuItem
-                        onClick={() => setOpenProfile(false)}
                         key={item.label}
-                        className=" text-[#6F6F6F] cursor-pointer focus:bg-transparent hover:opacity-70"
+                        className="flex items-center gap-3 text-[#6F6F6F] cursor-pointer focus:bg-transparent hover:opacity-70"
                       >
-                        <Image src={item.icon} width={20} height={20} alt="" />
-                        <span>{item.label}</span>
+                        <Link href={item.to} className="flex items-center gap-3">
+                          <Image src={item.icon} width={20} height={20} alt="" />
+                          <span>{item.label}</span>
+                        </Link>
                       </DropdownMenuItem>
-                    </Link>
-                  ))}
-                </div>
+                    ))}
+                  </div>
 
-                {/* Divider */}
+                  {/* Divider */}
 
-                {/* Logout */}
-                <DropdownMenuItem className="flex items-center gap-3 text-[#EB3A3A] px-8 pt-4 mt-1 cursor-pointer focus:bg-transparent hover:opacity-70">
-                  <Image src={logout} width={20} height={20} alt="" />
-                  <span>Logout</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                  {/* Logout */}
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault(); // ⛔ prevents dropdown from closing
+                      handleLogout();
+                    }}
+                    disabled={isLoggingOut}
+                    className="flex items-center gap-3 text-[#EB3A3A] px-8 pt-4 mt-1 cursor-pointer focus:bg-transparent hover:opacity-70"
+                  >
+                    <Image src={logout} width={20} height={20} alt="" />
+                    <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ) : (
+            <Link
+              href={"/auth/login"}
+              className="py-2.5 px-5 bg-[#27AE60] rounded-md text-[#FFFFFF] text-[18px] leading-7 font-semibold cursor-pointer md:block hidden"
+            >
+              Login / Signup
+            </Link>
+          )}
 
           <div
             className="flex flex-nowrap items-center gap-2 cursor-pointer"
@@ -206,7 +258,11 @@ export default function Header() {
         onClose={() => setOpenProfile(false)}
         widthClass="max-w-[380px] w-full"
       >
-        <MyAccountDrawer onClose={() => setOpenProfile(false)} />
+        <MyAccountDrawer
+          onClose={() => setOpenProfile(false)}
+          onlogout={handleLogout}
+          isLoggingOut={isLoggingOut}
+        />
       </RightDrawer>
     </section>
   );

@@ -10,6 +10,7 @@ import {
   VerifyEmailRequestByCode,
   VerifyEmailResponseByCode,
 } from "../../app/features/auth/auth.types";
+import { logOut } from "../authSlice";
 import { api } from "./api";
 
 export const authApi = api.injectEndpoints({

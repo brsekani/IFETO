@@ -209,8 +209,10 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
 
                   <div className="bg-[#EFEEEE] px-3 py-4 rounded">
                     <Image
-                      src={item?.product?.images[0]}
-                      alt={item?.product?.name}
+                      src={
+                        item?.product?.images?.[0] || "/images/placeholder.png"
+                      }
+                      alt={item?.product?.name || "product"}
                       width={80}
                       height={58}
                       className="w-20 h-[58px] object-contain"
