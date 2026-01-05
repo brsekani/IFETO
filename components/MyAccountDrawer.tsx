@@ -17,13 +17,13 @@ export default function MyAccountDrawer({ onClose }: { onClose: () => void }) {
   const links = [
     {
       name: "My Order",
-      to: "/",
+      to: "/orders",
       icon: box,
       textColor: "#787878",
     },
     {
       name: "My Account",
-      to: "/",
+      to: "/account",
       icon: user,
       textColor: "#787878",
     },

@@ -3,6 +3,7 @@ import aboutImg from "@/assets/images/aboutImg.png";
 import AboutSlider from "@/components/general/AboutSlider";
 import BannerContainer from "@/components/general/BannerContainer";
 import FAQ from "@/components/general/FAQ";
+import Link from "next/link";
 
 const Page = () => {
   return (
@@ -35,9 +36,9 @@ const Page = () => {
             </p>
 
             <div className="flex items-center justify-center lg:block">
-              <button className=" px-5 md:h-12 h-10 bg-primary text-white lg:text-lg font-semibold text-center rounded-md md:mt-8 mt-5">
+              <Link href="/shop" className="px-5 md:h-12 h-10 bg-primary text-white lg:text-lg font-semibold text-center rounded-md md:mt-8 mt-5 w-fit flex justify-center items-center">
                 Go To Shop Now
-              </button>
+              </Link>
             </div>
           </div>
 

@@ -38,11 +38,12 @@ import { useAppSelector } from "./auth/AuthGuard";
 import { useGetCartQuery } from "@/lib/api/cart";
 import { getLocalCart } from "@/lib/cart/localCart";
 import { useGetLocalCartQuery } from "@/lib/api/localCartApi";
+import Link from "next/link";
 
 const items = [
-  { label: "My Order", icon: box },
-  { label: "My Account", icon: user },
-  { label: "Address", icon: location },
+  { label: "My Order", icon: box, to: "/orders" },
+  { label: "My Account", icon: user, to: "/account" },
+  { label: "Address", icon: location, to: "/" },
 ];
 
 export default function Header() {
@@ -136,13 +137,16 @@ export default function Header() {
                 {/* Menu Items */}
                 <div className="flex flex-col gap-4 px-6">
                   {items.map((item) => (
-                    <DropdownMenuItem
-                      key={item.label}
-                      className="flex items-center gap-3 text-[#6F6F6F] cursor-pointer focus:bg-transparent hover:opacity-70"
-                    >
-                      <Image src={item.icon} width={20} height={20} alt="" />
-                      <span>{item.label}</span>
-                    </DropdownMenuItem>
+                    <Link href={item.to} className="">
+                      <DropdownMenuItem
+                        onClick={() => setOpenProfile(false)}
+                        key={item.label}
+                        className=" text-[#6F6F6F] cursor-pointer focus:bg-transparent hover:opacity-70"
+                      >
+                        <Image src={item.icon} width={20} height={20} alt="" />
+                        <span>{item.label}</span>
+                      </DropdownMenuItem>
+                    </Link>
                   ))}
                 </div>
 

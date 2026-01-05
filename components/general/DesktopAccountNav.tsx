@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { UserRound, LockKeyhole, Bell } from "lucide-react";
+import { UserRound, LockKeyhole, Bell, Repeat } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 const DesktopAccountNav = () => {
@@ -8,6 +8,7 @@ const DesktopAccountNav = () => {
   const accountLinks = [
     { href: "/account/profile", label: "My Profile", Icon: UserRound },
     { href: "/account/security", label: "Security", Icon: LockKeyhole },
+    { href: "/account/routine", label: "Routine Orders", Icon: Repeat },
     // {
     //   href: "/account/notification",
     //   label: "Notification",

@@ -1,5 +1,5 @@
 "use client";
-import { Bell, ChevronRight, LockKeyhole, UserRound } from "lucide-react";
+import { Bell, ChevronRight, LockKeyhole, Repeat, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -7,6 +7,7 @@ const account = () => {
   const accountLinks = [
     { href: "/account/profile", label: "My Profile", Icon: UserRound },
     { href: "/account/security", label: "Security", Icon: LockKeyhole },
+        { href: "/account/routine", label: "Routine Orders", Icon: Repeat },
     // {
     //   href: "/account/notification",
     //   label: "Notification",
