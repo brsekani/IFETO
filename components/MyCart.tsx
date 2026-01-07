@@ -51,6 +51,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
   const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
   const [updateLocalQty] = useUpdateLocalQtyMutation();
   const [removeLocalItem] = useRemoveLocalItemMutation();
+  console.log(updateQty);
 
   // const [localItems, setLocalItems] = useState<UICartItem[]>([]);
   // const [loadingLocal, setLoadingLocal] = useState(!isAuthenticated);

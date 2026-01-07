@@ -61,6 +61,7 @@ export default function ProductDetailsClients({ id }: { id: string }) {
 
   const [addCartItem, { isLoading }] = useAddCartItemMutation();
   const [addLocalItem] = useAddLocalItemMutation();
+  const maxQuantity = productsRes?.data?.quantity;
 
   console.log(id);
   console.log(productsRes);
@@ -152,6 +153,7 @@ export default function ProductDetailsClients({ id }: { id: string }) {
               unitPrice={productsRes?.data?.price}
               quantity={quantity}
               setQuantity={setQuantity}
+              maxQuantity={maxQuantity}
             />
 
             <button

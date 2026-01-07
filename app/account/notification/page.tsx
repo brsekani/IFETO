@@ -10,7 +10,7 @@ const notification = () => {
   const [toggleEmailNotification, setToggleEmailNotification] = useState(true);
 
   return (
-    <div className="w-full h-full Lg:shadow-custom2 bg-white lg:rounded-2xl p-6">
+    <div className="w-full h-full lg:shadow-custom2 bg-white lg:rounded-2xl p-6">
       <div className="lg:block flex items-center gap-2 w-full justify-between">
         <button
           className="lg:hidden flex items-center gap-2 outline-none text-light cursor-pointer"

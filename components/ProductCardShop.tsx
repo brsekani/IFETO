@@ -49,6 +49,7 @@ export default function ProductCardShop({
   );
 
   const [addCartItem, { isLoading }] = useAddCartItemMutation();
+  const maxQuantity = product?.quantity;
 
   const handleAddToCart = () => {
     const now = Date.now();
@@ -64,7 +65,7 @@ export default function ProductCardShop({
           name: product.name,
           images: product.images?.length
             ? product.images
-            : ["/placeholder.png"],
+            : ["/images/placeholder.png"],
         },
         id: product.id,
       });
@@ -134,11 +135,15 @@ export default function ProductCardShop({
           </p>
           <button
             onClick={handleAddToCart}
-            disabled={isAuthenticated && isLoading}
-            className={`bg-[#27AE60] hover:bg-[#1F8A4E] text-[#FFFFFF]
+            disabled={alreadyInCart || (isAuthenticated && isLoading)}
+            className={`bg-[#27AE60] text-[#FFFFFF]
     md:text-[18px] text-[14px] leading-7 font-semibold
     w-full md:w-fit md:px-5 md:py-2.5 py-1.5 rounded-[6px]
-    flex items-center gap-2 justify-center cursor-pointer`}
+    flex items-center gap-2 justify-center      ${
+      alreadyInCart
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-primary hover:bg-[#1F8A4E] cursor-pointer"
+    }`}
           >
             <>
               <Image
@@ -146,7 +151,7 @@ export default function ProductCardShop({
                 alt=""
                 className="w-3.5 h-3.5 block md:hidden"
               />
-              <span>{alreadyInCart ? "Add More" : "Add to Cart"}</span>
+              <span>{alreadyInCart ? "In Cart" : "Add to Cart"}</span>
             </>
           </button>
         </div>

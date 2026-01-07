@@ -44,7 +44,7 @@ export default function Shopbycategory() {
         {/* 🔹 Skeleton loader */}
         {isLoading &&
           Array.from({ length: 6 }).map((_, i) => (
-            <SwiperSlide key={i} className="!w-[124px] md:!w-[257px] shrink-0">
+            <SwiperSlide key={i} className="w-[124px]! md:w-[257px]! shrink-0">
               <div className="w-full md:h-40 h-[87px] bg-[#F2F2F2] rounded-2xl flex flex-col items-center justify-center gap-3 animate-pulse">
                 <div className="md:w-[143px] md:h-20 w-[92px] h-[50px] bg-gray-300 rounded-md" />
                 <div className="w-16 md:w-24 h-3 bg-gray-300 rounded" />
@@ -57,7 +57,7 @@ export default function Shopbycategory() {
           categories.map((category: Category) => (
             <SwiperSlide
               key={category.id}
-              className="!w-[124px] md:!w-[257px] shrink-0 cursor-pointer"
+              className="w-[124px]! md:w-[257px]! shrink-0 cursor-pointer"
             >
               <div
                 className="
