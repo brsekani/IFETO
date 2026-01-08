@@ -109,7 +109,7 @@ export const DeleteAccountSchema = Yup.object({
 export const addAddressSchema = Yup.object({
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string().required("Last name is required"),
-  phone: Yup.string().nullable(),
+  phone: Yup.string().required("Phone number is required"),
   addressLabel: Yup.string().nullable(),
   address1: Yup.string().required("Address line 1 is required"),
   address2: Yup.string().nullable(),

@@ -13,3 +13,15 @@ export const formatPriceKeepSymbol = (price: string) => {
 
   return `${symbol}${formattedAmount}`;
 };
+
+export const parsePrice = (price?: string) => {
+  if (!price) return 0;
+  return Number(price.replace(/[^\d.]/g, ""));
+};
+
+export const parsePriceToCents = (price?: string): number => {
+  if (!price) return 0;
+
+  const numeric = price.replace(/[^\d.]/g, "");
+  return Math.round(Number(numeric) * 100);
+};

@@ -4,23 +4,98 @@ import Image from "next/image";
 import Link from "next/link";
 import arrowRight from "@/assets/icons/arrow-right1.svg";
 import rightIconPrimary from "@/assets/icons/right-icon-primary.svg";
-import garri from "@/assets/images/Garri.png";
 import info from "@/assets/icons/info-circle-primary.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RightDrawer from "@/components/RightDrawer";
 import AddAddress from "@/components/AddAddress";
+import SelectAddress from "@/components/SelectAddress";
+import { useAppSelector } from "@/components/auth/AuthGuard";
+import { selectIsAuthenticated } from "@/lib/authSlice";
+import { useGetCartQuery } from "@/lib/api/cart";
+import { UICartItem } from "@/types/cart";
+import { formatPriceKeepSymbol } from "@/utils/formatPrice";
+import CartItemLoader from "@/components/loaders/CartItemLoader";
+import { useRouter } from "next/navigation";
+import OrderSummarySkeleton from "@/components/loaders/OrderSummarySkeleton";
+import PayButtonSkeleton from "@/components/loaders/PayButtonSkeleton";
+import { useGetProfileQuery } from "@/lib/api/profile";
+import ContactSkeleton from "@/components/loaders/ContactSkeleton";
+import { useGetAddressesQuery } from "@/lib/api/address";
+import DeliveryDetailsSkeleton from "@/components/loaders/DeliveryDetailsSkeleton";
+import { useCreateCheckoutSessionMutation } from "@/lib/api/checkout";
+import { Address } from "@/types/address";
 
 export default function page() {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace("/auth/login");
+    }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) return null;
+
   const [openAddress, setOpenAddress] = useState(false);
-  const address = [
-    {
-      name: "Halimah Balogun",
-      address:
-        "742 Meadowbrook Lane Suite, 204 Fairfield, Ohio 45014, United States",
-      email: "Halimah.balogun@gmail.com ",
-      phoneNumber: "+1 (458) 742-1930  ",
-    },
-  ];
+  const [openSelectAddress, setOpenSelectAddress] = useState(false);
+
+  const { data, isLoading } = useGetCartQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
+  const {
+    data: profileData,
+    isLoading: profileLoading,
+    error,
+  } = useGetProfileQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
+  const {
+    data: addresssData,
+    isLoading: addresssLoading,
+    error: addresssError,
+  } = useGetAddressesQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
+  const [createCheckoutSession, { isLoading: creatingSession }] =
+    useCreateCheckoutSessionMutation();
+
+  const addresses = addresssData?.data ?? [];
+
+  const defaultAddress = addresses.find((a: Address) => a.isDefault) ?? null;
+
+  const cartItems: UICartItem[] = data?.data?.items;
+  const subtotalPrice = data?.data?.subtotalPrice;
+
+  const handlePay = async () => {
+    if (!data?.data?.id || !defaultAddress) return;
+
+    try {
+      const res = await createCheckoutSession({
+        cartId: data.data.id,
+        address: {
+          label: defaultAddress.label,
+          address1: defaultAddress.address1,
+          address2: defaultAddress.address2,
+          city: defaultAddress.city,
+          state: defaultAddress.state,
+          country: defaultAddress.country,
+          zipCode: defaultAddress.zipCode,
+        },
+        saveAddress: false,
+      }).unwrap();
+
+      // 🔥 Redirect to Stripe
+      console.log(res);
+      window.location.href = res.data.url;
+    } catch (err) {
+      console.error("Failed to create checkout session", err);
+    }
+  };
 
   return (
     <div className="bg-[#FAFAFA]">
@@ -48,24 +123,33 @@ export default function page() {
 
         <div className="flex flex-col md:flex-row w-full md:gap-10 gap-6 md:mt-[50px] mt-6">
           <div className="w-full md:space-y-8 space-y-6 ">
-            <div className="md:p-6 p-4 bg-[#E3FFEF4D] shadow-custom2 md:space-y-4 space-y-2.5 w-full">
-              <h5 className="md:text-[24px] text-[16px] md:leading-8 leading-6 font-semibold text-[#2A2A2A]">
-                Contact
-              </h5>
-              <div className="md:space-y-2 space-y-[5px]">
-                <h6 className="md:text-[20px] text-[14px] leading-[30px] font-medium text-[#2A2A2A]">
-                  Halimah Balogun
-                </h6>
-                <p className="md:text-[18px] text-[12px] md:leading-7 leading-[18px] text-[#787878]">
-                  Halimah.balogun@gmail.com
-                </p>
-                <p className="md:text-[18px] text-[12px] md:leading-7 leading-[18px] text-[#787878]">
-                  +234 705 113 9856
-                </p>
-              </div>
-            </div>
+            {profileLoading ? (
+              <ContactSkeleton />
+            ) : (
+              <div className="md:p-6 p-4 bg-[#E3FFEF4D] shadow-custom2 md:space-y-4 space-y-2.5 w-full">
+                <h5 className="md:text-[24px] text-[16px] md:leading-8 leading-6 font-semibold text-[#2A2A2A]">
+                  Contact
+                </h5>
 
-            {address.length >= 1 ? (
+                <div className="md:space-y-2 space-y-[5px]">
+                  <h6 className="md:text-[20px] text-[14px] leading-[30px] font-medium text-[#2A2A2A]">
+                    {profileData?.data?.firstName} {profileData?.data?.lastName}
+                  </h6>
+
+                  <p className="md:text-[18px] text-[12px] md:leading-7 leading-[18px] text-[#787878]">
+                    {profileData?.data?.email}
+                  </p>
+
+                  <p className="md:text-[18px] text-[12px] md:leading-7 leading-[18px] text-[#787878]">
+                    +{profileData?.data?.phone}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {addresssLoading ? (
+              <DeliveryDetailsSkeleton />
+            ) : defaultAddress ? (
               <div className="bg-[#FFFFFF] md:p-6 p-4 shadow-custom2 rounded-2xl md:space-y-4 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <h6 className="md:text-[24px] text-[16px] leading-6 font-semibold text-[#2A2A2A] truncate">
@@ -80,6 +164,7 @@ export default function page() {
       cursor-pointer
       max-w-[140px] md:max-w-none
       truncate overflow-hidden whitespace-nowrap"
+                      onClick={() => setOpenSelectAddress(true)}
                     >
                       Select Address
                     </button>
@@ -100,14 +185,17 @@ export default function page() {
 
                 <div className="md:space-y-2 space-y-[5px] md:text-[18px] text-[12px] md:leading-7 leading-[18px] text-[#787878]">
                   <h5 className="text-[#2A2A2A] md:text-[20px] text-[14px] md:leading-[30px] leading-5 font-medium">
-                    Halimah Balogun
+                    {defaultAddress.label}
                   </h5>
                   <p>
-                    742 Meadowbrook Lane Suite, 204 Fairfield, Ohio 45014,
-                    United States
+                    {defaultAddress.address1}
+                    {defaultAddress.address2 && `, ${defaultAddress.address2}`}
                   </p>
-                  <p>Halimah.balogun@gmail.com </p>
-                  <p>+1 (458) 742-1930</p>
+                  <p>
+                    {defaultAddress.city}, {defaultAddress.state}
+                  </p>
+
+                  <p>{defaultAddress.country}</p>
                 </div>
               </div>
             ) : (
@@ -132,60 +220,106 @@ export default function page() {
                 Product Summary
               </div>
 
-              <div className="flex md:gap-5 gap-3 border-t-[0.6px] border-[#CFCFCF] md:p-4 p-2.5">
-                <div className="bg-[#EFEEEE] w-fit md:px-[18px] px-[11px] md:py-6 py-3.5 relative rounded-[6px]">
-                  <Image
-                    src={garri}
-                    alt=""
-                    className="md:w-[84px] w-[49px] md:h-[57px] h-[38px]"
-                  />
-                  <div className="absolute top-3 right-2 w-4 h-4 bg-[#27AE60] rounded-full flex items-center justify-center text-[12px] leading-[18px] font-semibold text-[#FFFFFF]">
-                    2
-                  </div>
-                </div>
+              <div className="w-full">
+                {isLoading ? (
+                  <>
+                    <CartItemLoader />
+                    <CartItemLoader />
+                    <CartItemLoader />
+                  </>
+                ) : (
+                  cartItems.map((cart, i) => (
+                    <div
+                      className={`flex md:gap-5 gap-3 w-full ${
+                        i > 0 && "border-t-[0.6px]"
+                      } border-[#CFCFCF] md:p-4 p-2.5`}
+                      key={cart.id || i}
+                    >
+                      <div className="bg-[#EFEEEE] w-fit md:px-[18px] px-[11px] md:py-6 py-3.5 relative rounded-[6px]">
+                        <Image
+                          src={cart?.product?.images?.[1]}
+                          alt={cart?.product?.name || "product"}
+                          width={84}
+                          height={57}
+                          className="md:w-[84px] w-[49px] md:h-[57px] h-[38px] object-contain"
+                        />
 
-                <div className="md:space-y-1.5 space-y-1">
-                  <p className="md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#2A2A2A] font-semibold">
-                    Yellow Garri
-                  </p>
-                  <p className="md:text-[18px] text-[12px] md:leading-7 leading-[18px] text-[#6C6C6C]">
-                    Qty: 2 Half Paint Bucket (1kg Bucket )
-                  </p>
-                  <p className="md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#2A2A2A] font-semibold">
-                    $49.98
-                  </p>
-                </div>
+                        <div className="absolute top-3 right-2 w-4 h-4 bg-[#27AE60] rounded-full flex items-center justify-center text-[12px] font-semibold text-white">
+                          {cart?.quantity}
+                        </div>
+                      </div>
+
+                      <div className="md:space-y-1.5 space-y-1 min-w-0">
+                        <p className="md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#2A2A2A] font-semibold truncate w-full">
+                          {cart?.product?.name}
+                        </p>
+
+                        <p className="md:text-[18px] text-[12px] md:leading-7 leading-[18px] text-[#6C6C6C]">
+                          Qty: {cart?.quantity}
+                        </p>
+
+                        <p className="md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#2A2A2A] font-semibold">
+                          {formatPriceKeepSymbol(cart?.price)}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
-              <div className="bg-[#E3FFEF4D] p-4 md:space-y-4 space-y-2.5 md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#484848] font-medium">
-                <div className="flex justify-between">
-                  <p>Sub Total:</p>
-                  <p>$74.97</p>
-                </div>
+              {isLoading ? (
+                <>
+                  <OrderSummarySkeleton />
+                  <PayButtonSkeleton />
+                </>
+              ) : (
+                <>
+                  <div className="bg-[#E3FFEF4D] p-4 md:space-y-4 space-y-2.5 md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#484848] font-medium">
+                    <div className="flex justify-between">
+                      <p>Sub Total:</p>
+                      <p>{formatPriceKeepSymbol(subtotalPrice)}</p>
+                    </div>
 
-                <div className="flex justify-between">
-                  <p>Weight:</p>
-                  <p>4.8 kg</p>
-                </div>
+                    <div className="flex justify-between">
+                      <p>Weight:</p>
+                      <p>{data?.data?.totalWeight}</p>
+                    </div>
 
-                <div className="flex justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <p>Weight Fee:</p>
-                    <Image src={info} alt="info" />
+                    <div className="flex justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <p>Weight Fee:</p>
+                        <Image src={info} alt="info" />
+                      </div>
+                      <p>$43.2</p>
+                    </div>
+
+                    <div className="flex justify-between md:text-[24px] text-[16px] md:leading-8 leading-6 text-[#484848] font-bold">
+                      <p>Total:</p>
+                      <p>{formatPriceKeepSymbol(data?.data?.totalPrice)}</p>
+                    </div>
                   </div>
 
-                  <p>$43.2</p>
-                </div>
-
-                <div className="flex justify-between md:text-[24px] text-[16px] md:leading-8 leading-6 text-[#484848] font-bold">
-                  <p>Total:</p>
-                  <p>$118.17</p>
-                </div>
-              </div>
-
-              <button className="h-12 bg-[#C7D3CC] w-full text-[#FFFFFF] text-[18px] leading-7 font-semibold border border-[#D0D5DD] rounded-md cursor-pointer">
-                Pay $118.17
-              </button>
+                  <button
+                    disabled={
+                      isLoading ||
+                      creatingSession ||
+                      !defaultAddress ||
+                      !data?.data?.items?.length
+                    }
+                    onClick={handlePay}
+                    className={`h-12 w-full rounded-md text-[18px] font-semibold transition
+    ${
+      creatingSession || !defaultAddress
+        ? "bg-gray-300 cursor-not-allowed"
+        : "bg-primary text-white hover:bg-green-700"
+    }`}
+                  >
+                    {creatingSession
+                      ? "Redirecting to payment..."
+                      : `Pay ${formatPriceKeepSymbol(data?.data?.totalPrice)}`}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -194,9 +328,17 @@ export default function page() {
       <RightDrawer
         isOpen={openAddress}
         onClose={() => setOpenAddress(false)}
-        widthClass="w-full md:w-[600px]"
+        widthClass="w-full md:w-[640px]"
       >
         <AddAddress onClose={() => setOpenAddress(false)} />
+      </RightDrawer>
+
+      <RightDrawer
+        isOpen={openSelectAddress}
+        onClose={() => setOpenSelectAddress(false)}
+        widthClass="w-full md:w-[640px]"
+      >
+        <SelectAddress onClose={() => setOpenSelectAddress(false)} />
       </RightDrawer>
     </div>
   );

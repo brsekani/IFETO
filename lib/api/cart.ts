@@ -1,3 +1,4 @@
+import { formatPriceKeepSymbol, parsePriceToCents } from "@/utils/formatPrice";
 import { api } from "./api";
 
 export const cartApi = api.injectEndpoints({
@@ -51,14 +52,36 @@ export const cartApi = api.injectEndpoints({
       }),
 
       onQueryStarted({ itemId, quantity }, { dispatch }) {
-        // 🔥 instant UI update
         dispatch(
           cartApi.util.updateQueryData("getCart", undefined, (draft: any) => {
-            const item = draft.data.items.find((i: any) => i.id === itemId);
+            const items = draft.data.items;
+            const item = items.find((i: any) => i.id === itemId);
+            if (!item) return;
 
-            if (item) {
-              item.quantity = quantity;
-            }
+            item.quantity = quantity;
+
+            let subtotalCents = 0;
+            let totalWeight = 0;
+
+            items.forEach((i: any) => {
+              const unitCents = parsePriceToCents(i.price);
+              subtotalCents += unitCents * i.quantity;
+
+              totalWeight += (i.product?.weight ?? 0) * i.quantity;
+            });
+
+            const symbol =
+              draft.data.subtotalPrice?.charAt(0) ||
+              item.price?.charAt(0) ||
+              "";
+
+            draft.data.subtotal = subtotalCents / 100;
+            draft.data.totalWeight = Number(totalWeight.toFixed(2));
+
+            // convert cents → formatted price
+            draft.data.subtotalPrice = formatPriceKeepSymbol(
+              `${symbol}${(subtotalCents / 100).toFixed(2)}`
+            );
           })
         );
       },

@@ -10,6 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 type AddAddressProps = {
   onClose: () => void;
@@ -17,7 +19,7 @@ type AddAddressProps = {
 
 export default function AddAddress({ onClose }: AddAddressProps) {
   return (
-    <div className="w-full bg-white overflow-y-scroll py-8 px-6 space-y-[30px]">
+    <div className="w-full bg-white overflow-y-scroll py-8 px-6 space-y-[30px] flex-1">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-[22px] font-semibold text-[#2A2A2A]">
@@ -46,11 +48,19 @@ export default function AddAddress({ onClose }: AddAddressProps) {
         validationSchema={addAddressSchema}
         onSubmit={(values) => console.log(values)}
       >
-        {({ errors, touched, handleChange, setFieldValue }) => (
+        {({
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          setFieldValue,
+          setFieldTouched,
+          values,
+        }) => (
           <Form className="space-y-4">
             {/* First & Last Name */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div className="flex items-center flex-col md:flex-row gap-4">
+              <div className="w-full">
                 <label className="form-label">
                   First Name <span className="text-red-500">*</span>
                 </label>
@@ -58,6 +68,7 @@ export default function AddAddress({ onClose }: AddAddressProps) {
                   name="firstName"
                   placeholder="Enter your first name"
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="form-input mt-2"
                 />
                 {touched.firstName && errors.firstName && (
@@ -65,7 +76,7 @@ export default function AddAddress({ onClose }: AddAddressProps) {
                 )}
               </div>
 
-              <div>
+              <div className="w-full">
                 <label className="form-label">
                   Last Name <span className="text-red-500">*</span>
                 </label>
@@ -73,6 +84,7 @@ export default function AddAddress({ onClose }: AddAddressProps) {
                   name="lastName"
                   placeholder="Enter your last name"
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="form-input mt-2"
                 />
                 {touched.lastName && errors.lastName && (
@@ -83,13 +95,33 @@ export default function AddAddress({ onClose }: AddAddressProps) {
 
             {/* Phone */}
             <div>
-              <label className="form-label">Phone Number</label>
-              <input
-                name="phone"
-                placeholder="+1"
-                onChange={handleChange}
-                className="form-input mt-2"
+              <label className="block font-medium text-sm" htmlFor="phone">
+                Phone Number
+              </label>
+
+              <PhoneInput
+                placeholder="1234567890"
+                country={"us"}
+                value={values.phone}
+                onChange={(value) => setFieldValue("phone", value)}
+                onBlur={() => setFieldTouched("phone", true)}
+                containerStyle={{
+                  width: "100%",
+                  height: "56px",
+                }}
+                inputStyle={{
+                  width: "100%",
+                  outline: "none",
+                  height: "56px",
+                  fontSize: "14px",
+                }}
+                buttonStyle={{
+                  background: "transparent",
+                }}
               />
+              {touched.phone && errors.phone && (
+                <div className="form-error">{errors.phone}</div>
+              )}
             </div>
 
             {/* Country */}
@@ -110,8 +142,10 @@ export default function AddAddress({ onClose }: AddAddressProps) {
               <label className="form-label">Address Label (Optional)</label>
 
               <Select
-                modal={false}
-                onValueChange={(value) => setFieldValue("addressLabel", value)}
+                onValueChange={(value) => {
+                  setFieldValue("addressLabel", value);
+                  setFieldTouched("addressLabel", true);
+                }}
               >
                 <SelectTrigger className="form-input mt-2">
                   <SelectValue placeholder="Select address label" />
@@ -120,6 +154,7 @@ export default function AddAddress({ onClose }: AddAddressProps) {
                 <SelectContent>
                   <SelectItem value="home">Home</SelectItem>
                   <SelectItem value="work">Work</SelectItem>
+                  <SelectItem value="others">Others</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -133,6 +168,7 @@ export default function AddAddress({ onClose }: AddAddressProps) {
                 name="address1"
                 placeholder="Enter your street address, P.O box, company name"
                 onChange={handleChange}
+                onBlur={handleBlur}
                 className="form-input mt-2"
               />
               {touched.address1 && errors.address1 && (
@@ -147,46 +183,61 @@ export default function AddAddress({ onClose }: AddAddressProps) {
                 name="address2"
                 placeholder="Apartment, suite, unit, etc."
                 onChange={handleChange}
+                onBlur={handleBlur}
                 className="form-input mt-2"
               />
             </div>
 
             {/* State / City / Zip */}
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="form-label">
+            <div className="flex items-center md:flex-row flex-col gap-4">
+              <div className="w-full">
+                <label className="form-label block truncate max-w-full">
                   State/Region <span className="text-red-500">*</span>
                 </label>
                 <input
                   name="state"
                   placeholder="Enter state/region"
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="form-input mt-2"
                 />
+
+                {touched.state && errors.state && (
+                  <p className="form-error">{errors.state}</p>
+                )}
               </div>
 
-              <div>
-                <label className="form-label">
+              <div className="w-full">
+                <label className="form-label block truncate max-w-full">
                   City <span className="text-red-500">*</span>
                 </label>
                 <input
                   name="city"
                   placeholder="Enter city"
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="form-input mt-2"
                 />
+                {touched.city && errors.city && (
+                  <p className="form-error">{errors.city}</p>
+                )}
               </div>
 
-              <div>
-                <label className="form-label">
+              <div className="w-full">
+                <label className="form-label block truncate max-w-full">
                   Zip/Postal Code <span className="text-red-500">*</span>
                 </label>
                 <input
                   name="zip"
                   placeholder="Enter zip/postal code"
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="form-input mt-2"
                 />
+
+                {touched.zip && errors.zip && (
+                  <p className="form-error">{errors.zip}</p>
+                )}
               </div>
             </div>
 
@@ -194,7 +245,7 @@ export default function AddAddress({ onClose }: AddAddressProps) {
             <button
               type="submit"
               className="w-full h-[52px] mt-6 rounded-md
-              bg-[#2DB463] text-white text-base font-medium
+              bg-[#2DB463] text-white text-[18px] leading-7 font-semibold
               hover:bg-[#249B54] transition cursor-pointer"
             >
               Add Address

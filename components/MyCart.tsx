@@ -24,6 +24,7 @@ import {
   useRemoveLocalItemMutation,
   useUpdateLocalQtyMutation,
 } from "@/lib/api/localCartApi";
+import { useRouter } from "next/navigation";
 
 const getNumericPrice = (price: string): number =>
   Number?.parseFloat(price?.replace(/[^\d.]/g, "")) || 0;
@@ -32,6 +33,7 @@ const getCurrency = (price: string) => price.match(/[₦$£€]/)?.[0] ?? "₦";
 
 export default function MyCart({ onClose }: { onClose: () => void }) {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const router = useRouter();
 
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
@@ -320,11 +322,23 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
             </div>
 
             <div className="p-4 flex flex-col gap-2">
-              <button className="w-full h-12 border border-[#27AE60] rounded-[6px] text-[18px] leading-7 font-semibold text-[#27AE60]">
+              {/* <button className="w-full h-12 border border-[#27AE60] rounded-[6px] text-[18px] leading-7 font-semibold text-[#27AE60]">
                 View Cart
-              </button>
-              <button className="w-full h-12 bg-[#27AE60] rounded-[6px] text-[18px] leading-7 font-semibold text-white">
-                Checkout
+              </button> */}
+              <button
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    onClose();
+                    router.push("/auth/login");
+                  } else {
+                    onClose();
+                    router.push("/checkout");
+                  }
+                }}
+                className="w-full h-12 bg-[#27AE60] rounded-[6px]
+  text-[18px] leading-7 font-semibold text-white cursor-pointer"
+              >
+                {isAuthenticated ? "Checkout" : "Login"}
               </button>
             </div>
           </div>
