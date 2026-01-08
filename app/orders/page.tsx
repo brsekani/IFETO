@@ -8,8 +8,14 @@ import cabbageImg from "@/assets/images/cabbage.png";
 import emptyImg from "@/assets/icons/emptyState.svg";
 import Image from "next/image";
 
+import { useGetOrdersQuery } from "@/lib/api/orders";
+
 const page = () => {
+  const { data: ordersData, isLoading, error } = useGetOrdersQuery();
   const [activeFilter, setActiveFilter] = useState("All orders");
+
+  const orders = ordersData?.data.data || [];
+
   const filterOptions = [
     "All orders",
     "Processing",
@@ -18,70 +24,12 @@ const page = () => {
     "Cancelled",
   ];
 
-  const mockOrders = [
-    {
-      id: "789012",
-      date: "Dec 15, 2025",
-      total: 125.5,
-      status: "Processing",
-      items: [
-        { name: "Garri", image: garriImg },
-        { name: "Cabbage", image: cabbageImg },
-      ],
-      weight: "3.5kg",
-      shippingMethod: "Standard Shipping",
-      estimatedDelivery: "Dec 22, 2025",
-    },
-    {
-      id: "789011",
-      date: "Dec 10, 2025",
-      total: 450.0,
-      status: "Shipped",
-      items: [{ name: "Cabbage", image: cabbageImg }],
-      weight: "1.2kg",
-      shippingMethod: "Express Delivery",
-      estimatedDelivery: "Dec 12, 2025",
-    },
-    {
-      id: "789010",
-      date: "Dec 05, 2025",
-      total: 89.99,
-      status: "Delivered",
-      items: [
-        { name: "Garri", image: garriImg },
-        { name: "Garri", image: garriImg },
-        { name: "Cabbage", image: cabbageImg },
-      ],
-      weight: "5.0kg",
-      shippingMethod: "Standard Shipping",
-      estimatedDelivery: "Dec 08, 2025",
-    },
-    {
-      id: "789009",
-      date: "Nov 28, 2025",
-      total: 320.0,
-      status: "Cancelled",
-      items: [{ name: "Garri", image: garriImg }],
-      weight: "2.0kg",
-      shippingMethod: "Pickup Station",
-      estimatedDelivery: "Cancelled",
-    },
-    {
-      id: "789013",
-      date: "Dec 18, 2025",
-      total: 55.0,
-      status: "Processing",
-      items: [{ name: "Cabbage", image: cabbageImg }],
-      weight: "0.5kg",
-      shippingMethod: "Standard Shipping",
-      estimatedDelivery: "Dec 25, 2025",
-    },
-  ];
-
   const filteredOrders =
     activeFilter === "All orders"
-      ? mockOrders
-      : mockOrders.filter((order) => order.status === activeFilter);
+      ? orders
+      : orders.filter(
+          (order) => order.status?.toLowerCase() === activeFilter.toLowerCase()
+        );
 
   const getFilterStyle = (status: string, isActive: boolean) => {
     if (!isActive)
@@ -92,6 +40,7 @@ const page = () => {
 
     switch (status.toLowerCase()) {
       case "processing":
+      case "pending":
         return {
           container: "bg-[#FFF8E6] text-[#F2C94C]",
           count: "bg-[#F2C94C] text-white",
@@ -120,8 +69,24 @@ const page = () => {
     }
   };
 
+  if (error) {
+    return (
+      <div className="w-full lg:py-7 lg:px-20 md:px-14 px-6 bg-[#FAFAFA] max-w-[1440px] mx-auto min-h-[50vh] flex flex-col justify-center items-center">
+        <p className="text-xl font-semibold text-[#EB5757]">
+          Failed to load orders.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-6 py-2 bg-primary text-white rounded-md"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full lg:py-7 lg:px-20 md:px-14 px-6 bg-[#FAFAFA] max-w-[1440px] mx-auto">
+    <div className="w-full lg:py-7 lg:px-20 md:px-14 px-6 bg-[#FAFAFA] max-w-[1440px] mx-auto min-h-screen">
       <div className="w-full flex gap-4 items-center text-[#5A5A5A] font-semibold">
         <Link
           href="/"
@@ -136,6 +101,13 @@ const page = () => {
       <div className="w-full overflow-x-auto flex items-center gap-6 mt-6 pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {filterOptions.map((option) => {
           const styles = getFilterStyle(option, activeFilter === option);
+          const count =
+            option === "All orders"
+              ? orders.length
+              : orders.filter(
+                  (o) => o.status?.toLowerCase() === option.toLowerCase()
+                ).length;
+
           return (
             <button
               key={option}
@@ -146,9 +118,7 @@ const page = () => {
               <span
                 className={`px-2 py-0.5 rounded-xl text-xs transition-colors duration-300 ${styles.count}`}
               >
-                {option === "All orders"
-                  ? mockOrders.length
-                  : mockOrders.filter((o) => o.status === option).length}
+                {isLoading ? "..." : count}
               </span>
             </button>
           );
@@ -156,12 +126,19 @@ const page = () => {
       </div>
 
       <div className="my-6 grid gap-6">
-        {filteredOrders.length > 0 ? (
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="w-full h-48 bg-gray-100 animate-pulse rounded-2xl"
+            />
+          ))
+        ) : filteredOrders.length > 0 ? (
           filteredOrders.map((order) => (
             <OrderCard key={order.id} order={order} />
           ))
         ) : (
-          <div className="text-center min-h-[20vh] flex flex-col justify-center items-center w-full">
+          <div className="text-center min-h-[40vh] flex flex-col justify-center items-center w-full bg-white rounded-2xl shadow-custom2 p-10">
             <Image
               src={emptyImg}
               alt="empty"
@@ -171,7 +148,9 @@ const page = () => {
               No orders yet
             </p>
             <p className="text-[#5A5A5A] lg:text-lg text-sm mt-3">
-              When you make a purchase, your order history will appear here.
+              {activeFilter === "All orders"
+                ? "When you make a purchase, your order history will appear here."
+                : `No orders found for current filter: ${activeFilter}`}
             </p>
             <Link
               href="/shop"

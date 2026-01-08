@@ -137,3 +137,90 @@ export interface DeleteAccountResponse {
   data: null | {};
   statusCode: 200;
 }
+
+// Order Types
+
+export interface OrderItem {
+  id: string;
+  cartId: string;
+  product: {
+    id: string;
+    name: string;
+    images: string[];
+    status: string;
+    weight: number;
+    baseCost: number;
+    quantity: number;
+    vendorId: string;
+    createdAt: string;
+    updatedAt: string;
+    categoryId: string;
+    description: string;
+    storageInstructions: string;
+  };
+  quantity: number;
+  createdAt: string;
+  productId: string;
+  updatedAt: string;
+  priceAtTime: number;
+  weightAtTime: number;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  items: OrderItem[];
+  deliveryAddressId: string;
+  currencyId: string;
+  currencyCode: string;
+  currencySymbol: string;
+  exchangeRateAtTime: number;
+  subtotal: number;
+  totalWeight: number;
+  deliveryFee: number;
+  totalAmountPaid: number;
+  trackingNumber: string | null;
+  shippingCarrier: string | null;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  stripeSessionId: string | null;
+  stripePaymentIntentId: string | null;
+  paymentStatus: string;
+  deliveryAddress: {
+    id: string;
+    userId: string;
+    label: string;
+    address1: string;
+    address2: string;
+    city: string;
+    state: string;
+    country: string;
+    zipCode: string;
+    isDefault: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
+export interface GetOrdersResponse {
+  success: true;
+  message: string;
+  data: {
+    data: Order[];
+    meta: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  };
+  statusCode: 200;
+}
+
+export interface GetOrderByIdResponse {
+  success: true;
+  message: string;
+  data: Order;
+  statusCode: 200;
+}
