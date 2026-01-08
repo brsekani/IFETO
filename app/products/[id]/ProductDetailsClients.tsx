@@ -15,7 +15,10 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import QuantityBox from "@/components/QuantityBox";
-import { useGetProductByIdQuery } from "@/lib/api/products";
+import {
+  useGetAllProductsQuery,
+  useGetProductByIdQuery,
+} from "@/lib/api/products";
 import ProductDetailsSkeleton from "@/components/loaders/ProductDetailsSkeleton";
 import { formatPriceKeepSymbol } from "@/utils/formatPrice";
 import { selectIsAuthenticated } from "@/lib/authSlice";
@@ -29,6 +32,9 @@ import {
 import { isItemInCart } from "@/lib/cart/isItemInCart";
 import { showSuccessToast } from "@/app/utils/toastHelpers";
 import Link from "next/link";
+import ProductCardSkeleton from "@/components/loaders/ProductCardShop";
+import { Product } from "@/types/product";
+import ProductCardShop from "@/components/ProductCardShop";
 
 export default function ProductDetailsClients({ id }: { id: string }) {
   const [quantity, setQuantity] = useState(1);
@@ -50,6 +56,25 @@ export default function ProductDetailsClients({ id }: { id: string }) {
     isError: productsError,
   } = useGetProductByIdQuery(id);
 
+  const categoryId = productsRes?.data?.categoryId;
+
+  const {
+    data: productsCat,
+    isLoading: productsCatLoading,
+    isFetching: productsCatFetching,
+    isError: productsCatError,
+  } = useGetAllProductsQuery(
+    {
+      limit: 4,
+      categoryId,
+    },
+    {
+      skip: !categoryId, // 👈 prevents firing until ready
+    }
+  );
+
+  console.log(productsCat);
+  console.log(productsRes?.data?.categoryId);
   const cartItems = serverCart?.data?.items ?? [];
 
   const alreadyInCart = isItemInCart(
@@ -61,6 +86,7 @@ export default function ProductDetailsClients({ id }: { id: string }) {
 
   const [addCartItem, { isLoading }] = useAddCartItemMutation();
   const [addLocalItem] = useAddLocalItemMutation();
+  const maxQuantity = productsRes?.data?.quantity;
 
   console.log(id);
   console.log(productsRes);
@@ -152,6 +178,7 @@ export default function ProductDetailsClients({ id }: { id: string }) {
               unitPrice={productsRes?.data?.price}
               quantity={quantity}
               setQuantity={setQuantity}
+              maxQuantity={maxQuantity}
             />
 
             <button
@@ -187,12 +214,24 @@ export default function ProductDetailsClients({ id }: { id: string }) {
           </div>
         </div>
 
-        <div className="md:py-20 py-6">
+        <div className="md:py-20 py-6 space-y-4 md:space-y-[35px]">
           <h5 className="md:text-[32px] text-[20px] leading-[30px] md:leading-[38px] text-[#2A2A2A] font-semibold">
             Related Items You May Like
           </h5>
 
-          <div className="grid grid-cols-2 xl:grid-cols-4 md:gap-6 gap-3"></div>
+          <div className="grid grid-cols-2 xl:grid-cols-4 md:gap-6 gap-3">
+            {productsCatLoading || productsLoading
+              ? Array.from({ length: 4 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))
+              : productsCat?.data?.data?.map((product: Product) => (
+                  <ProductCardShop
+                    product={product}
+                    index={product.id}
+                    key={product.id}
+                  />
+                ))}
+          </div>
         </div>
       </div>
     </div>

@@ -8,15 +8,17 @@ import Image from "next/image";
 import { formatPriceKeepSymbol } from "@/utils/formatPrice";
 
 type Props = {
-  unitPrice: string; // price per item
-  quantity: number; // weight per item (kg)
+  unitPrice: string;
+  quantity: number;
   setQuantity: Dispatch<SetStateAction<number>>;
+  maxQuantity: number;
 };
 
 export default function QuantityBox({
   unitPrice,
   quantity,
   setQuantity,
+  maxQuantity,
 }: Props) {
   // Extract symbol & numeric value
   const symbol = unitPrice.charAt(0);
@@ -30,11 +32,14 @@ export default function QuantityBox({
   return (
     <div className="flex items-center flex-col md:flex-row gap-4 w-full text-[#2A2A2A] md:mt-[50px] mt-6 md:mb-20 mb-[30px]">
       <div className="w-full">
-        <p className="text-[14px] leading-5 mb-1 font-medium">Quantity</p>
+        <p className="text-[14px] leading-5 mb-1 font-medium">
+          Quantity: {`${maxQuantity} left`}
+        </p>
         <div className="flex items-center justify-between bg-muted rounded-md px-3 h-14">
           <button
             className="cursor-pointer"
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            disabled={quantity <= 1}
           >
             <Image src={minuscircle} alt="-" />
           </button>
@@ -44,6 +49,7 @@ export default function QuantityBox({
           <button
             className="cursor-pointer"
             onClick={() => setQuantity((q) => q + 1)}
+            disabled={quantity >= maxQuantity}
           >
             <Image src={addCircle} alt="+" />
           </button>

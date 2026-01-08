@@ -233,3 +233,26 @@ input[type="radio"]:active {
   color: var(--color-light) !important;
   font-weight: 600 !important;
 }
+
+.form-input {
+  @apply w-full h-12 px-4 text-[14px] leading-5 text-[#2A2A2A]
+  border border-[#D0D0D0] rounded-md
+  placeholder:text-[#B0B0B0]
+  focus:outline-none focus:ring-1 focus:ring-green-500;
+}
+
+.form-input-disabled {
+  @apply bg-[#F4F4F4] text-[#7A7A7A] cursor-not-allowed;
+}
+
+.form-label {
+  @apply text-[14px] leading-5 font-medium text-[#101928];
+}
+
+.form-error {
+  @apply text-xs text-red-500 mt-1;
+}
+
+html {
+  scrollbar-gutter: stable;
+}

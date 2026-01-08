@@ -52,7 +52,6 @@ export default function ShopClient() {
     limit,
     categoryId: selected || undefined,
   });
-  console.log(productsRes);
 
   const categoriesFromApi: Category[] = data?.data ?? [];
 
