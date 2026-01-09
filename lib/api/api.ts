@@ -13,6 +13,7 @@ export const api = createApi({
     "products",
     "Cart",
     "Orders",
+    "addresses",
   ],
   endpoints: () => ({}),
 });

@@ -97,10 +97,23 @@ export const SecuritySchema = Yup.object({
     .oneOf([Yup.ref("newPassword"), undefined], "Passwords do not match")
     .required("Confirm password is required"),
 });
+
 export const DeleteAccountSchema = Yup.object({
   reason: Yup.string().required("Reason is required"),
   otherReason: Yup.string(),
   password: Yup.string()
     .matches(passwordRegex, passwordMessage)
     .required("Password is required"),
+});
+
+export const addAddressSchema = Yup.object({
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  phone: Yup.string().required("Phone number is required"),
+  addressLabel: Yup.string().nullable(),
+  address1: Yup.string().required("Address line 1 is required"),
+  address2: Yup.string().nullable(),
+  state: Yup.string().required("State is required"),
+  city: Yup.string().required("City is required"),
+  zip: Yup.string().required("Zip code is required"),
 });
