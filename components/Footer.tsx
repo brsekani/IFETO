@@ -71,9 +71,21 @@ export default function Footer() {
                 Policy
               </h6>
               <ul className="text-[14px] leading-5 text-[#FAFAFA] space-y-4">
-                <li>Terms & Condition</li>
-                <li>Return Policy</li>
-                <li>Privacy Policy</li>
+                <li>
+                  <Link href="/policy/terms">
+                    Terms & Condition
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/policy/return">
+                    Return Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/policy/privacy">
+                    Privacy Policy
+                  </Link>
+                </li>
               </ul>
             </div>
 
