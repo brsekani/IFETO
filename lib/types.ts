@@ -224,3 +224,83 @@ export interface GetOrderByIdResponse {
   data: Order;
   statusCode: 200;
 }
+export interface Address {
+  id: string;
+  userId: string;
+  firstname: string;
+  lastname: string;
+  phone: string;
+  label: string;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GetAddressesResponse {
+  success: true;
+  message: string;
+  data: Address[];
+  statusCode: 200;
+}
+
+export interface AddAddressRequest {
+  firstname: string;
+  lastname: string;
+  phone: string;
+  label?: string;
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
+  isDefault?: boolean;
+}
+
+export interface AddAddressResponse {
+  success: true;
+  message: string;
+  data: Address;
+  statusCode: 201;
+}
+
+export interface UpdateAddressRequest {
+  firstname?: string;
+  lastname?: string;
+  phone?: string;
+  label?: string;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  zipCode?: string;
+  isDefault?: boolean;
+}
+
+export interface UpdateAddressResponse {
+  success: true;
+  message: string;
+  data: Address;
+  statusCode: 200;
+}
+
+export interface DeleteAddressResponse {
+  success: true;
+  message: string;
+  data: null | {};
+  statusCode: 200;
+}
+
+export interface SetDefaultAddressResponse {
+  success: true;
+  message: string;
+  data: Address;
+  statusCode: 200;
+}

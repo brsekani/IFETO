@@ -47,7 +47,7 @@ import { useDispatch } from "react-redux";
 const items = [
   { label: "My Order", icon: box, to: "/orders" },
   { label: "My Account", icon: user, to: "/account" },
-  { label: "Address", icon: location, to: "/" },
+  { label: "Address", icon: location, to: "/address" },
 ];
 
 export default function Header() {
@@ -177,10 +177,16 @@ export default function Header() {
                     {items.map((item) => (
                       <DropdownMenuItem
                         key={item.label}
+                        asChild
                         className="flex items-center gap-3 text-[#6F6F6F] cursor-pointer focus:bg-transparent hover:opacity-70"
                       >
-                        <Link href={item.to} className="flex items-center gap-3">
-                          <Image src={item.icon} width={20} height={20} alt="" />
+                        <Link href={item.to}>
+                          <Image
+                            src={item.icon}
+                            width={20}
+                            height={20}
+                            alt=""
+                          />
                           <span>{item.label}</span>
                         </Link>
                       </DropdownMenuItem>

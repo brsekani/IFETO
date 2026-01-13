@@ -1,56 +1,82 @@
 import { api } from "./api";
 import {
-  ChangePasswordRequest,
-  ChangePasswordResponse,
-  DeleteAccountRequest,
-  DeleteAccountResponse,
-  GetProfileResponse,
-  UpdateProfileRequest,
-  UpdateProfileResponse,
+  GetAddressesResponse,
+  AddAddressRequest,
+  AddAddressResponse,
+  UpdateAddressRequest,
+  UpdateAddressResponse,
+  DeleteAddressResponse,
+  SetDefaultAddressResponse,
 } from "../types";
 
 export const profileApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getAddresses: builder.query<any, void>({
+    getAddresses: builder.query<GetAddressesResponse, void>({
       query: () => "/addresses",
-      providesTags: ["addresses"],
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ id }) => ({
+                type: "addresses" as const,
+                id,
+              })),
+              { type: "addresses", id: "LIST" },
+            ]
+          : [{ type: "addresses", id: "LIST" }],
     }),
 
-    addAddresses: builder.mutation<any, void>({
+    addAddresses: builder.mutation<AddAddressResponse, AddAddressRequest>({
       query: (data) => ({
         url: "/addresses",
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["addresses"],
+      invalidatesTags: [{ type: "addresses", id: "LIST" }],
     }),
 
-    changeDefaultAddresses: builder.mutation<any, string>({
-      query: (id) => ({
-        url: `/addresses/${id}/default`,
-        method: "PATCH",
-      }),
-      invalidatesTags: ["addresses"],
-    }),
-
-    deleteAccount: builder.mutation<
-      DeleteAccountResponse,
-      DeleteAccountRequest
+    updateAddress: builder.mutation<
+      UpdateAddressResponse,
+      { id: string; data: UpdateAddressRequest }
     >({
-      query: (data) => ({
-        url: "/profile",
-        method: "DELETE",
+      query: ({ id, data }) => ({
+        url: `/addresses/${id}`,
+        method: "PATCH",
         body: data,
       }),
-      // On success, you might want to log the user out on the client side
+      invalidatesTags: (result, error, { id }) => [
+        { type: "addresses", id },
+        { type: "addresses", id: "LIST" },
+      ],
     }),
+
+    deleteAddress: builder.mutation<DeleteAddressResponse, string>({
+      query: (id) => ({
+        url: `/addresses/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "addresses", id },
+        { type: "addresses", id: "LIST" },
+      ],
+    }),
+
+    changeDefaultAddresses: builder.mutation<SetDefaultAddressResponse, string>(
+      {
+        query: (id) => ({
+          url: `/addresses/${id}/default`,
+          method: "PATCH",
+        }),
+        invalidatesTags: [{ type: "addresses", id: "LIST" }],
+      }
+    ),
   }),
-  overrideExisting: false, // Prevent overwriting if loaded multiple times
+  overrideExisting: false,
 });
 
 export const {
   useGetAddressesQuery,
   useAddAddressesMutation,
+  useUpdateAddressMutation,
+  useDeleteAddressMutation,
   useChangeDefaultAddressesMutation,
-  useDeleteAccountMutation,
 } = profileApi;

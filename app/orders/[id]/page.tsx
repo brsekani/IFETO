@@ -14,12 +14,13 @@ import Image from "next/image";
 import garriImg from "@/assets/images/Garri.png";
 import cabbageImg from "@/assets/images/cabbage.png";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useGetOrderByIdQuery } from "@/lib/api/orders";
 import { format } from "date-fns";
 
 const OrderDetails = () => {
   const { id } = useParams();
+  const router = useRouter();
   const {
     data: orderResponse,
     isLoading,
@@ -125,13 +126,13 @@ const OrderDetails = () => {
       <div className="max-w-[1440px] mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <Link
-            href="/orders"
+          <button
+            onClick={() => router.back()}
             className="flex items-center gap-2 text-[#5A5A5A] hover:text-primary transition-colors font-semibold w-fit"
           >
             <ChevronLeft className="w-5 h-5" />
             <span>Back to orders</span>
-          </Link>
+          </button>
         </div>
 
         <div className="space-y-6">

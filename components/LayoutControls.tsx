@@ -24,8 +24,10 @@ export default function LayoutControls({
     pathname.startsWith("/reset-pass") ||
     pathname.startsWith("/signup");
 
-  const isDashboard = pathname.startsWith("/account");
-  const isOrders = pathname.startsWith("/orders");
+  const isDashboard =
+    pathname.startsWith("/account") ||
+    pathname.startsWith("/orders") ||
+    pathname.startsWith("/address");
 
   return (
     <>
@@ -41,7 +43,7 @@ export default function LayoutControls({
         {children}
       </div>
 
-      {!isAuthRoute && !isDashboard && !isOrders && <Footer />}
+      {!isAuthRoute && !isDashboard && <Footer />}
     </>
   );
 }

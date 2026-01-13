@@ -3,8 +3,6 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import OrderCard from "@/components/OrderCard";
-import garriImg from "@/assets/images/Garri.png";
-import cabbageImg from "@/assets/images/cabbage.png";
 import emptyImg from "@/assets/icons/emptyState.svg";
 import Image from "next/image";
 
