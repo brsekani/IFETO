@@ -13,9 +13,10 @@ import { Address } from "@/types/address";
 
 type Props = {
   onClose: () => void;
+  onSelectAddress: (addressId: string) => void;
 };
 
-export default function SelectAddressList({ onClose }: Props) {
+export default function SelectAddressList({ onClose, onSelectAddress }: Props) {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const {
     data: addresssData,
@@ -42,15 +43,8 @@ export default function SelectAddressList({ onClose }: Props) {
       onSubmit={async ({ selectedAddressId }) => {
         if (!selectedAddressId) return;
 
-        try {
-          await changeDefaultAddress(selectedAddressId).unwrap();
-          showSuccessToast("Default address updated");
-          console.log("Default address updated:", selectedAddressId);
-          onClose();
-        } catch (error) {
-          showErrorToast("Failed to update default address");
-          console.error("Failed to update default address", error);
-        }
+        onSelectAddress(selectedAddressId); // 👈 send ID to parent
+        onClose();
       }}
     >
       {({ values, setFieldValue }) => {

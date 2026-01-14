@@ -322,9 +322,15 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
             </div>
 
             <div className="p-4 flex flex-col gap-2">
-              {/* <button className="w-full h-12 border border-[#27AE60] rounded-[6px] text-[18px] leading-7 font-semibold text-[#27AE60]">
+              <button
+                onClick={() => {
+                  onClose();
+                  router.push("/cart");
+                }}
+                className="w-full h-12 border border-[#27AE60] rounded-[6px] text-[18px] leading-7 font-semibold text-[#27AE60] cursor-pointer"
+              >
                 View Cart
-              </button> */}
+              </button>
               <button
                 onClick={() => {
                   if (!isAuthenticated) {

@@ -8,10 +8,25 @@ import { CircleCheck, MapPin, Box, CreditCard } from "lucide-react";
 import { Fragment } from "react";
 import garriImg from "@/assets/images/Garri.png";
 import cabbageImg from "@/assets/images/cabbage.png";
+import { useGetSessionByIdQuery } from "@/lib/api/checkout";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { format } from "date-fns";
+import OrderReceiptSkeleton from "@/components/loaders/OrderReceiptSkeleton";
+import OrderItemsSkeleton from "@/components/loaders/OrderItemsSkeleton";
 
 export default function SuccessPage() {
   const params = useSearchParams();
   const sessionId = params.get("session_id");
+
+  const {
+    data: productsRes,
+    isLoading: productsLoading,
+    isFetching: productsFetching,
+    isError: productsError,
+  } = useGetSessionByIdQuery(sessionId || skipToken);
+
+  console.log(productsRes);
+  console.log(typeof sessionId);
 
   const order = {
     id: "789012",
@@ -131,64 +146,84 @@ export default function SuccessPage() {
               Order Completed!
             </p>
 
-            <p className="text-[#606060] md:text-[24px] md:leading-2.5 text-[16px] leading-6">
+            <p className="text-[#606060] md:text-[24px] md:leading-2.5 text-[16px] leading-6 text-center">
               Thank you for your. Your order has been confirmed and will soon be
               shipped.
             </p>
           </div>
-          <div className="lg:mt-16 mt-6 shadow-custom2 p-4 lg:p-6 rounded-2xl bg-white">
-            <h2 className="lg:text font-semibold">Order Receipt</h2>
-            <div className="lg:mt-4 mt-2.5">
-              <div className="flex gap-3 items-center">
-                <span className="text-light text-xs lg:text-lg">Order ID:</span>
-                <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                  #123456789
-                </span>
-              </div>
-              <div className="flex gap-3 items-center mt-2">
-                <span className="text-light text-xs lg:text-lg">Date:</span>
-                <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                  December 14, 2025
-                </span>
-              </div>
-              <div className="flex gap-3 items-center mt-2">
-                <span className="text-light text-xs lg:text-lg">Email:</span>
-                <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                  Halimah.balogun@gmail.com
-                </span>
-              </div>
-              <div className="flex gap-3 items-center mt-2">
-                <span className="text-light text-xs lg:text-lg">
-                  Payment Status:
-                </span>
-                <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                  Successful
-                </span>
-              </div>
-              <div className="flex gap-3 items-center mt-2">
-                <span className="text-light text-xs lg:text-lg">Currency:</span>
-                <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                  USD ($)
-                </span>
-              </div>
-              <div className="flex gap-3 items-center mt-2">
-                <span className="text-light text-xs lg:text-lg">
-                  Total Amount:
-                </span>
-                <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                  $118.7
-                </span>
-              </div>
-              <div className="flex gap-3 items-center mt-2">
-                <span className="text-light text-xs lg:text-lg">
-                  Payment Method:
-                </span>
-                <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                  Stripe
-                </span>
+
+          {productsLoading ? (
+            <OrderReceiptSkeleton />
+          ) : (
+            <div className="lg:mt-16 mt-6 shadow-custom2 p-4 lg:p-6 rounded-2xl bg-white">
+              <h2 className="md::text-[24px] md:leading-8 text-[20px] leading-[30px] font-semibold text-[#2A2A2A]">
+                Order Receipt
+              </h2>
+              <div className="lg:mt-4 mt-2.5">
+                <div className="flex gap-3 items-center">
+                  <span className="text-light text-xs lg:text-lg whitespace-nowrap">
+                    Order ID:
+                  </span>
+                  <span className="text-[#363636] text-xs lg:text-lg font-medium truncate">
+                    {productsRes?.data?.id}
+                  </span>
+                </div>
+                <div className="flex gap-3 items-center mt-2">
+                  <span className="text-light text-xs lg:text-lg">Date:</span>
+                  {productsRes?.data?.createdAt && (
+                    <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                      {format(
+                        new Date(productsRes.data.createdAt),
+                        "MMMM d, yyyy"
+                      )}
+                    </span>
+                  )}
+                </div>
+                <div className="flex gap-3 items-center mt-2">
+                  <span className="text-light text-xs lg:text-lg">Email:</span>
+                  <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                    Halimah.balogun@gmail.com
+                  </span>
+                </div>
+                <div className="flex gap-3 items-center mt-2">
+                  <span className="text-light text-xs lg:text-lg">
+                    Payment Status:
+                  </span>
+                  <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                    {productsRes?.data?.paymentStatus}
+                  </span>
+                </div>
+                <div className="flex gap-3 items-center mt-2">
+                  <span className="text-light text-xs lg:text-lg">
+                    Currency:
+                  </span>
+                  <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                    {productsRes?.data?.currencyCode}(
+                    {productsRes?.data?.currencySymbol})
+                  </span>
+                </div>
+                <div className="flex gap-3 items-center mt-2">
+                  <span className="text-light text-xs lg:text-lg">
+                    Total Amount:
+                  </span>
+                  <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                    {productsRes?.data?.currencySymbol}
+                    {Number(
+                      productsRes?.data?.totalAmountPaid
+                    ).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex gap-3 items-center mt-2">
+                  <span className="text-light text-xs lg:text-lg">
+                    Payment Method:
+                  </span>
+                  <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                    Stripe
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -281,39 +316,47 @@ export default function SuccessPage() {
             <h2 className="text-lg lg:text-2xl font-semibold lg:font-bold text-dark mb-4">
               Product Summary
             </h2>
-            <div className="space-y-4">
-              {order.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex gap-4 items-center p-2 lg:py-5 lg:px-6 border-b border-[#EFEEEE]"
-                >
-                  <div className="relative w-20 h-20 lg:w-[112px] lg:h-[112px] bg-[#EFEEEE] rounded lg:rounded-lg shrink-0 border border-gray-100">
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      fill
-                      className="object-contain p-2"
-                    />
-                  </div>
-                  <div className="flex-1 lg:space-y-4 space-y-1">
-                    <div className="flex items-center justify-between w-full">
-                      <h3 className="font-semibold text-dark text-sm lg:text-lg">
-                        {item.name}
-                      </h3>
-                      <p className="text-sm lg:text-lg font-medium">
-                        ${item.price.toFixed(2)}
+
+            {productsLoading ? (
+              <OrderItemsSkeleton />
+            ) : (
+              <div className="space-y-4">
+                {/* change item from any */}
+                {productsRes?.data?.items.map((item: any, index: string) => (
+                  <div
+                    key={index}
+                    className="flex gap-4 items-center p-2 lg:py-5 lg:px-6 border-b border-[#EFEEEE]"
+                  >
+                    <div className="relative w-20 h-20 lg:w-[112px] lg:h-[112px] bg-[#EFEEEE] rounded lg:rounded-lg shrink-0 border border-gray-100">
+                      <Image
+                        src={item?.product?.images[0]}
+                        alt={item?.name}
+                        fill
+                        className="object-contain p-2"
+                      />
+                    </div>
+                    <div className="flex-1 lg:space-y-4 space-y-1">
+                      <div className="flex items-center justify-between w-full">
+                        <h3 className="font-semibold text-dark text-sm lg:text-lg">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm lg:text-lg font-medium">
+                          {productsRes?.data?.currencySymbol}
+                          {item.priceAtTime?.toLocaleString()}
+                        </p>
+                      </div>
+                      <p className="text-xs lg:text-base text-light">
+                        Qty: {item.quantity}
+                      </p>
+                      <p className="font-bold text-dark text-right text-base lg:text-xl">
+                        {productsRes?.data?.currencySymbol}
+                        {(item.quantity * item.priceAtTime)?.toLocaleString()}
                       </p>
                     </div>
-                    <p className="text-xs lg:text-base text-light">
-                      Qty: {item.quantity}
-                    </p>
-                    <p className="font-bold text-dark text-right text-base lg:text-xl">
-                      ${(item.quantity * item.price).toFixed(2)}
-                    </p>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Card 3: Delivery Info */}

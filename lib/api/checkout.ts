@@ -26,7 +26,12 @@ export const checkoutApi = api.injectEndpoints({
         body,
       }),
     }),
+
+    getSessionById: builder.query<any, string>({
+      query: (id) => `/checkout/session/${id}`,
+    }),
   }),
 });
 
-export const { useCreateCheckoutSessionMutation } = checkoutApi;
+export const { useCreateCheckoutSessionMutation, useGetSessionByIdQuery } =
+  checkoutApi;

@@ -7,6 +7,7 @@ export type UICartItem = {
     id: string;
     name: string;
     images: string[];
+    weight: string;
   };
 };
 

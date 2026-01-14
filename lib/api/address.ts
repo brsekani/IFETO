@@ -9,7 +9,7 @@ import {
   SetDefaultAddressResponse,
 } from "../types";
 
-export const profileApi = api.injectEndpoints({
+export const addressesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getAddresses: builder.query<GetAddressesResponse, void>({
       query: () => "/addresses",
@@ -79,4 +79,4 @@ export const {
   useUpdateAddressMutation,
   useDeleteAddressMutation,
   useChangeDefaultAddressesMutation,
-} = profileApi;
+} = addressesApi;
