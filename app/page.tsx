@@ -17,6 +17,8 @@ import HowItworks from "@/components/HowItworks";
 import AppDownload from "@/components/AppDownload";
 import Footer from "@/components/Footer";
 import RightDrawer from "@/components/RightDrawer";
+import { useGetCollectionWithProductsQuery } from "@/lib/api/collections";
+import ProductSectionSkeleton from "@/components/loaders/ProductSectionSkeleton";
 
 export default function Home() {
   const [token, setToken] = useState<string | null>(null);
@@ -24,6 +26,13 @@ export default function Home() {
   const [logout, { isLoading }] = useLogoutMutation();
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const {
+    data,
+    isLoading: isGetting,
+    error,
+  } = useGetCollectionWithProductsQuery();
+  console.log(data);
 
   const handleLogout = async () => {
     try {
@@ -59,60 +68,26 @@ export default function Home() {
     );
   }
 
-  const products = [
-    {
-      id: 1,
-      name: "Irish Potatoes",
-      price: 24.99,
-      category: "Tubers & Nuts",
-      description:
-        "Premium Irish potatoes with a mild, earthy flavor. Excellent for mashing, roasting, or boiling.",
-      image: "/images/products/irish-potatoes.png",
-    },
-    {
-      id: 2,
-      name: "Cabbage",
-      price: 24.99,
-      category: "Fruits & Vegetables",
-      description:
-        "Fresh, firm heads perfect for coleslaw, stir-fries, or steaming. Adds bulk and crunch to any meal.",
-      image: "/images/products/cabbage.png",
-    },
-    {
-      id: 3,
-      name: "Okro",
-      price: 24.99,
-      category: "Fruits & Vegetables",
-      description:
-        "Perfect for soups, stews, and thickening sauces. Essential for traditional Nigerian dishes.",
-      image: "/images/products/irish-potatoes.png",
-    },
-    {
-      id: 4,
-      name: "Yellow Garri",
-      price: 24.99,
-      category: "Grains",
-      description:
-        "Toasted fermented cassava flakes. Suitable for soaking or making Eba.",
-      image: "/images/products/irish-potatoes.png",
-    },
-  ];
-
   return (
     <div className="md:space-y-20 space-y-6 bg-[#F9F9F9]">
       <HeroSection />
       <Shopbycategory />
       <div className="space-y-6">
-        <ProductSection
-          title={"Featured Products"}
-          products={products}
-          link={"/"}
-        />
-        <ProductSection
-          title={"Recommended For You"}
-          products={products}
-          link={"/"}
-        />
+        {isGetting ? (
+          <>
+            <ProductSectionSkeleton />
+            <ProductSectionSkeleton />
+          </>
+        ) : (
+          data?.data.map((item) => (
+            <ProductSection
+              key={item.id}
+              title={item.name}
+              products={item.products}
+              link="/"
+            />
+          ))
+        )}
       </div>
       <HowItworks />
       <AppDownload />

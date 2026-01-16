@@ -65,6 +65,8 @@ export default function Page() {
     skip: !isAuthenticated,
   });
 
+  console.log(addresssData);
+
   const [createCheckoutSession, { isLoading: creatingSession }] =
     useCreateCheckoutSessionMutation();
 

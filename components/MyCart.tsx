@@ -13,7 +13,7 @@ import {
 } from "@/lib/api/cart";
 import { formatPriceKeepSymbol } from "@/utils/formatPrice";
 import QtySpinner from "./loaders/QtySpinner";
-import CartSkeleton from "./loaders/CartSkeleton";
+import CartSkeleton from "./loaders/CartPageLoader";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppSelector } from "./auth/AuthGuard";
 import { selectIsAuthenticated } from "@/lib/authSlice";
@@ -163,28 +163,6 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
         <CartSkeleton />
       ) : cartItems.length >= 1 ? (
         <>
-          <div className="px-6 py-[18px] flex items-center gap-3 text-[18px] text-[#5A5A5A]">
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={allChecked}
-                onChange={toggleAll}
-                className="peer appearance-none w-6 h-6 rounded border border-gray-400
-               checked:bg-[#27AE60] checked:border-[#27AE60]"
-              />
-
-              {/* White Dot */}
-              <span
-                className="pointer-events-none absolute left-1/2 top-1/2 
-               -translate-x-1/2 -translate-y-1/2
-               w-2 h-2 rounded-full bg-white opacity-0
-               peer-checked:opacity-100"
-              ></span>
-            </label>
-
-            <p>Select All Items</p>
-          </div>
-
           <div className="flex-1 overflow-y-auto pb-0">
             {cartItems.map((item) => (
               <div
@@ -193,24 +171,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
               >
                 {/* Checkbox + Image */}
                 <div className="flex items-center gap-4">
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={checkedIds.includes(item.id)}
-                      onChange={() => toggleItem(item.id)}
-                      className="peer appearance-none w-6 h-6 rounded border border-gray-400
-               checked:bg-[#27AE60] checked:border-[#27AE60]"
-                    />
-
-                    <span
-                      className="pointer-events-none absolute left-1/2 top-1/2 
-               -translate-x-1/2 -translate-y-1/2
-               w-2 h-2 rounded-full bg-white opacity-0
-               peer-checked:opacity-100"
-                    ></span>
-                  </label>
-
-                  <div className="bg-[#EFEEEE] px-3 py-4 rounded">
+                  <div className="bg-[#EFEEEE] px-3 py-4 rounded-md">
                     <Image
                       src={
                         item?.product?.images?.[0] || "/images/placeholder.png"
@@ -218,7 +179,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
                       alt={item?.product?.name || "product"}
                       width={80}
                       height={58}
-                      className="w-20 h-[58px] object-contain"
+                      className="w-20 h-[58px] object-contain rounded-md"
                     />
                   </div>
                 </div>

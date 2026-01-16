@@ -29,7 +29,7 @@ export default function ProductImageCarousel({
                   width={372}
                   height={274}
                   alt="Product image"
-                  className="object-contain"
+                  className="object-contain rounded-2xl"
                 />
               </div>
             </CarouselItem>

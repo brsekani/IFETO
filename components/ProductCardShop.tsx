@@ -16,6 +16,7 @@ import {
   useGetLocalCartQuery,
 } from "@/lib/api/localCartApi";
 import Link from "next/link";
+import { useAddToCart } from "@/hooks/useAddToCart";
 
 export default function ProductCardShop({
   product,
@@ -24,74 +25,8 @@ export default function ProductCardShop({
   product: any;
   index: number;
 }) {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const lastActionRef = useRef<number>(0);
-
-  // const [localCart, setLocalCart] = useState<LocalCartItem[]>([]);
-
-  const { data } = useGetCartQuery(undefined, {
-    skip: !isAuthenticated,
-  });
-
-  const { data: localCart = [] } = useGetLocalCartQuery(undefined, {
-    skip: isAuthenticated,
-  });
-
-  const [addLocalItem] = useAddLocalItemMutation();
-
-  const cartItems = data?.data?.items ?? [];
-
-  const alreadyInCart = isItemInCart(
-    product.id,
-    isAuthenticated,
-    cartItems, // server cart items
-    localCart
-  );
-
-  const [addCartItem, { isLoading }] = useAddCartItemMutation();
-  const maxQuantity = product?.quantity;
-
-  const handleAddToCart = () => {
-    const now = Date.now();
-    if (now - lastActionRef.current < 500) return;
-    lastActionRef.current = now;
-
-    if (!isAuthenticated) {
-      addLocalItem({
-        productId: product.id,
-        quantity: 1,
-        price: product.price,
-        product: {
-          name: product.name,
-          images: product.images?.length
-            ? product.images
-            : ["/images/placeholder.png"],
-        },
-        id: product.id,
-      });
-
-      // 🔥 OPTIMISTIC LOCAL STATE UPDATE
-
-      showSuccessToast(
-        alreadyInCart
-          ? "Product quantity updated in cart"
-          : "Product added successfully"
-      );
-      return;
-    }
-
-    // 🔥 Fire-and-forget for auth users
-    addCartItem({
-      productId: product.id,
-      quantity: 1,
-    });
-
-    showSuccessToast(
-      alreadyInCart
-        ? "Product quantity updated in cart"
-        : "Product added successfully"
-    );
-  };
+  const { handleAddToCart, alreadyInCart, isLoading, isAuthenticated } =
+    useAddToCart({ product });
 
   return (
     <div
@@ -99,7 +34,7 @@ export default function ProductCardShop({
       className="rounded-2xl border-[0.6px] border-[#EFEEEE] bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between md:min-w-[280px] min-w-[105px] w-full"
     >
       <Link href={`/products/${product.id}`}>
-        <div className="w-full h-[150px] relative ">
+        <div className="relative w-full h-[150px] rounded-tr-2xl rounded-tl-2xl overflow-hidden">
           <Image
             src={product.images[0]}
             alt={product.name}
@@ -108,7 +43,7 @@ export default function ProductCardShop({
             blurDataURL="/placeholder.png"
             loading="lazy"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover py-[14.56px] px-[13.78px]"
+            className="object-cover"
           />
         </div>
 

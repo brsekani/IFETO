@@ -18,6 +18,7 @@ export default function ProductSection({
   products,
   link,
 }: ProductSectionProps) {
+  console.log(products);
   return (
     <section className="w-full max-w-[1440px] mx-auto px-6 md:px-20">
       {/* HEADER */}

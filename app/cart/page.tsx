@@ -22,11 +22,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import trash from "@/assets/icons/trash_red.svg";
 import eye from "@/assets/icons/eye.svg";
-import CartSkeleton from "@/components/loaders/CartSkeleton";
+import CartSkeleton from "@/components/loaders/CartPageLoader";
 import EmptyCart from "@/components/EmptyCart";
 import Link from "next/link";
 import ConfirmDeleteCartModal from "@/components/modals/ConfirmDeleteCartModal";
 import info from "@/assets/icons/info-circle-primary.svg";
+import CartPageLoader from "@/components/loaders/CartPageLoader";
 
 export default function Page() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -100,11 +101,11 @@ export default function Page() {
 
   if (!isAuthenticated) return null;
 
-  if (isLoading || loadingLocal) return <CartSkeleton />;
+  if (isLoading || loadingLocal) return <CartPageLoader />;
 
   if (!cartItems.length)
     return (
-      <div className="pb-10">
+      <div className="min-h-[70vh] -mt-20 flex items-center justify-center">
         <EmptyCart />
       </div>
     );
@@ -273,8 +274,8 @@ export default function Page() {
                   {/* Tooltip */}
                   <div
                     className="
-      absolute left-30 -top-30 mt-2 w-[260px]
-      rounded-xl bg-white p-4 text-sm text-[#2A2A2A]
+      absolute left-36 -top-16 mt-2 w-[245px]
+      rounded-xl bg-white p-2 text-[12px] leading-[18px] text-[#484848]
       shadow-[0px_4px_24px_0px_#0000000A]
       opacity-0 scale-95
       pointer-events-none
@@ -283,9 +284,11 @@ export default function Page() {
       z-50
     "
                   >
-                    <p className="font-semibold mb-3">Weight Breakdown</p>
+                    <p className="font-semibold mb-4 text-[#363636] text-[14px] leading-5">
+                      Weight Breakdown
+                    </p>
 
-                    <div className="space-y-2 text-[#787878]">
+                    <div className="space-y-2">
                       <div className="flex justify-between">
                         <span>Weight Category</span>
                         <span className="text-[#2A2A2A]">
@@ -303,7 +306,7 @@ export default function Page() {
                         <span className="text-[#2A2A2A]">$9 per kg</span>
                       </div>
 
-                      <div className="flex justify-between font-semibold text-[#2A2A2A] pt-2 border-t">
+                      <div className="flex justify-between font-semibold">
                         <span>Total Weight Fee</span>
                         <span>4.8 kg × $9 = $43.2</span>
                       </div>

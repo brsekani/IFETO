@@ -67,13 +67,15 @@ export default function Shopbycategory() {
                 "
                 onClick={() => handleCategoryClick(category)}
               >
-                <Image
-                  src={category.image}
-                  alt={category.name}
-                  width={143}
-                  height={80}
-                  className="object-contain md:w-[143px] md:h-20 w-[92px] h-[50px]"
-                />
+                <div className="rounded overflow-hidden bg-[#EFEEEE] flex items-center justify-center">
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    width={143}
+                    height={80}
+                    className="object-contain"
+                  />
+                </div>
 
                 <p className="md:text-[16px] text-[10.03px] font-semibold text-[#2A2A2A] text-center">
                   {category.name}
