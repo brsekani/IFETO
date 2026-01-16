@@ -56,7 +56,7 @@ export default function ProductCard({
         <button
           onClick={handleAddToCart}
           disabled={alreadyInCart || (isAuthenticated && isLoading)}
-          className={`bg-[#27AE60] text-[#FFFFFF] text-[18px] leading-7 font-semibold cursor-pointer w-full md:w-fit md:px-5 py-2.5 rounded-[6px] flex items-center gap-1 justify-centerC disabled:cursor-default ${
+          className={`bg-[#27AE60] text-[#FFFFFF] text-[18px] leading-7 font-semibold cursor-pointer w-full md:w-fit md:px-5 py-2.5 rounded-[6px] flex items-center gap-1 justify-center disabled:cursor-default ${
             alreadyInCart
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-primary hover:bg-[#1F8A4E] cursor-pointer"

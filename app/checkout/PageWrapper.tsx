@@ -78,6 +78,8 @@ export default function Page() {
 
   const defaultAddress = addresses.find((a: Address) => a.isDefault) ?? null;
 
+  console.log(defaultAddress);
+
   const effectiveAddress = selectedAddress ?? defaultAddress;
 
   const cartItems: UICartItem[] = data?.data?.items;

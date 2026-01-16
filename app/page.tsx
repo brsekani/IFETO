@@ -19,6 +19,16 @@ import Footer from "@/components/Footer";
 import RightDrawer from "@/components/RightDrawer";
 import { useGetCollectionWithProductsQuery } from "@/lib/api/collections";
 import ProductSectionSkeleton from "@/components/loaders/ProductSectionSkeleton";
+import { Collection, Product } from "@/types/product";
+
+export interface Category {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  createdAt: string; // ISO date
+  updatedAt: string; // ISO date
+}
 
 export default function Home() {
   const [token, setToken] = useState<string | null>(null);
@@ -32,7 +42,7 @@ export default function Home() {
     isLoading: isGetting,
     error,
   } = useGetCollectionWithProductsQuery();
-  console.log(data);
+  console.log(data?.data);
 
   const handleLogout = async () => {
     try {
@@ -79,7 +89,7 @@ export default function Home() {
             <ProductSectionSkeleton />
           </>
         ) : (
-          data?.data.map((item) => (
+          data?.data.map((item: Collection) => (
             <ProductSection
               key={item.id}
               title={item.name}

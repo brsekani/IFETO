@@ -7,7 +7,7 @@ import {
 } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: 'https://ifeto-backend-1.onrender.com/api/v1',
+  baseUrl: "https://ifeto-backend-1.onrender.com/api/v1",
   credentials: "include",
   prepareHeaders: (headers) => {
     const token =
