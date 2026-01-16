@@ -1,7 +1,15 @@
 import emptyState from "@/assets/icons/emptyState.svg";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-export default function EmptyCart({ onClose }: { onClose: () => void }) {
+export default function EmptyCart({ onClose }: { onClose?: () => void }) {
+  const router = useRouter();
+
+  const handleClose = () => {
+    onClose?.();
+    router.replace("/shop");
+  };
+
   return (
     <div className="flex items-center justify-center flex-col">
       <Image
@@ -14,7 +22,7 @@ export default function EmptyCart({ onClose }: { onClose: () => void }) {
       </p>
 
       <button
-        onClick={onClose}
+        onClick={handleClose}
         className="w-full max-w-[280px] h-12 bg-[#27AE60] rounded-[6px] text-[18px]  leading-7 font-semibold text-white cursor-pointer"
       >
         Continue Shopping

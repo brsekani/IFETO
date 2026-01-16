@@ -12,12 +12,29 @@ import {
 } from "./ui/select";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { useAddAddressesMutation } from "@/lib/api/address";
+import { showErrorToast, showSuccessToast } from "@/app/utils/toastHelpers";
 
 type AddAddressProps = {
   onClose: () => void;
 };
 
 export default function AddAddress({ onClose }: AddAddressProps) {
+  const [addAddress, { isLoading: isAdding }] = useAddAddressesMutation();
+
+  const mapAddressToApi = (values: any) => ({
+    firstname: values.firstName,
+    lastname: values.lastName,
+    phone: values.phone,
+    label: values.label, // REQUIRED by backend
+    address1: values.address1,
+    address2: values.address2 || "",
+    country: values.country,
+    city: values.city,
+    state: values.state,
+    zipCode: values.zipCode,
+  });
+
   return (
     <div className="w-full bg-white overflow-y-scroll py-8 px-6 space-y-[30px] flex-1">
       {/* Header */}
@@ -38,15 +55,34 @@ export default function AddAddress({ onClose }: AddAddressProps) {
           firstName: "",
           lastName: "",
           phone: "",
-          addressLabel: "",
+          country: "country",
+          label: "",
           address1: "",
           address2: "",
           state: "",
           city: "",
-          zip: "",
+          zipCode: "",
         }}
         validationSchema={addAddressSchema}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={async (values, { resetForm }) => {
+          const payload = mapAddressToApi(values);
+          console.log(payload);
+
+          try {
+            await addAddress({
+              ...payload,
+              isDefault: true,
+            }).unwrap();
+            showSuccessToast("Address added successfuly");
+          } catch (error: any) {
+            console.error("Failed to change password", error);
+            const message = error?.data?.message || "Failed to add address";
+            showErrorToast(message);
+          }
+
+          resetForm();
+          onClose();
+        }}
       >
         {({
           errors,
@@ -128,10 +164,12 @@ export default function AddAddress({ onClose }: AddAddressProps) {
             <div>
               <label className="form-label">Country</label>
               <input
-                value="United States"
+                name="country"
+                value={values.country}
                 disabled
                 className="form-input form-input-disabled mt-2"
               />
+
               <p className="text-xs text-[#6B7280] mt-2">
                 Country has been set from the user’s saved details.
               </p>
@@ -143,8 +181,8 @@ export default function AddAddress({ onClose }: AddAddressProps) {
 
               <Select
                 onValueChange={(value) => {
-                  setFieldValue("addressLabel", value);
-                  setFieldTouched("addressLabel", true);
+                  setFieldValue("label", value);
+                  setFieldTouched("label", true);
                 }}
               >
                 <SelectTrigger className="form-input mt-2">
@@ -228,15 +266,15 @@ export default function AddAddress({ onClose }: AddAddressProps) {
                   Zip/Postal Code <span className="text-red-500">*</span>
                 </label>
                 <input
-                  name="zip"
+                  name="zipCode"
                   placeholder="Enter zip/postal code"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   className="form-input mt-2"
                 />
 
-                {touched.zip && errors.zip && (
-                  <p className="form-error">{errors.zip}</p>
+                {touched.zipCode && errors.zipCode && (
+                  <p className="form-error">{errors.zipCode}</p>
                 )}
               </div>
             </div>
@@ -244,11 +282,14 @@ export default function AddAddress({ onClose }: AddAddressProps) {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full h-[52px] mt-6 rounded-md
-              bg-[#2DB463] text-white text-[18px] leading-7 font-semibold
-              hover:bg-[#249B54] transition cursor-pointer"
+              disabled={isAdding}
+              className={`w-full h-[52px] mt-6 rounded-md
+    bg-[#2DB463] text-white text-[18px] font-semibold
+    transition
+    ${isAdding ? "opacity-60 cursor-not-allowed" : "hover:bg-[#249B54]"}
+  `}
             >
-              Add Address
+              {isAdding ? "Adding Address..." : "Add Address"}
             </button>
           </Form>
         )}

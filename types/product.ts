@@ -4,5 +4,12 @@ export interface Product {
   price: number;
   category: string;
   description: string;
-  image: string;
+  images: string[];
+}
+
+export interface Collection {
+  id: string;
+  name: string;
+  description: string;
+  products: Product[];
 }

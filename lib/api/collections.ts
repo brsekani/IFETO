@@ -9,20 +9,11 @@ import {
   SetDefaultAddressResponse,
 } from "../types";
 
-export const addressesApi = api.injectEndpoints({
+export const collectionsApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getAddresses: builder.query<GetAddressesResponse, void>({
-      query: () => "/addresses",
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.data.map(({ id }) => ({
-                type: "addresses" as const,
-                id,
-              })),
-              { type: "addresses", id: "LIST" },
-            ]
-          : [{ type: "addresses", id: "LIST" }],
+    getCollectionWithProducts: builder.query<any, void>({
+      query: () => "/collections/with-products",
+      providesTags: ["collections"],
     }),
 
     addAddresses: builder.mutation<AddAddressResponse, AddAddressRequest>({
@@ -73,10 +64,4 @@ export const addressesApi = api.injectEndpoints({
   overrideExisting: false,
 });
 
-export const {
-  useGetAddressesQuery,
-  useAddAddressesMutation,
-  useUpdateAddressMutation,
-  useDeleteAddressMutation,
-  useChangeDefaultAddressesMutation,
-} = addressesApi;
+export const { useGetCollectionWithProductsQuery } = collectionsApi;

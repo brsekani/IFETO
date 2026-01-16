@@ -7,10 +7,12 @@ import { useRouter } from "next/navigation";
 import { useGetProfileQuery } from "@/lib/api/profile";
 
 const profile = () => {
-    const router = useRouter();
+  const router = useRouter();
   const { data: profileData, isLoading, error } = useGetProfileQuery();
   console.log(profileData);
   const user = profileData?.data;
+
+  console.log(profileData);
 
   if (isLoading) {
     return (
