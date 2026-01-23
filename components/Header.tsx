@@ -43,6 +43,8 @@ import { useGetProfileQuery } from "@/lib/api/profile";
 import { useLogoutMutation } from "@/lib/api/auth";
 import { showErrorToast, showSuccessToast } from "@/app/utils/toastHelpers";
 import { useDispatch } from "react-redux";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import close from "@/assets/icons/Close.svg";
 
 const items = [
   { label: "My Order", icon: box, to: "/orders" },
@@ -53,6 +55,12 @@ const items = [
 export default function Header() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const dispatch = useDispatch();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const [query, setQuery] = useState("");
+
   const {
     data: profileData,
     isLoading: isLoadingProfileData,
@@ -81,7 +89,7 @@ export default function Header() {
       return (
         data?.data?.items?.reduce(
           (total: number, item: UICartItem) => total + item.quantity,
-          0
+          0,
         ) ?? 0
       );
     }
@@ -104,6 +112,33 @@ export default function Header() {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (query.trim().length < 1) return;
+
+    router.push(`/shop?search=${encodeURIComponent(query.trim())}`);
+  };
+
+  const clearSearch = () => {
+    const params = new URLSearchParams(searchParams);
+
+    params.delete("search");
+    setQuery("");
+
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
+  useEffect(() => {
+    if (query.trim().length < 1) return;
+
+    const t = setTimeout(() => {
+      router.push(`/shop?search=${query.trim()}`);
+    }, 600);
+
+    return () => clearTimeout(t);
+  }, [query]);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -117,12 +152,33 @@ export default function Header() {
           className="md:w-[84px] md:h-[55px] w-12 h-8"
         />
 
-        <form className="max-w-[615px] w-full md:flex hidden items-center text-[14px] leading-5">
-          <input
-            className="w-full bg-white h-12 rounded-l-3xl px-6 border-[0.5px]"
-            placeholder="Search for grains, protein,  seafood, fruits etc....."
-          />
-          <button className="w-[74px] h-12 bg-[#27AE60] rounded-r-3xl  font-semibold text-[#FFFFFF] cursor-pointer">
+        <form
+          onSubmit={handleSubmit}
+          className="max-w-[615px] w-full md:flex hidden items-center text-[14px] leading-5 "
+        >
+          <div className="relative w-full">
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full bg-white h-12 rounded-l-3xl px-6 border-[0.5px]"
+              placeholder="Search for grains, protein,  seafood, fruits etc....."
+              maxLength={50}
+            />
+
+            {query.trim().length > 1 && (
+              <Image
+                src={close}
+                alt={close}
+                className="w-6 h-6 md:w-5 md:h-5 hidden md:block absolute top-3.5 right-1 cursor-pointer"
+                onClick={clearSearch}
+              />
+            )}
+          </div>
+          <button
+            type="submit"
+            disabled={query.trim().length < 1}
+            className="w-[74px] h-12 bg-[#27AE60] rounded-r-3xl  font-semibold text-[#FFFFFF] cursor-pointer disabled:cursor-not-allowed"
+          >
             Search
           </button>
         </form>
@@ -192,8 +248,6 @@ export default function Header() {
                       </DropdownMenuItem>
                     ))}
                   </div>
-
-                  {/* Divider */}
 
                   {/* Logout */}
                   <DropdownMenuItem

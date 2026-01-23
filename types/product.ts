@@ -12,4 +12,5 @@ export interface Collection {
   name: string;
   description: string;
   products: Product[];
+  slug: string;
 }

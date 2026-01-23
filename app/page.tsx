@@ -94,7 +94,7 @@ export default function Home() {
               key={item.id}
               title={item.name}
               products={item.products}
-              link="/"
+              link={`/shop/${item?.slug}`}
             />
           ))
         )}

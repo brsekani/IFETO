@@ -40,7 +40,7 @@ export default function ProductCardShop({
             alt={product.name}
             fill
             placeholder="blur"
-            blurDataURL="/placeholder.png"
+            blurDataURL="/images/placeholder.png"
             loading="lazy"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover"
@@ -49,7 +49,7 @@ export default function ProductCardShop({
 
         <div className="p-4">
           <span className="inline-block bg-[#ADFFD0] text-[#2A2A2A] px-[7.93px] md:px-3 py-[3.96px] md:py-1.5 rounded-full text-[12px] leading-[18px] mb-4 w-fit truncate max-w-full">
-            {product.category.name}
+            {product?.category?.name}
           </span>
 
           <div className="space-y-2">

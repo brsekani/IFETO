@@ -73,7 +73,7 @@ export default function Page() {
   const addresses = addresssData?.data ?? [];
 
   const selectedAddress = selectedAddressId
-    ? addresses.find((a: Address) => a.id === selectedAddressId) ?? null
+    ? (addresses.find((a: Address) => a.id === selectedAddressId) ?? null)
     : null;
 
   const defaultAddress = addresses.find((a: Address) => a.isDefault) ?? null;
@@ -151,8 +151,63 @@ export default function Page() {
         </div>
 
         <div className="flex flex-col md:flex-row w-full md:gap-10 gap-6 md:mt-[50px] mt-6">
+          <div className="w-full">
+            <div className="p-4 md:p-6 bg-[#FAFAFA] rounded-2xl shadow-custom2 md:space-y-4 space-y-2.5 w-full">
+              <div className="md:text-[24px] text-[16px] md:leading-8 leading-6 font-semibold text-[#2A2A2A]">
+                Product Summary
+              </div>
+
+              <div className="w-full h-screen overflow-y-scroll scrollbar scrollbar-thin">
+                {isLoading ? (
+                  <>
+                    <CartItemLoader />
+                    <CartItemLoader />
+                    <CartItemLoader />
+                  </>
+                ) : (
+                  cartItems.map((cart, i) => (
+                    <div
+                      className={`flex md:gap-5 gap-3 w-full ${
+                        i > 0 && "border-t-[0.6px]"
+                      } border-[#CFCFCF] md:p-4 p-2.5`}
+                      key={cart.id || i}
+                    >
+                      <div className="bg-[#EFEEEE] w-fit md:px-[18px] px-[11px] md:py-6 py-3.5 relative rounded-[6px]">
+                        <Image
+                          src={cart?.product?.images?.[1]}
+                          alt={cart?.product?.name || "product"}
+                          width={84}
+                          height={57}
+                          className="md:w-[84px] w-[49px] md:h-[57px] h-[38px] object-contain"
+                        />
+
+                        <div className="absolute top-3 right-2 w-4 h-4 bg-[#27AE60] rounded-full flex items-center justify-center text-[12px] font-semibold text-white">
+                          {cart?.quantity}
+                        </div>
+                      </div>
+
+                      <div className="md:space-y-1.5 space-y-1 min-w-0">
+                        <p className="md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#2A2A2A] font-semibold truncate w-full">
+                          {cart?.product?.name}
+                        </p>
+
+                        <p className="md:text-[18px] text-[12px] md:leading-7 leading-[18px] text-[#6C6C6C]">
+                          Qty: {cart?.quantity}
+                        </p>
+
+                        <p className="md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#2A2A2A] font-semibold">
+                          {formatPriceKeepSymbol(cart?.price)}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="w-full md:space-y-8 space-y-6 ">
-            {profileLoading ? (
+            {/* {profileLoading ? (
               <ContactSkeleton />
             ) : (
               <div className="md:p-6 p-4 bg-[#E3FFEF4D] shadow-custom2 md:space-y-4 space-y-2.5 w-full">
@@ -174,7 +229,7 @@ export default function Page() {
                   </p>
                 </div>
               </div>
-            )}
+            )} */}
 
             {addresssLoading ? (
               <DeliveryDetailsSkeleton />
@@ -242,139 +297,82 @@ export default function Page() {
                 </div>
               </div>
             )}
-          </div>
 
-          <div className="w-full">
-            <div className="p-4 md:p-6 bg-[#FAFAFA] rounded-2xl shadow-custom2 md:space-y-4 space-y-2.5 w-full">
-              <div className="md:text-[24px] text-[16px] md:leading-8 leading-6 font-semibold text-[#2A2A2A]">
-                Product Summary
-              </div>
-
-              <div className="w-full">
-                {isLoading ? (
-                  <>
-                    <CartItemLoader />
-                    <CartItemLoader />
-                    <CartItemLoader />
-                  </>
-                ) : (
-                  cartItems.map((cart, i) => (
-                    <div
-                      className={`flex md:gap-5 gap-3 w-full ${
-                        i > 0 && "border-t-[0.6px]"
-                      } border-[#CFCFCF] md:p-4 p-2.5`}
-                      key={cart.id || i}
-                    >
-                      <div className="bg-[#EFEEEE] w-fit md:px-[18px] px-[11px] md:py-6 py-3.5 relative rounded-[6px]">
-                        <Image
-                          src={cart?.product?.images?.[1]}
-                          alt={cart?.product?.name || "product"}
-                          width={84}
-                          height={57}
-                          className="md:w-[84px] w-[49px] md:h-[57px] h-[38px] object-contain"
-                        />
-
-                        <div className="absolute top-3 right-2 w-4 h-4 bg-[#27AE60] rounded-full flex items-center justify-center text-[12px] font-semibold text-white">
-                          {cart?.quantity}
-                        </div>
-                      </div>
-
-                      <div className="md:space-y-1.5 space-y-1 min-w-0">
-                        <p className="md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#2A2A2A] font-semibold truncate w-full">
-                          {cart?.product?.name}
-                        </p>
-
-                        <p className="md:text-[18px] text-[12px] md:leading-7 leading-[18px] text-[#6C6C6C]">
-                          Qty: {cart?.quantity}
-                        </p>
-
-                        <p className="md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#2A2A2A] font-semibold">
-                          {formatPriceKeepSymbol(cart?.price)}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {isLoading ? (
-                <>
-                  <OrderSummarySkeleton />
-                  <PayButtonSkeleton />
-                </>
-              ) : (
-                <>
-                  <div className="bg-[#E3FFEF4D] p-4 md:space-y-4 space-y-2.5 md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#484848] font-medium">
-                    <div className="flex justify-between">
-                      <p>Sub Total:</p>
-                      <p>{formatPriceKeepSymbol(subtotalPrice)}</p>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <p>Weight:</p>
-                      <p>{data?.data?.totalWeight}</p>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <div className="flex items-center gap-2.5">
-                        <p>Weight Fee:</p>
-                        <Image src={info} alt="info" />
-                      </div>
-                      <p>$43.2</p>
-                    </div>
-
-                    <div className="flex justify-between md:text-[24px] text-[16px] md:leading-8 leading-6 text-[#484848] font-bold">
-                      <p>Total:</p>
-                      <p>{formatPriceKeepSymbol(data?.data?.totalPrice)}</p>
-                    </div>
+            {isLoading ? (
+              <>
+                <OrderSummarySkeleton />
+                <PayButtonSkeleton />
+              </>
+            ) : (
+              <>
+                <div className="bg-[#E3FFEF4D] p-4 md:space-y-4 space-y-2.5 md:text-[20px] text-[14px] md:leading-[30px] leading-5 text-[#484848] font-medium">
+                  <div className="flex justify-between">
+                    <p>Sub Total:</p>
+                    <p>{formatPriceKeepSymbol(subtotalPrice)}</p>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="rememberMe"
-                        name="rememberMe"
-                        checked={agreed}
-                        onChange={(e) => setAgreed(e.target.checked)}
-                        className="w-6 h-6 appearance-none border border-light-active rounded focus:ring-0 cursor-pointer checked:bg-primary checked:border-primary custom-checkbox"
-                      />
+                  <div className="flex justify-between">
+                    <p>Weight:</p>
+                    <p>{data?.data?.totalWeight}</p>
+                  </div>
 
-                      <p className="text-[14px] leading-5">
-                        I agree to{" "}
-                        <span className="text-[#17683A] underline">
-                          <Link href={"/policy/privacy"}>
-                            IFETO's Terms and Return Policy
-                          </Link>
-                        </span>
-                      </p>
+                  <div className="flex justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <p>Weight Fee:</p>
+                      <Image src={info} alt="info" />
                     </div>
-                    <button
-                      disabled={
-                        isLoading ||
-                        creatingSession ||
-                        !effectiveAddress ||
-                        !data?.data?.items?.length ||
-                        !agreed
-                      }
-                      onClick={handlePay}
-                      className={`h-12 w-full rounded-md text-[18px] font-semibold transition disabled:bg-[#C7D3CC]
+                    <p>$43.2</p>
+                  </div>
+
+                  <div className="flex justify-between md:text-[24px] text-[16px] md:leading-8 leading-6 text-[#484848] font-bold">
+                    <p>Total:</p>
+                    <p>{formatPriceKeepSymbol(data?.data?.totalPrice)}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="rememberMe"
+                      name="rememberMe"
+                      checked={agreed}
+                      onChange={(e) => setAgreed(e.target.checked)}
+                      className="w-6 h-6 appearance-none border border-light-active rounded focus:ring-0 cursor-pointer checked:bg-primary checked:border-primary custom-checkbox"
+                    />
+
+                    <p className="text-[14px] leading-5">
+                      I agree to{" "}
+                      <span className="text-[#17683A] underline">
+                        <Link href={"/policy/privacy"}>
+                          IFETO's Terms and Return Policy
+                        </Link>
+                      </span>
+                    </p>
+                  </div>
+                  <button
+                    disabled={
+                      isLoading ||
+                      creatingSession ||
+                      !effectiveAddress ||
+                      !data?.data?.items?.length ||
+                      !agreed
+                    }
+                    onClick={handlePay}
+                    className={`h-12 w-full rounded-md text-[18px] font-semibold transition disabled:bg-[#C7D3CC]
     ${
       creatingSession || !effectiveAddress
         ? "bg-gray-300 cursor-not-allowed"
         : "bg-primary text-white hover:bg-green-700"
     }`}
-                    >
-                      {creatingSession
-                        ? "Redirecting to payment..."
-                        : `Pay ${formatPriceKeepSymbol(
-                            data?.data?.totalPrice
-                          )}`}
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+                  >
+                    {creatingSession
+                      ? "Redirecting to payment..."
+                      : `Pay ${formatPriceKeepSymbol(data?.data?.totalPrice)}`}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -394,6 +392,7 @@ export default function Page() {
       >
         <SelectAddress
           onClose={() => setOpenSelectAddress(false)}
+          activeAddressId={effectiveAddress?.id}
           onSelectAddress={(id) => {
             setSelectedAddressId(id);
 
