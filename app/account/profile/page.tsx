@@ -9,16 +9,11 @@ import { useGetProfileQuery } from "@/lib/api/profile";
 const profile = () => {
   const router = useRouter();
   const { data: profileData, isLoading, error } = useGetProfileQuery();
-  console.log(profileData);
   const user = profileData?.data;
-
-  console.log(profileData);
 
   if (isLoading) {
     return (
-      <div className="w-full h-full lg:shadow-custom2 bg-white lg:rounded-2xl p-6 flex items-center justify-center">
-        <p>Loading profile...</p>
-      </div>
+      <div className="w-full h-[500px] bg-[#f3f3f3] animate-pulse rounded-2xl shadow-custom2" />
     );
   }
 

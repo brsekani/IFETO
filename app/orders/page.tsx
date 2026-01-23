@@ -1,7 +1,7 @@
 "use client";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import OrderCard from "@/components/OrderCard";
 import emptyImg from "@/assets/icons/emptyState.svg";
 import Image from "next/image";
@@ -10,7 +10,21 @@ import { useGetOrdersQuery } from "@/lib/api/orders";
 
 const page = () => {
   const { data: ordersData, isLoading, error } = useGetOrdersQuery();
-  const [activeFilter, setActiveFilter] = useState("All orders");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const activeFilter = searchParams.get("status") || "All orders";
+
+  const setActiveFilter = (newStatus: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (newStatus === "All orders") {
+      params.delete("status");
+    } else {
+      params.set("status", newStatus);
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const orders = ordersData?.data.data || [];
 
@@ -26,7 +40,7 @@ const page = () => {
     activeFilter === "All orders"
       ? orders
       : orders.filter(
-          (order) => order.status?.toLowerCase() === activeFilter.toLowerCase()
+          (order) => order.status?.toLowerCase() === activeFilter.toLowerCase(),
         );
 
   const getFilterStyle = (status: string, isActive: boolean) => {
@@ -103,7 +117,7 @@ const page = () => {
             option === "All orders"
               ? orders.length
               : orders.filter(
-                  (o) => o.status?.toLowerCase() === option.toLowerCase()
+                  (o) => o.status?.toLowerCase() === option.toLowerCase(),
                 ).length;
 
           return (

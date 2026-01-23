@@ -38,7 +38,7 @@ export default function MyAccountDrawer({
     },
     {
       name: "Address Management",
-      to: "/",
+      to: "/address",
       icon: location,
       textColor: "#787878",
     },

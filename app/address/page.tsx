@@ -53,7 +53,7 @@ const address = () => {
     setSettingDefaultId(id);
     try {
       const response = await changeDefaultAddress(id).unwrap();
-      toast.success(response.message || "Default address updated");
+      toast.success("Default address updated");
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to update default address");
     } finally {
