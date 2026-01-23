@@ -14,6 +14,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { useAddAddressesMutation } from "@/lib/api/address";
 import { showErrorToast, showSuccessToast } from "@/app/utils/toastHelpers";
+import { useGetMyCountryQuery } from "@/lib/api/countries";
 
 type AddAddressProps = {
   onClose: () => void;
@@ -21,6 +22,7 @@ type AddAddressProps = {
 
 export default function AddAddress({ onClose }: AddAddressProps) {
   const [addAddress, { isLoading: isAdding }] = useAddAddressesMutation();
+  const { data, isLoading, error } = useGetMyCountryQuery();
 
   const mapAddressToApi = (values: any) => ({
     firstname: values.firstName,
@@ -55,7 +57,7 @@ export default function AddAddress({ onClose }: AddAddressProps) {
           firstName: "",
           lastName: "",
           phone: "",
-          country: "country",
+          country: data?.data?.name || "Nigeria",
           label: "",
           address1: "",
           address2: "",
@@ -282,7 +284,7 @@ export default function AddAddress({ onClose }: AddAddressProps) {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isAdding}
+              disabled={isAdding || isLoading}
               className={`w-full h-[52px] mt-6 rounded-md
     bg-[#2DB463] text-white text-[18px] font-semibold
     transition

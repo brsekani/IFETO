@@ -256,3 +256,25 @@ input[type="radio"]:active {
 html {
   scrollbar-gutter: stable;
 }
+
+@layer utilities {
+  .scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #f7f4ed;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(39, 174, 96, 1);
+    border-radius: 100vh;
+    border: 1px solid rgba(39, 174, 96, 1);
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(39, 174, 96, 1);
+  }
+}

@@ -40,7 +40,7 @@ export function useAddToCart({ product }: UseAddToCartArgs) {
     product.id,
     isAuthenticated,
     cartItems,
-    localCart
+    localCart,
   );
 
   /** ---------- Action ---------- */
@@ -66,7 +66,7 @@ export function useAddToCart({ product }: UseAddToCartArgs) {
       showSuccessToast(
         alreadyInCart
           ? "Product quantity updated in cart"
-          : "Product added successfully"
+          : "Product added successfully",
       );
       return;
     }
@@ -79,7 +79,7 @@ export function useAddToCart({ product }: UseAddToCartArgs) {
     showSuccessToast(
       alreadyInCart
         ? "Product quantity updated in cart"
-        : "Product added successfully"
+        : "Product added successfully",
     );
   };
 
