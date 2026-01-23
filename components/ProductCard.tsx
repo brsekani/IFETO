@@ -26,7 +26,7 @@ export default function ProductCard({
             alt={product.name}
             fill
             placeholder="blur"
-            blurDataURL="/placeholder.png"
+            blurDataURL="/images/placeholder.png"
             loading="lazy"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover pb-[14.56px]"

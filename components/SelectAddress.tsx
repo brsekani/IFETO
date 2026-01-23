@@ -14,9 +14,14 @@ import { Address } from "@/types/address";
 type Props = {
   onClose: () => void;
   onSelectAddress: (addressId: string) => void;
+  activeAddressId?: string;
 };
 
-export default function SelectAddressList({ onClose, onSelectAddress }: Props) {
+export default function SelectAddressList({
+  onClose,
+  onSelectAddress,
+  activeAddressId,
+}: Props) {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const {
     data: addresssData,
@@ -31,14 +36,15 @@ export default function SelectAddressList({ onClose, onSelectAddress }: Props) {
 
   const addresses = addresssData?.data ?? [];
 
-  const defaultAddressId =
-    addresses.find((a: Address) => a.isDefault)?.id || "";
+  const defaultAddressId = addresses.find((a) => a.isDefault)?.id ?? "";
+
+  const initialSelectedId = activeAddressId || defaultAddressId;
 
   return (
     <Formik
       enableReinitialize
       initialValues={{
-        selectedAddressId: defaultAddressId,
+        selectedAddressId: initialSelectedId,
       }}
       onSubmit={async ({ selectedAddressId }) => {
         if (!selectedAddressId) return;
@@ -48,7 +54,7 @@ export default function SelectAddressList({ onClose, onSelectAddress }: Props) {
       }}
     >
       {({ values, setFieldValue }) => {
-        const isUnchanged = values.selectedAddressId === defaultAddressId;
+        // const isUnchanged = values.selectedAddressId === defaultAddressId;
 
         return (
           <Form className="bg-white h-full flex flex-col px-6 py-8">
@@ -66,7 +72,7 @@ export default function SelectAddressList({ onClose, onSelectAddress }: Props) {
             </div>
 
             {/* Address List */}
-            <div className="space-y-6 flex-1 overflow-y-auto">
+            <div className="space-y-6 flex-1 overflow-y-auto scrollbar">
               {addresses?.map((item: Address) => (
                 <label
                   key={item.id}
@@ -108,7 +114,7 @@ export default function SelectAddressList({ onClose, onSelectAddress }: Props) {
             {/* Actions */}
             <button
               type="submit"
-              disabled={isUnchanged || changingDefault}
+              disabled={changingDefault}
               className="mt-8 h-[52px] w-full rounded-md
                 bg-[#2DB463] text-white text-[18px] font-semibold
                 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"

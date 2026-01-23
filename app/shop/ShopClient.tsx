@@ -25,6 +25,7 @@ import FilterDropdownSkeleton from "@/components/loaders/FilterDropdownSkeleton"
 import { FilterDropdownListSkeleton } from "@/components/loaders/FilterDropdownListSkeleton";
 import { Product } from "@/types/product";
 import { Category } from "@/types/category";
+import SearchNotFound from "@/components/SearchNotFound";
 
 export default function ShopClient() {
   const searchParams = useSearchParams();
@@ -33,6 +34,7 @@ export default function ShopClient() {
 
   const perPage = 16;
   const page = Number(searchParams.get("page")) || 1;
+  const search = searchParams.get("search") || "";
   const limit = perPage;
   const selected = searchParams.get("filters");
 
@@ -51,6 +53,7 @@ export default function ShopClient() {
     page,
     limit,
     categoryId: selected || undefined,
+    search,
   });
 
   const categoriesFromApi: Category[] = data?.data ?? [];
@@ -82,6 +85,14 @@ export default function ShopClient() {
     params.delete("page");
     router.replace(`${pathname}?${params.toString()}`);
   };
+
+  const clearSearchAndFilters = () => {
+    const params = new URLSearchParams();
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
+  const isEmpty =
+    !productsLoading && !productsFetching && products.length === 0;
 
   if (error) {
     return (
@@ -163,7 +174,7 @@ export default function ShopClient() {
                 {selected &&
                   (() => {
                     const category = categoriesFromApi.find(
-                      (c) => c.id === selected
+                      (c) => c.id === selected,
                     );
                     if (!category) return null;
 
@@ -202,19 +213,23 @@ export default function ShopClient() {
       </AnimatePresence>
 
       <div className="relative">
-        <div className="grid grid-cols-2 xl:grid-cols-4 md:gap-6 gap-3">
-          {productsLoading || productsFetching
-            ? Array.from({ length: 20 }).map((_, i) => (
-                <ProductCardSkeleton key={i} />
-              ))
-            : products.map((product: Product) => (
-                <ProductCardShop
-                  product={product}
-                  index={product.id}
-                  key={product.id}
-                />
-              ))}
-        </div>
+        {isEmpty ? (
+          <SearchNotFound search={search} onClear={clearSearchAndFilters} />
+        ) : (
+          <div className="grid grid-cols-2 xl:grid-cols-4 md:gap-6 gap-3">
+            {productsLoading || productsFetching
+              ? Array.from({ length: 16 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))
+              : products.map((product: Product) => (
+                  <ProductCardShop
+                    product={product}
+                    index={product.id}
+                    key={product.id}
+                  />
+                ))}
+          </div>
+        )}
       </div>
 
       <Suspense fallback={<p>Loading pagination...</p>}>

@@ -174,7 +174,7 @@ export default function SuccessPage() {
                     <span className="text-[#363636] text-xs lg:text-lg font-medium">
                       {format(
                         new Date(productsRes.data.createdAt),
-                        "MMMM d, yyyy"
+                        "MMMM d, yyyy",
                       )}
                     </span>
                   )}
@@ -209,7 +209,7 @@ export default function SuccessPage() {
                   <span className="text-[#363636] text-xs lg:text-lg font-medium">
                     {productsRes?.data?.currencySymbol}
                     {Number(
-                      productsRes?.data?.totalAmountPaid
+                      productsRes?.data?.totalAmountPaid,
                     ).toLocaleString()}
                   </span>
                 </div>
@@ -338,7 +338,7 @@ export default function SuccessPage() {
                     <div className="flex-1 lg:space-y-4 space-y-1">
                       <div className="flex items-center justify-between w-full">
                         <h3 className="font-semibold text-dark text-sm lg:text-lg">
-                          {item.name}
+                          {item?.product?.name}
                         </h3>
                         <p className="text-sm lg:text-lg font-medium">
                           {productsRes?.data?.currencySymbol}
@@ -365,13 +365,13 @@ export default function SuccessPage() {
               Delivery Details
             </h2>
             <div className="space-y-4">
-              <h6>Halimah Balogun</h6>
-              <p>
-                742 Meadowbrook Lane Suite, 204 Fairfield, Ohio 45014, United
-                States
-              </p>
-              <p>Halimah.balogun@gmail.com</p>
-              <p>+1 (458) 742-1930</p>
+              <h6>
+                {productsRes?.data?.deliveryAddress?.firstname}{" "}
+                {productsRes?.data?.deliveryAddress?.lastname}
+              </h6>
+              <p>{productsRes?.data?.deliveryAddress?.address1}</p>
+              <p>{productsRes?.data?.deliveryAddress?.address2}</p>
+              <p>{productsRes?.data?.deliveryAddress?.phone}</p>
             </div>
           </div>
         </div>
