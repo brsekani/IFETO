@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { TriangleAlert } from "lucide-react";
+import { TriangleAlert, Loader2 } from "lucide-react";
 import Modal from "../ui/modal";
 
 interface ModalItem {
@@ -16,6 +16,8 @@ interface CancelRoutineModalProps {
   onClose: () => void;
   onConfirm: () => void;
   items: ModalItem[];
+  title?: string;
+  isLoading?: boolean;
 }
 
 const CancelRoutineModal: React.FC<CancelRoutineModalProps> = ({
@@ -23,6 +25,8 @@ const CancelRoutineModal: React.FC<CancelRoutineModalProps> = ({
   onClose,
   onConfirm,
   items,
+  title,
+  isLoading,
 }) => {
   if (!items || items.length === 0) return null;
 
@@ -35,7 +39,7 @@ const CancelRoutineModal: React.FC<CancelRoutineModalProps> = ({
           <TriangleAlert />
         </div>
         <h3 className="text-xl font-semibold mt-4">
-          Cancel routine order?
+          {title || "Cancel routine order?"}
         </h3>
         <p className="mt-2 text-sm lg:text-base text-light">
           You won't receive future deliveries for this item unless you create a
@@ -46,12 +50,17 @@ const CancelRoutineModal: React.FC<CancelRoutineModalProps> = ({
       <div className="mt-6 border border-[#E5E5E5] rounded-2xl p-4">
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
-            <div className="w-[71px] h-[66px] bg-[#EFEEEE] rounded-[4px] p-1 shrink-0">
-              <Image
-                src={firstItem.image}
-                alt={firstItem.name}
-                className="w-full h-full object-cover"
-              />
+            <div className="w-[71px] h-[66px] bg-[#EFEEEE] rounded-[4px] p-1 shrink-0 relative flex items-center justify-center overflow-hidden">
+              {firstItem.image ? (
+                <Image
+                  src={firstItem.image}
+                  alt={firstItem.name}
+                  fill
+                  className="object-contain p-1"
+                />
+              ) : (
+                <span className="text-[10px] text-gray-400">No Image</span>
+              )}
             </div>
             <div className="space-y-1 w-full text-left">
               <div className="flex items-center justify-between gap-2 font-nunito">
@@ -80,13 +89,22 @@ const CancelRoutineModal: React.FC<CancelRoutineModalProps> = ({
       <div className="flex flex-col gap-3 mt-8 font-nunito">
         <button
           onClick={onConfirm}
-          className="w-full h-12 rounded-[6px] bg-[#E53E3E] text-white text-lg font-semibold cursor-pointer hover:bg-[#c53030] transition-colors"
+          disabled={isLoading}
+          className="w-full h-12 rounded-[6px] bg-[#E53E3E] text-white text-lg font-semibold cursor-pointer hover:bg-[#c53030] transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
         >
-          Yes, cancel routine order
+          {isLoading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>Canceling...</span>
+            </>
+          ) : (
+            "Yes, cancel routine order"
+          )}
         </button>
         <button
           onClick={onClose}
-          className="w-full h-12 rounded-[6px] border border-primary text-primary text-lg font-semibold cursor-pointer hover:bg-[#E3FFEF] transition-colors"
+          disabled={isLoading}
+          className="w-full h-12 rounded-[6px] border border-primary text-primary text-lg font-semibold cursor-pointer hover:bg-[#E3FFEF] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Keep routine order
         </button>
@@ -94,5 +112,4 @@ const CancelRoutineModal: React.FC<CancelRoutineModalProps> = ({
     </Modal>
   );
 };
-
 export default CancelRoutineModal;

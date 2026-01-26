@@ -21,7 +21,6 @@ const page = () => {
             <h1 className="text-2xl font-semibold mb-2">
               IFETO Customer Satisfaction Policy (Returns & Refunds)
             </h1>
-            <p className="text-light ">Last Updated: 5th December 2025</p>
           </div>
 
           <div className="mt-4 lg:mt-6 text-light">
@@ -51,21 +50,19 @@ const page = () => {
                 has been packaged and shipped.
               </p>
               <p className="mb-4">This policy ensures the following:</p>
-              <p className="mb-4">
-                Quality Control: We guarantee the freshness and integrity of all
-                perishable food and health products shipped from our vendors.
-              </p>
-              <p className="mb-4">
-                Logistical Integrity: Returns involving long-haul international
-                transit expose products to high risk of damage, temperature
-                fluctuation, and spoilage, which prevents us from reselling or
-                donating them.
-              </p>
-              <p className="mb-4">
-                Ethical Responsibility: We are committed to upholding the
-                ethical sourcing practices of our vendors, ensuring that our
-                products reach their intended recipients in good condition.
-              </p>
+              <ul className="pl-6 list-disc space-y-2">
+                <li>
+                  <span className="font-semibold">Quality Control:</span> We
+                  guarantee the freshness and integrity of all perishable food
+                  and health products shipped from our vendors.
+                </li>
+                <li>
+                  <span className="font-semibold">Logistical Integrity:</span>{" "}
+                  Returns involving long-haul international transit expose
+                  products to high risk of damage, temperature fluctuation, and
+                  spoilage, which prevents us from reselling or donating them.
+                </li>
+              </ul>
             </div>
 
             <div className="mb-4">
@@ -82,18 +79,29 @@ const page = () => {
                 <h3 className="font-semibold mb-4">
                   A. Item Arrived Damaged or Spoiled
                 </h3>
-                <ul className="pl-6">
+                <p className="mb-2">
+                  If your product is damaged, spoiled, or appears tampered with
+                  upon arrival:
+                </p>
+                <ul className="pl-6 space-y-2">
                   <li className="list-disc">
                     <span className="font-semibold">Action Required: </span>You
                     must contact us within 32 hours of the delivery date.
                   </li>
-                  <li className="list-disc mt-1">
+                  <li className="list-disc">
                     <span className="font-semibold">Proof Required: </span>You
                     must provide clear photographic evidence of the damaged
                     product and the exterior shipping package to our support
-                    team at support@ifeto.com.
+                    team at{" "}
+                    <a
+                      href="mailto:Admin@ifetomarket.com"
+                      className="text-primary font-medium"
+                    >
+                      Admin@ifetomarket.com
+                    </a>
+                    .
                   </li>
-                  <li className="list-disc mt-1">
+                  <li className="list-disc">
                     <span className="font-semibold">Remedy: </span>Upon
                     verification, IFETO will process a full refund to your
                     original payment method or ship a replacement product
@@ -108,12 +116,12 @@ const page = () => {
                 <p className="mb-4">
                   If you received an item that was not what you ordered:
                 </p>
-                <ul className="pl-6">
+                <ul className="pl-6 space-y-2">
                   <li className="list-disc">
                     <span className="font-semibold">Action Required: </span> You
                     must contact us within 7 days of the delivery date.
                   </li>
-                  <li className="list-disc mt-1">
+                  <li className="list-disc">
                     <span className="font-semibold">Remedy: </span>We will
                     verify the shipping manifest error and either issue a full
                     refund or arrange for the correct product to be shipped at
@@ -133,21 +141,21 @@ const page = () => {
                 replacement:
               </p>
               <div className="mb-4">
-                <ul className="pl-6">
+                <ul className="pl-6 space-y-2">
                   <li className="list-disc">
                     Change of mind, taste preference, or product
                     dissatisfaction.
                   </li>
-                  <li className="list-disc mt-1">
+                  <li className="list-disc">
                     The product was damaged after successful delivery (e.g.,
                     dropped, left outside, or improperly stored by the
                     customer).
                   </li>
-                  <li className="list-disc mt-1">
+                  <li className="list-disc">
                     Any issues reported more than 32 hours after the delivery
                     confirmation date.
                   </li>
-                  <li className="list-disc mt-1">
+                  <li className="list-disc">
                     Losses due to incorrect shipping addresses provided by the
                     customer at checkout.
                   </li>
@@ -160,12 +168,12 @@ const page = () => {
                 4. Processing Refunds
               </h2>
               <div className="mb-4">
-                <ul className="pl-6">
+                <ul className="pl-6 space-y-2">
                   <li className="list-disc">
                     Once a refund is approved, it will be processed within 5-10
                     business days.
                   </li>
-                  <li className="list-disc mt-1">
+                  <li className="list-disc">
                     Refunds will be credited back to your original payment
                     method (e.g., credit card, bank account). Processing times
                     may vary depending on your bank.
@@ -179,20 +187,25 @@ const page = () => {
                 <span className="font-semibold">Contact Us: </span>For all
                 questions regarding your order or our policy, please contact us
                 immediately: Email:{" "}
-                <span className="text-primary font-semibold">
+                <a
+                  href="mailto:Admin@ifetomarket.com"
+                  className="text-primary font-semibold"
+                >
                   Admin@ifetomarket.com
-                </span>
+                </a>
               </p>
             </div>
 
             <div className="mb-4">
-              <h2 className="font-semibold ">Social Media:</h2>
-              <ul className="pl-6">
+              <h2 className="font-semibold mb-2">Social Media:</h2>
+              <ul className="pl-6 space-y-2">
                 <li className="list-disc">
-                  Instagram: Ifeto_market (Ifeto): (QR will be shared)
+                  <span className="font-medium">Instagram:</span> Ifeto_market
+                  (Ifeto): (QR will be shared)
                 </li>
-                <li className="list-disc mt-1">
-                  Facebook & Tik tok: Ifeto market (Ifeto): (QR will be Shared)
+                <li className="list-disc">
+                  <span className="font-medium">Facebook & Tik tok:</span> Ifeto
+                  market (Ifeto): (QR will be Shared)
                 </li>
               </ul>
             </div>

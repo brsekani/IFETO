@@ -313,7 +313,7 @@ export default function Page() {
 
                   <div className="flex justify-between">
                     <p>Weight:</p>
-                    <p>{data?.data?.totalWeight}</p>
+                    <p>{data?.data?.totalWeight?.toFixed(2)}kg</p>
                   </div>
 
                   <div className="flex justify-between">
@@ -321,7 +321,7 @@ export default function Page() {
                       <p>Weight Fee:</p>
                       <Image src={info} alt="info" />
                     </div>
-                    <p>$43.2</p>
+                    <p>{data?.data?.estimatedShippingPrice}</p>
                   </div>
 
                   <div className="flex justify-between md:text-[24px] text-[16px] md:leading-8 leading-6 text-[#484848] font-bold">

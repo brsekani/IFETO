@@ -13,6 +13,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { format } from "date-fns";
 import OrderReceiptSkeleton from "@/components/loaders/OrderReceiptSkeleton";
 import OrderItemsSkeleton from "@/components/loaders/OrderItemsSkeleton";
+import RoutineOrderCard from "@/components/RoutineOrderCard";
 
 export default function SuccessPage() {
   const params = useSearchParams();
@@ -155,225 +156,242 @@ export default function SuccessPage() {
           {productsLoading ? (
             <OrderReceiptSkeleton />
           ) : (
-            <div className="lg:mt-16 mt-6 shadow-custom2 p-4 lg:p-6 rounded-2xl bg-white">
-              <h2 className="md::text-[24px] md:leading-8 text-[20px] leading-[30px] font-semibold text-[#2A2A2A]">
-                Order Receipt
-              </h2>
-              <div className="lg:mt-4 mt-2.5">
-                <div className="flex gap-3 items-center">
-                  <span className="text-light text-xs lg:text-lg whitespace-nowrap">
-                    Order ID:
-                  </span>
-                  <span className="text-[#363636] text-xs lg:text-lg font-medium truncate">
-                    {productsRes?.data?.id}
-                  </span>
-                </div>
-                <div className="flex gap-3 items-center mt-2">
-                  <span className="text-light text-xs lg:text-lg">Date:</span>
-                  {productsRes?.data?.createdAt && (
-                    <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                      {format(
-                        new Date(productsRes.data.createdAt),
-                        "MMMM d, yyyy",
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:mt-16 mt-6">
+              <div className="lg:col-span-8 col-span-1 space-y-6">
+                <div className="shadow-custom2 p-4 lg:p-6 rounded-2xl bg-white">
+                  <h2 className="md::text-[24px] md:leading-8 text-[20px] leading-[30px] font-semibold text-[#2A2A2A]">
+                    Order Receipt
+                  </h2>
+                  <div className="lg:mt-4 mt-2.5">
+                    <div className="flex gap-3 items-center">
+                      <span className="text-light text-xs lg:text-lg whitespace-nowrap">
+                        Order ID:
+                      </span>
+                      <span className="text-[#363636] text-xs lg:text-lg font-medium truncate">
+                        {productsRes?.data?.id}
+                      </span>
+                    </div>
+                    <div className="flex gap-3 items-center mt-2">
+                      <span className="text-light text-xs lg:text-lg">
+                        Date:
+                      </span>
+                      {productsRes?.data?.createdAt && (
+                        <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                          {format(
+                            new Date(productsRes.data.createdAt),
+                            "MMMM d, yyyy",
+                          )}
+                        </span>
                       )}
-                    </span>
+                    </div>
+                    <div className="flex gap-3 items-center mt-2">
+                      <span className="text-light text-xs lg:text-lg">
+                        Email:
+                      </span>
+                      <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                        Halimah.balogun@gmail.com
+                      </span>
+                    </div>
+                    <div className="flex gap-3 items-center mt-2">
+                      <span className="text-light text-xs lg:text-lg">
+                        Payment Status:
+                      </span>
+                      <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                        {productsRes?.data?.paymentStatus}
+                      </span>
+                    </div>
+                    <div className="flex gap-3 items-center mt-2">
+                      <span className="text-light text-xs lg:text-lg">
+                        Currency:
+                      </span>
+                      <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                        {productsRes?.data?.currencyCode}(
+                        {productsRes?.data?.currencySymbol})
+                      </span>
+                    </div>
+                    <div className="flex gap-3 items-center mt-2">
+                      <span className="text-light text-xs lg:text-lg">
+                        Total Amount:
+                      </span>
+                      <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                        {productsRes?.data?.currencySymbol}
+                        {Number(
+                          productsRes?.data?.totalAmountPaid,
+                        ).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex gap-3 items-center mt-2">
+                      <span className="text-light text-xs lg:text-lg">
+                        Payment Method:
+                      </span>
+                      <span className="text-[#363636] text-xs lg:text-lg font-medium">
+                        Stripe
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 1: Status & Tracking */}
+                <div className="bg-white rounded-2xl p-6 shadow-custom2">
+                  <div className="flex justify-between items-start lg:mb-3 mb-4">
+                    <h1 className="lg:text-2xl text-xl font-bold text-dark mb-1">
+                      Order Tracking
+                    </h1>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    {/* Container for the steps */}
+                    <div className="flex flex-col lg:flex-row items-stretch lg:items-start lg:justify-between gap-0 lg:gap-4 min-w-fit mx-auto">
+                      {order.trackingSteps.map((step, index) => {
+                        const nextStep = order.trackingSteps[index + 1];
+                        const isConnectorActive = nextStep?.completed;
+
+                        return (
+                          <Fragment key={index}>
+                            {/* Step Container */}
+                            <div className="flex flex-row lg:flex-col items-stretch lg:items-center gap-4 lg:gap-3 relative z-10 w-full lg:w-max lg:max-w-[120px]">
+                              {/* Circle + Mobile Connector Column */}
+                              <div className="flex flex-col items-center">
+                                {/* Circle */}
+                                <div
+                                  className={`w-8 lg:w-14 h-8 lg:h-14 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300 border-2 z-10 relative ${
+                                    step.completed
+                                      ? "bg-[#34C759] border-[#34C759] text-white"
+                                      : "bg-[#CFCFCF] text-gray-400"
+                                  }`}
+                                >
+                                  {step.completed ? (
+                                    <CircleCheck className="w-4 h-4 lg:w-8 lg:h-8" />
+                                  ) : (
+                                    <div className="w-3 h-3 lg:w-6 lg:h-6 rounded-full bg-white" />
+                                  )}
+                                </div>
+
+                                {/* Mobile Connector (Vertical) - Grows to fill space to next step */}
+                                {index !== order.trackingSteps.length - 1 && (
+                                  <div
+                                    className={`lg:hidden w-[2px] flex-grow -my-1 pb-2 transition-colors duration-300 ${
+                                      isConnectorActive
+                                        ? "bg-[#34C759]"
+                                        : "bg-light"
+                                    }`}
+                                  />
+                                )}
+                              </div>
+
+                              {/* Text Details */}
+                              <div className="flex flex-col items-start lg:items-center text-left lg:text-center w-max pb-8 lg:pb-0">
+                                <p
+                                  className={`font-semibold text-base ${
+                                    step.completed ? "text-dark" : "text-light"
+                                  } `}
+                                >
+                                  {step.status}
+                                </p>
+                                <p className="text-sm text-light mt-0.5">
+                                  {step.date}
+                                </p>
+                                {step.time && (
+                                  <p className="text-xs text-light/80">
+                                    {step.time}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Desktop Connector Line (Sibling) */}
+                            {index !== order.trackingSteps.length - 1 && (
+                              <div
+                                className={`hidden lg:block w-[40px] h-[2px] mt-7 shrink-0 transition-colors duration-300 ${
+                                  isConnectorActive
+                                    ? "bg-[#34C759]"
+                                    : "bg-light"
+                                }`}
+                              />
+                            )}
+                          </Fragment>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 2: Product Summary */}
+                <div className="bg-white rounded-2xl lg:p-6 p-4 shadow-custom2">
+                  <h2 className="text-lg lg:text-2xl font-semibold lg:font-bold text-dark mb-4">
+                    Product Summary
+                  </h2>
+
+                  {productsLoading ? (
+                    <OrderItemsSkeleton />
+                  ) : (
+                    <div className="space-y-4">
+                      {/* change item from any */}
+                      {productsRes?.data?.items.map(
+                        (item: any, index: string) => (
+                          <div
+                            key={index}
+                            className="flex gap-4 items-center p-2 lg:py-5 lg:px-6 border-b border-[#EFEEEE]"
+                          >
+                            <div className="relative w-20 h-20 lg:w-[112px] lg:h-[112px] bg-[#EFEEEE] rounded lg:rounded-lg shrink-0 border border-gray-100">
+                              <Image
+                                src={item?.product?.images[0]}
+                                alt={item?.product?.name || "Product image"}
+                                fill
+                                className="object-contain p-2"
+                              />
+                            </div>
+                            <div className="flex-1 lg:space-y-4 space-y-1">
+                              <div className="flex items-center justify-between w-full">
+                                <h3 className="font-semibold text-dark text-sm lg:text-lg">
+                                  {item?.product?.name}
+                                </h3>
+                                <p className="text-sm lg:text-lg font-medium">
+                                  {productsRes?.data?.currencySymbol}
+                                  {item.priceAtTime?.toLocaleString()}
+                                </p>
+                              </div>
+                              <p className="text-xs lg:text-base text-light">
+                                Qty: {item.quantity}
+                              </p>
+                              <p className="font-bold text-dark text-right text-base lg:text-xl">
+                                {productsRes?.data?.currencySymbol}
+                                {(
+                                  item.quantity * item.priceAtTime
+                                )?.toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        ),
+                      )}
+                    </div>
                   )}
                 </div>
-                <div className="flex gap-3 items-center mt-2">
-                  <span className="text-light text-xs lg:text-lg">Email:</span>
-                  <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                    Halimah.balogun@gmail.com
-                  </span>
+
+                {/* Card 3: Delivery Info */}
+                <div className="bg-white rounded-2xl lg:p-6 p-4 shadow-custom2">
+                  <h2 className="text-lg lg:text-2xl font-semibold mb-4 lg:mb-6 flex items-center gap-2">
+                    Delivery Details
+                  </h2>
+                  <div className="space-y-4">
+                    <h6>
+                      {productsRes?.data?.deliveryAddress?.firstname}{" "}
+                      {productsRes?.data?.deliveryAddress?.lastname}
+                    </h6>
+                    <p>{productsRes?.data?.deliveryAddress?.address1}</p>
+                    <p>{productsRes?.data?.deliveryAddress?.address2}</p>
+                    <p>{productsRes?.data?.deliveryAddress?.phone}</p>
+                  </div>
                 </div>
-                <div className="flex gap-3 items-center mt-2">
-                  <span className="text-light text-xs lg:text-lg">
-                    Payment Status:
-                  </span>
-                  <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                    {productsRes?.data?.paymentStatus}
-                  </span>
-                </div>
-                <div className="flex gap-3 items-center mt-2">
-                  <span className="text-light text-xs lg:text-lg">
-                    Currency:
-                  </span>
-                  <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                    {productsRes?.data?.currencyCode}(
-                    {productsRes?.data?.currencySymbol})
-                  </span>
-                </div>
-                <div className="flex gap-3 items-center mt-2">
-                  <span className="text-light text-xs lg:text-lg">
-                    Total Amount:
-                  </span>
-                  <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                    {productsRes?.data?.currencySymbol}
-                    {Number(
-                      productsRes?.data?.totalAmountPaid,
-                    ).toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex gap-3 items-center mt-2">
-                  <span className="text-light text-xs lg:text-lg">
-                    Payment Method:
-                  </span>
-                  <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                    Stripe
-                  </span>
-                </div>
+              </div>
+
+              {/* Right Column: Routine Order Card */}
+              <div className="lg:col-span-4 col-span-1">
+                <RoutineOrderCard sessionId={sessionId} />
               </div>
             </div>
           )}
-        </div>
-
-        <div className="space-y-6">
-          {/* Card 1: Status & Tracking */}
-          <div className="bg-white rounded-2xl p-6 shadow-custom2">
-            <div className="flex justify-between items-start lg:mb-3 mb-4">
-              <h1 className="lg:text-2xl text-xl font-bold text-dark mb-1">
-                Order Tracking
-              </h1>
-
-              {/* <span className="bg-[#FFF8E6] text-[#F2C94C] px-4 py-1.5 rounded-full text-xs lg:text-base font-semibold">
-                {order.status}
-              </span> */}
-            </div>
-
-            {/* Progress Bar */}
-            <div className="w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              {/* Container for the steps */}
-              <div className="flex flex-col lg:flex-row items-stretch lg:items-start lg:justify-between gap-0 lg:gap-4 min-w-fit mx-auto">
-                {order.trackingSteps.map((step, index) => {
-                  const nextStep = order.trackingSteps[index + 1];
-                  const isConnectorActive = nextStep?.completed;
-
-                  return (
-                    <Fragment key={index}>
-                      {/* Step Container */}
-                      <div className="flex flex-row lg:flex-col items-stretch lg:items-center gap-4 lg:gap-3 relative z-10 w-full lg:w-max lg:max-w-[120px]">
-                        {/* Circle + Mobile Connector Column */}
-                        <div className="flex flex-col items-center">
-                          {/* Circle */}
-                          <div
-                            className={`w-8 lg:w-14 h-8 lg:h-14 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300 border-2 z-10 relative ${
-                              step.completed
-                                ? "bg-[#34C759] border-[#34C759] text-white"
-                                : "bg-[#CFCFCF] text-gray-400"
-                            }`}
-                          >
-                            {step.completed ? (
-                              <CircleCheck className="w-4 h-4 lg:w-8 lg:h-8" />
-                            ) : (
-                              <div className="w-3 h-3 lg:w-6 lg:h-6 rounded-full bg-white" />
-                            )}
-                          </div>
-
-                          {/* Mobile Connector (Vertical) - Grows to fill space to next step */}
-                          {index !== order.trackingSteps.length - 1 && (
-                            <div
-                              className={`lg:hidden w-[2px] flex-grow -my-1 pb-2 transition-colors duration-300 ${
-                                isConnectorActive ? "bg-[#34C759]" : "bg-light"
-                              }`}
-                            />
-                          )}
-                        </div>
-
-                        {/* Text Details */}
-                        <div className="flex flex-col items-start lg:items-center text-left lg:text-center w-max pb-8 lg:pb-0">
-                          <p
-                            className={`font-semibold text-base ${
-                              step.completed ? "text-dark" : "text-light"
-                            } `}
-                          >
-                            {step.status}
-                          </p>
-                          <p className="text-sm text-light mt-0.5">
-                            {step.date}
-                          </p>
-                          {step.time && (
-                            <p className="text-xs text-light/80">{step.time}</p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Desktop Connector Line (Sibling) */}
-                      {index !== order.trackingSteps.length - 1 && (
-                        <div
-                          className={`hidden lg:block w-[40px] h-[2px] mt-7 shrink-0 transition-colors duration-300 ${
-                            isConnectorActive ? "bg-[#34C759]" : "bg-light"
-                          }`}
-                        />
-                      )}
-                    </Fragment>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2: Product Summary */}
-          <div className="bg-white rounded-2xl lg:p-6 p-4 shadow-custom2 mt-4">
-            <h2 className="text-lg lg:text-2xl font-semibold lg:font-bold text-dark mb-4">
-              Product Summary
-            </h2>
-
-            {productsLoading ? (
-              <OrderItemsSkeleton />
-            ) : (
-              <div className="space-y-4">
-                {/* change item from any */}
-                {productsRes?.data?.items.map((item: any, index: string) => (
-                  <div
-                    key={index}
-                    className="flex gap-4 items-center p-2 lg:py-5 lg:px-6 border-b border-[#EFEEEE]"
-                  >
-                    <div className="relative w-20 h-20 lg:w-[112px] lg:h-[112px] bg-[#EFEEEE] rounded lg:rounded-lg shrink-0 border border-gray-100">
-                      <Image
-                        src={item?.product?.images[0]}
-                        alt={item?.name}
-                        fill
-                        className="object-contain p-2"
-                      />
-                    </div>
-                    <div className="flex-1 lg:space-y-4 space-y-1">
-                      <div className="flex items-center justify-between w-full">
-                        <h3 className="font-semibold text-dark text-sm lg:text-lg">
-                          {item?.product?.name}
-                        </h3>
-                        <p className="text-sm lg:text-lg font-medium">
-                          {productsRes?.data?.currencySymbol}
-                          {item.priceAtTime?.toLocaleString()}
-                        </p>
-                      </div>
-                      <p className="text-xs lg:text-base text-light">
-                        Qty: {item.quantity}
-                      </p>
-                      <p className="font-bold text-dark text-right text-base lg:text-xl">
-                        {productsRes?.data?.currencySymbol}
-                        {(item.quantity * item.priceAtTime)?.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Card 3: Delivery Info */}
-          <div className="bg-white rounded-2xl lg:p-6 p-4 shadow-custom2">
-            <h2 className="text-lg lg:text-2xl font-semibold mb-4 lg:mb-6 flex items-center gap-2">
-              Delivery Details
-            </h2>
-            <div className="space-y-4">
-              <h6>
-                {productsRes?.data?.deliveryAddress?.firstname}{" "}
-                {productsRes?.data?.deliveryAddress?.lastname}
-              </h6>
-              <p>{productsRes?.data?.deliveryAddress?.address1}</p>
-              <p>{productsRes?.data?.deliveryAddress?.address2}</p>
-              <p>{productsRes?.data?.deliveryAddress?.phone}</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

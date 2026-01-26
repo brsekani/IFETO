@@ -30,6 +30,7 @@ const page = () => {
 
   const filterOptions = [
     "All orders",
+    "Pending",
     "Processing",
     "Shipped",
     "Delivered",
@@ -39,9 +40,12 @@ const page = () => {
   const filteredOrders =
     activeFilter === "All orders"
       ? orders
-      : orders.filter(
-          (order) => order.status?.toLowerCase() === activeFilter.toLowerCase(),
-        );
+      : activeFilter === "Shipped"
+        ? orders.filter((order) => order.status?.toLowerCase() === "intransit")
+        : orders.filter(
+            (order) =>
+              order.status?.toLowerCase() === activeFilter.toLowerCase(),
+          );
 
   const getFilterStyle = (status: string, isActive: boolean) => {
     if (!isActive)
@@ -116,9 +120,12 @@ const page = () => {
           const count =
             option === "All orders"
               ? orders.length
-              : orders.filter(
-                  (o) => o.status?.toLowerCase() === option.toLowerCase(),
-                ).length;
+              : option === "Shipped"
+                ? orders.filter((o) => o.status?.toLowerCase() === "intransit")
+                    .length
+                : orders.filter(
+                    (o) => o.status?.toLowerCase() === option.toLowerCase(),
+                  ).length;
 
           return (
             <button

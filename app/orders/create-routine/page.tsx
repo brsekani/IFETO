@@ -2,18 +2,18 @@
 import {
   ChevronLeft,
   CircleCheck,
-  Calendar,
   ChevronRight,
   Info,
+  Calendar,
   ChevronDown,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { useState, useMemo, forwardRef } from "react";
-import garriImg from "@/assets/images/Garri.png";
+import React, { forwardRef } from "react";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
+import Skeleton from "@/components/loaders/Skeleton";
+import { useCreateRoutine } from "@/hooks/useCreateRoutine";
 
 const CustomDateInput = forwardRef(({ value, onClick }: any, ref: any) => (
   <div
@@ -31,85 +31,75 @@ const CustomDateInput = forwardRef(({ value, onClick }: any, ref: any) => (
 
 CustomDateInput.displayName = "CustomDateInput";
 
-const createRoutine = () => {
-  const router = useRouter();
-  const [selectedFrequency, setSelectedFrequency] = useState("Weekly");
+const CreateRoutine = () => {
+  const {
+    router,
+    sessionId,
+    isSessionLoading,
+    isCreating,
+    isRecalculating,
+    selectedFrequency,
+    setSelectedFrequency,
+    isCustomFrequency,
+    setIsCustomFrequency,
+    customDays,
+    setCustomDays,
+    isConsented,
+    setIsConsented,
+    startDate,
+    setStartDate,
+    items,
+    totals,
+    selectedItemId,
+    setSelectedItemId,
+    selectedItem,
+    updateQuantity,
+    totalPerDelivery,
+    frequencies,
+    handleCreateRoutine,
+  } = useCreateRoutine();
 
-  const [isConsented, setIsConsented] = useState(false);
-  const [startDate, setStartDate] = useState(new Date(2026, 0, 17)); // 17th January, 2026
+  // Skeleton Loading State
+  if (isSessionLoading) {
+    return (
+      <div className="w-full lg:py-7 lg:px-20 md:px-14 px-6 bg-[#FAFAFA] max-w-[1440px] mx-auto min-h-[calc(100vh-8rem)] overflow-hidden pb-10">
+        <Skeleton className="w-16 h-6 mb-8 mt-4 rounded" />
 
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      image: garriImg,
-      name: "Fresh Tomatoes",
-      unitWeight: 2,
-      quantity: 1,
-      price: 24.99,
-    },
-    {
-      id: 2,
-      image: garriImg,
-      name: "Potatoes",
-      unitWeight: 5,
-      quantity: 2,
-      price: 15.5,
-    },
-    {
-      id: 3,
-      image: garriImg,
-      name: "Onions",
-      unitWeight: 1.5,
-      quantity: 1,
-      price: 10.0,
-    },
-  ]);
+        <div className="lg:mt-14 mt-8">
+          <Skeleton className="h-8 w-1/3 mb-2 rounded" />
+          <Skeleton className="h-6 w-1/2 mb-10 rounded" />
 
-  const [selectedItemId, setSelectedItemId] = useState(items[0].id);
+          {/* Card Skeletons */}
+          <div className="bg-white lg:p-8 p-4 rounded-2xl shadow-custom2 mt-4 space-y-4">
+            <Skeleton className="h-8 w-1/4 rounded mb-4" />
+            <Skeleton className="h-16 w-full rounded" />
+            <Skeleton className="h-16 w-full rounded" />
+            <Skeleton className="h-16 w-full rounded" />
+          </div>
 
-  const selectedItem = useMemo(
-    () => items.find((item) => item.id === selectedItemId),
-    [items, selectedItemId]
-  );
+          <div className="bg-white lg:p-8 p-6 rounded-2xl mt-8 shadow-custom2">
+            <Skeleton className="h-8 w-1/4 rounded mb-6" />
+            <Skeleton className="h-12 w-full rounded mb-4" />
+            <Skeleton className="h-4 w-1/2 rounded" />
+          </div>
 
-  const updateQuantity = (id: number, delta: number) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
+          <div className="bg-white lg:p-8 p-6 rounded-2xl mt-8 shadow-custom2">
+            <Skeleton className="h-8 w-1/4 rounded mb-6" />
+            <Skeleton className="h-24 w-full rounded mb-4" />
+            <Skeleton className="h-4 w-1/2 rounded" />
+          </div>
+        </div>
+      </div>
     );
-  };
+  }
 
-  const totalWeight = useMemo(
-    () => items.reduce((acc, item) => acc + item.unitWeight * item.quantity, 0),
-    [items]
-  );
-
-  const estimatedShipping = totalWeight * 5; // Example: $5 per kg
-
-  const totalProductsPrice = useMemo(
-    () => items.reduce((acc, item) => acc + item.price * item.quantity, 0),
-    [items]
-  );
-
-  const totalPerDelivery = totalProductsPrice + estimatedShipping;
-
-  const frequencies = [
-    {
-      title: "Weekly",
-      subtext: "Delivered every 7 days",
-    },
-    {
-      title: "Monthly",
-      subtext: "Delivered once every month",
-    },
-    {
-      title: "Yearly",
-      subtext: "Delivered once every year",
-    },
-  ];
+  if (!sessionId) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p>No Session ID provided.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full lg:py-7 lg:px-20 md:px-14 px-6 bg-[#FAFAFA] max-w-[1440px] mx-auto min-h-[calc(100vh-8rem)] overflow-hidden pb-10">
@@ -141,9 +131,12 @@ const createRoutine = () => {
             {frequencies.map((freq) => (
               <div
                 key={freq.title}
-                onClick={() => setSelectedFrequency(freq.title)}
+                onClick={() => {
+                  setSelectedFrequency(freq.title);
+                  setIsCustomFrequency(false);
+                }}
                 className={`flex justify-between items-center border-primary p-2 lg:p-4 rounded-[8px] cursor-pointer border-[0.6px] transition-all duration-200 ${
-                  selectedFrequency === freq.title
+                  selectedFrequency === freq.title && !isCustomFrequency
                     ? "bg-[#E3FFEF] "
                     : "bg-white"
                 }`}
@@ -156,11 +149,46 @@ const createRoutine = () => {
                     {freq.subtext}
                   </p>
                 </div>
-                {selectedFrequency === freq.title && (
+                {selectedFrequency === freq.title && !isCustomFrequency && (
                   <CircleCheck className="w-6 lg:w-8 h-6 lg:h-8 text-primary" />
                 )}
               </div>
             ))}
+
+            {/* Custom Interval Option */}
+            <div className="mt-2">
+              <div className="flex items-center gap-2 mb-3">
+                <input
+                  type="checkbox"
+                  id="custom-freq-checkbox"
+                  checked={isCustomFrequency}
+                  onChange={(e) => setIsCustomFrequency(e.target.checked)}
+                  className="w-5 h-5 cursor-pointer accent-primary"
+                />
+                <label
+                  htmlFor="custom-freq-checkbox"
+                  className="text-[#363636] font-medium cursor-pointer"
+                >
+                  Select custom day interval
+                </label>
+              </div>
+
+              {isCustomFrequency && (
+                <div className="ml-7">
+                  <p className="text-sm text-light mb-2">
+                    Enter number of days between deliveries:
+                  </p>
+                  <input
+                    type="number"
+                    value={customDays}
+                    onChange={(e) => setCustomDays(e.target.value)}
+                    placeholder="e.g. 45"
+                    min="1"
+                    className="border border-[#CFCFCF] rounded-lg p-3 w-full max-w-[200px] outline-none focus:border-primary transition-colors"
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -189,77 +217,95 @@ const createRoutine = () => {
         </div>
 
         {/* Quantity and Order */}
-        <div className="bg-white lg:p-8 p-4 rounded-2xl mt-8 shadow-custom2">
-          <h3 className="text-2xl font-semibold mb-4 lg:mb-6">
-            Quantity and Order
-          </h3>
+        {items.length > 0 && (
+          <div className="bg-white lg:p-8 p-4 rounded-2xl mt-8 shadow-custom2">
+            <h3 className="text-2xl font-semibold mb-4 lg:mb-6">
+              Quantity and Order
+            </h3>
 
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4">
-              <span className="text-lg text-light">Quantity per delivery:</span>
-              <div className="flex items-center gap-6">
-                {/* Item Images */}
-                <div className="flex items-center gap-3">
-                  {items.map((item) => (
-                    <div
-                      key={item.id}
-                      onClick={() => setSelectedItemId(item.id)}
-                      className={`w-[71px] h-16 rounded-[4px] overflow-hidden border-2 cursor-pointer transition-all bg-[#EFEEEE] ${
-                        selectedItemId === item.id
-                          ? "border-primary scale-110"
-                          : "border-transparent opacity-60 hover:opacity-100"
-                      }`}
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4">
+                <span className="text-lg text-light">
+                  Quantity per delivery:
+                </span>
+                <div className="flex items-center gap-6">
+                  {/* Item Images */}
+                  <div className="flex items-center gap-3">
+                    {items.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => setSelectedItemId(item.id)}
+                        className={`w-[71px] h-16 rounded-[4px] overflow-hidden border-2 cursor-pointer transition-all bg-[#EFEEEE] ${
+                          selectedItemId === item.id
+                            ? "border-primary scale-110"
+                            : "border-transparent opacity-60 hover:opacity-100"
+                        }`}
+                      >
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={71}
+                          height={64}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Counter */}
+                  <div className="flex items-center gap-4 p-2 px-4 rounded-xl ">
+                    <button
+                      onClick={() =>
+                        selectedItemId && updateQuantity(selectedItemId, -1)
+                      }
+                      className="p-2 bg-[#EFEEEE] hover:bg-white rounded-md transition-colors"
+                      disabled={!selectedItemId}
                     >
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Counter */}
-                <div className="flex items-center gap-4 p-2 px-4 rounded-xl ">
-                  <button
-                    onClick={() => updateQuantity(selectedItemId, -1)}
-                    className="p-2 bg-[#EFEEEE] hover:bg-white rounded-md transition-colors"
-                  >
-                    <ChevronLeft className="w-3 h-3 text-[#363636]" />
-                  </button>
-                  <span className="text-sm text-[#5A5A5A] min-w-6 text-center">
-                    {selectedItem?.quantity}
-                  </span>
-                  <button
-                    onClick={() => updateQuantity(selectedItemId, 1)}
-                    className="p-2 bg-[#EFEEEE] hover:bg-white rounded-md transition-colors"
-                  >
-                    <ChevronRight className="w-3 h-3 text-[#363636]" />
-                  </button>
+                      <ChevronLeft className="w-3 h-3 text-[#363636]" />
+                    </button>
+                    <span className="text-sm text-[#5A5A5A] min-w-6 text-center">
+                      {selectedItem?.quantity || 0}
+                    </span>
+                    <button
+                      onClick={() =>
+                        selectedItemId && updateQuantity(selectedItemId, 1)
+                      }
+                      className="p-2 bg-[#EFEEEE] hover:bg-white rounded-md transition-colors"
+                      disabled={!selectedItemId}
+                    >
+                      <ChevronRight className="w-3 h-3 text-[#363636]" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex justify-between items-center">
-              <span className="text-lg text-light">Unit weight:</span>
-              <span className="text-lg text-light">
-                {selectedItem?.unitWeight} kg
-              </span>
-            </div>
+              <div className="flex justify-between items-center">
+                <span className="text-lg text-light">Unit weight:</span>
+                <span className="text-lg text-light">
+                  {selectedItem?.unitWeight || 0} kg
+                </span>
+              </div>
 
-            <div className="flex justify-between items-center">
-              <span className="text-lg text-light">Total weight:</span>
-              <span className="text-lg text-light">{totalWeight} kg</span>
-            </div>
+              <div className="flex justify-between items-center">
+                <span className="text-lg text-light">Total weight:</span>
+                <span className="text-lg text-light">
+                  {totals.totalWeight?.toFixed(2)} kg
+                </span>
+              </div>
 
-            <div className="flex justify-between items-center">
-              <span className="text-lg text-light">Estimated shipping:</span>
-              <span className="text-lg text-light">
-                ${estimatedShipping.toLocaleString()}
-              </span>
+              <div className="flex justify-between items-center">
+                <span className="text-lg text-light">Estimated shipping:</span>
+                <span className="text-lg text-light">
+                  {isRecalculating ? (
+                    <Skeleton className="h-6 w-20 rounded" />
+                  ) : (
+                    `${totals.currencySymbol}${totals.estimatedShipping.toLocaleString()}`
+                  )}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Pricing Summary */}
         <div className="bg-white lg:p-8 p-4 rounded-2xl mt-8 shadow-custom2">
@@ -274,9 +320,13 @@ const createRoutine = () => {
                 className="flex justify-between items-center text-lg gap-2 text-light"
               >
                 <span>
-                  {item.name} ({item.quantity}x ${item.price.toFixed(2)})
+                  {item.name} ({item.quantity}x {totals.currencySymbol}
+                  {Number(item.price)?.toFixed(2)})
                 </span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
+                <span>
+                  {totals.currencySymbol}
+                  {(Number(item.price) * item.quantity)?.toFixed(2)}
+                </span>
               </div>
             ))}
 
@@ -287,7 +337,11 @@ const createRoutine = () => {
                 Total Per Delivery
               </span>
               <span className="text-2xl font-bold">
-                ${totalPerDelivery.toFixed(2)}
+                {isRecalculating ? (
+                  <Skeleton className="h-8 w-24 rounded" />
+                ) : (
+                  `${totals.currencySymbol}${totalPerDelivery?.toFixed(2)}`
+                )}
               </span>
             </div>
           </div>
@@ -319,14 +373,18 @@ const createRoutine = () => {
         </div>
 
         <div className="mt-6 py-6 flex items-center w-full gap-6">
-          <button className="border border-primary text-primary px-5 h-12 text-lg font-semibold rounded w-full">
+          <button
+            onClick={() => router.back()}
+            className="border border-primary text-primary px-5 h-12 text-lg font-semibold rounded w-full"
+          >
             Cancel
           </button>
           <button
-            disabled={!isConsented}
-            className="bg-primary text-white px-5 h-12 text-lg font-semibold rounded w-full disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+            onClick={handleCreateRoutine}
+            disabled={!isConsented || isCreating}
+            className="bg-primary text-white px-5 h-12 text-lg font-semibold rounded w-full disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center justify-center"
           >
-            Create Order
+            {isCreating ? "Creating..." : "Create Order"}
           </button>
         </div>
       </div>
@@ -334,4 +392,4 @@ const createRoutine = () => {
   );
 };
 
-export default createRoutine;
+export default CreateRoutine;

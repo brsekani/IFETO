@@ -1,19 +1,9 @@
 "use client";
 
 import { Fragment } from "react";
-import {
-  ChevronLeft,
-  Check,
-  Copy,
-  CircleCheck,
-  MapPin,
-  CreditCard,
-} from "lucide-react";
+import { ChevronLeft, CircleCheck, MapPin, CreditCard } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import garriImg from "@/assets/images/Garri.png";
-import cabbageImg from "@/assets/images/cabbage.png";
-
 import { useParams, useRouter } from "next/navigation";
 import { useGetOrderByIdQuery } from "@/lib/api/orders";
 import { format } from "date-fns";
@@ -60,41 +50,49 @@ const OrderDetails = () => {
   const order = orderResponse.data;
 
   // Derive tracking steps from status
-  const getTrackingSteps = (status: string) => {
+  const getTrackingSteps = (statusKey: string) => {
+    const status = statusKey?.toUpperCase();
+    const isCancelled = status === "CANCELED" || status === "CANCELLED";
+
     const steps = [
       {
         status: "Order Placed",
         date: order.createdAt
           ? format(new Date(order.createdAt), "MMM d, yyyy")
           : "N/A",
-        completed: true,
+        completed:
+          !isCancelled &&
+          [
+            "PENDING",
+            "PROCESSING",
+            "INTRANSIT",
+            "DELIVERED",
+            "SHIPPED",
+          ].includes(status),
       },
       {
         status: "Verified & Packed",
-        date: order.createdAt
-          ? format(new Date(order.createdAt), "MMM d, yyyy")
-          : "N/A",
-        completed: true,
+        date: "Pending",
+        completed:
+          !isCancelled &&
+          ["PROCESSING", "INTRANSIT", "DELIVERED", "SHIPPED"].includes(status),
       },
       {
         status: "Shipped from warehouse",
         date: "Pending",
-        completed: status === "SHIPPED" || status === "DELIVERED",
-      },
-      {
-        status: "Arrived US Sorting Centre",
-        date: "Pending",
-        completed: status === "DELIVERED",
+        completed:
+          !isCancelled &&
+          ["INTRANSIT", "DELIVERED", "SHIPPED"].includes(status),
       },
       {
         status: "Out for delivery",
         date: "Pending",
-        completed: status === "DELIVERED",
+        completed: !isCancelled && ["INTRANSIT", "DELIVERED"].includes(status),
       },
       {
         status: "Delivered",
         date: "Pending",
-        completed: status === "DELIVERED",
+        completed: !isCancelled && ["DELIVERED"].includes(status),
       },
     ];
     return steps;
@@ -152,7 +150,7 @@ const OrderDetails = () => {
               </div>
               <span
                 className={`${getStatusColor(
-                  order.status || order.paymentStatus
+                  order.status || order.paymentStatus,
                 )} px-4 py-1.5 rounded-full text-xs lg:text-base font-semibold font-nunito`}
               >
                 {order.status || order.paymentStatus}

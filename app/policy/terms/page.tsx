@@ -19,9 +19,9 @@ const terms = () => {
         <div className="bg-white rounded-2xl p-6 shadow-custom2">
           <div className="">
             <h1 className="text-2xl font-semibold mb-2">
-              IFETO Terms and Conditions
+              IFETO Terms and Conditions of Service
             </h1>
-            <p className="text-light ">Last Updated: 5th December 2025</p>
+            <p className="text-light ">Last Updated: 26th January 2026</p>
           </div>
           <div className="mt-4 lg:mt-6 text-light">
             <p className="">
@@ -205,14 +205,16 @@ const terms = () => {
                   customers. While we ethically vet our vendors, IFETO is not
                   responsible for:
                 </p>
-                <p className="mb-4">
-                  The manufacturing process or the final quality of products
-                  prior to shipment.
-                </p>
-                <p className="">
-                  Any third-party intellectual property infringement claims
-                  arising from content provided by our vendors.
-                </p>
+                <ul className="pl-6 list-disc space-y-1">
+                  <li>
+                    The manufacturing process or the final quality of products
+                    prior to shipment.
+                  </li>
+                  <li>
+                    Any third-party intellectual property infringement claims
+                    arising from content provided by our vendors.
+                  </li>
+                </ul>
               </div>
             </div>
 
@@ -281,9 +283,12 @@ const terms = () => {
               <p className="mb-4">
                 For any questions regarding these Terms and Conditions, please
                 contact us at: Email:{" "}
-                <span className="text-primary underline">
+                <a
+                  href="mailto:Admin@ifetomarket.com"
+                  className="text-primary font-medium"
+                >
                   Admin@ifetomarket.com
-                </span>
+                </a>
               </p>
             </div>
           </div>

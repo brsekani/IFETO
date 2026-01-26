@@ -15,6 +15,7 @@ export const api = createApi({
     "Orders",
     "addresses",
     "collections",
+    "RoutineOrders",
   ],
   endpoints: () => ({}),
 });

@@ -8,7 +8,10 @@ export const ordersApi = api.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.data.data.map(({ id }) => ({ type: "Orders" as const, id })),
+              ...result.data.data.map(({ id }) => ({
+                type: "Orders" as const,
+                id,
+              })),
               { type: "Orders", id: "LIST" },
             ]
           : [{ type: "Orders", id: "LIST" }],

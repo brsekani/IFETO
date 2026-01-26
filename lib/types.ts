@@ -169,6 +169,7 @@ export interface OrderItem {
 export interface Order {
   id: string;
   userId: string;
+  type: string;
   items: OrderItem[];
   deliveryAddressId: string;
   currencyId: string;
