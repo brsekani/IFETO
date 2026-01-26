@@ -142,6 +142,14 @@ const page = () => {
             </button>
           );
         })}
+
+        <Link
+          href="/account/routine"
+          className="shrink-0 flex gap-2 items-center px-4 py-2 font-medium transition-colors duration-300 whitespace-nowrap bg-white border-b border-primary text-primary ml-auto lg:ml-0"
+        >
+          <span>Routine Orders</span>
+          <ChevronRight className="w-4 h-4" />
+        </Link>
       </div>
 
       <div className="my-6 grid gap-6">
