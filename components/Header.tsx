@@ -1,12 +1,18 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
 import logo from "@/assets/icons/Logo.svg";
 import cart from "@/assets/icons/cart.svg";
 import user from "@/assets/icons/user.svg";
 import arrowDown from "@/assets/icons/arrow-down-black.svg";
-import usa from "@/assets/icons/flags/usa.svg";
 import menu from "@/assets/icons/menu.svg";
 import search from "@/assets/icons/search-normal.svg";
+import close from "@/assets/icons/Close.svg";
 import box from "@/assets/icons/box.svg";
 import location from "@/assets/icons/location.svg";
 import logout from "@/assets/icons/logout.svg";
@@ -18,33 +24,19 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import Image from "next/image";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import greenArrowDown from "@/assets/icons/green-arrow-down.svg";
-import { useEffect, useMemo, useState } from "react";
 import RightDrawer from "./RightDrawer";
 import MyCart from "./MyCart";
 import MenuDrawer from "./MenuDrawer";
 import MyAccountDrawer from "./MyAccountDrawer";
+
 import { UICartItem } from "@/types/cart";
 import { logOut, selectIsAuthenticated } from "@/lib/authSlice";
 import { useAppSelector } from "./auth/AuthGuard";
 import { useGetCartQuery } from "@/lib/api/cart";
-import { getLocalCart } from "@/lib/cart/localCart";
 import { useGetLocalCartQuery } from "@/lib/api/localCartApi";
-import Link from "next/link";
 import { useGetProfileQuery } from "@/lib/api/profile";
 import { useLogoutMutation } from "@/lib/api/auth";
 import { showErrorToast, showSuccessToast } from "@/app/utils/toastHelpers";
-import { useDispatch } from "react-redux";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import close from "@/assets/icons/Close.svg";
 
 const items = [
   { label: "My Order", icon: box, to: "/orders" },
@@ -56,45 +48,36 @@ export default function Header() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const dispatch = useDispatch();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const [query, setQuery] = useState("");
+  const [mounted, setMounted] = useState(false);
 
-  const {
-    data: profileData,
-    isLoading: isLoadingProfileData,
-    error,
-  } = useGetProfileQuery(undefined, {
+  const [openCart, setOpenCart] = useState(false);
+  const [openProfile, setOpenProfile] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [openMobileSearch, setOpenMobileSearch] = useState(false);
+
+  const { data: profileData, isLoading } = useGetProfileQuery(undefined, {
     skip: !isAuthenticated,
   });
 
-  const { data, isLoading } = useGetCartQuery(undefined, {
-    skip: !isAuthenticated,
-  });
-
+  const { data } = useGetCartQuery(undefined, { skip: !isAuthenticated });
   const { data: localCart = [] } = useGetLocalCartQuery(undefined, {
     skip: isAuthenticated,
   });
 
   const [logoutUser, { isLoading: isLoggingOut }] = useLogoutMutation();
 
-  const [openCart, setOpenCart] = useState(false);
-  const [openProfile, setOpenProfile] = useState(false);
-  const [openMenu, setOpenMenu] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
   const numberOfItemsInCart = useMemo(() => {
-    if (isAuthenticated) {
-      return (
-        data?.data?.items?.reduce(
-          (total: number, item: UICartItem) => total + item.quantity,
-          0,
-        ) ?? 0
-      );
-    }
-
-    return localCart.reduce((total, item) => total + item.quantity, 0);
+    const source = isAuthenticated ? data?.data?.items : localCart;
+    return (
+      source?.reduce(
+        (total: number, item: UICartItem) => total + item.quantity,
+        0,
+      ) ?? 0
+    );
   }, [isAuthenticated, data, localCart]);
 
   const handleLogout = async (): Promise<boolean> => {
@@ -114,28 +97,23 @@ export default function Header() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (query.trim().length < 1) return;
-
+    if (!query.trim()) return;
     router.push(`/shop?search=${encodeURIComponent(query.trim())}`);
+    setOpenMobileSearch(false);
   };
 
   const clearSearch = () => {
     const params = new URLSearchParams(searchParams);
-
     params.delete("search");
     setQuery("");
-
     router.replace(`${pathname}?${params.toString()}`);
   };
 
   useEffect(() => {
-    if (query.trim().length < 1) return;
-
+    if (!query.trim()) return;
     const t = setTimeout(() => {
       router.push(`/shop?search=${query.trim()}`);
     }, 600);
-
     return () => clearTimeout(t);
   }, [query]);
 
@@ -143,160 +121,132 @@ export default function Header() {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    setOpenMobileSearch(false);
+  }, [pathname]);
+
   return (
     <section className="bg-[#FAFAFA] w-full">
-      <div className="max-w-[1440px] w-full mx-auto md:px-20 px-6 py-2 h-full flex items-center justify-between gap-4">
+      {/* HEADER ROW */}
+      <div className="max-w-[1440px] mx-auto md:px-20 px-6 py-2 flex items-center justify-between gap-4">
         <Image
           src={logo}
-          alt={logo}
+          alt="logo"
           className="md:w-[84px] md:h-[55px] w-12 h-8"
         />
 
+        {/* DESKTOP SEARCH */}
         <form
           onSubmit={handleSubmit}
-          className="max-w-[615px] w-full md:flex hidden items-center text-[14px] leading-5 "
+          className="max-w-[615px] w-full md:flex hidden items-center"
         >
           <div className="relative w-full">
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full bg-white h-12 rounded-l-3xl px-6 border-[0.5px]"
-              placeholder="Search for grains, protein,  seafood, fruits etc....."
+              className="w-full bg-white h-12 rounded-l-3xl px-6 border"
+              placeholder="Search for grains, protein, seafood, fruits..."
               maxLength={50}
             />
-
-            {query.trim().length > 1 && (
+            {query && (
               <Image
                 src={close}
-                alt={close}
-                className="w-6 h-6 md:w-5 md:h-5 hidden md:block absolute top-3.5 right-1 cursor-pointer"
+                alt="clear"
+                className="absolute top-3.5 right-3 w-5 h-5 cursor-pointer"
                 onClick={clearSearch}
               />
             )}
           </div>
-          <button
-            type="submit"
-            disabled={query.trim().length < 1}
-            className="w-[74px] h-12 bg-[#27AE60] rounded-r-3xl  font-semibold text-[#FFFFFF] cursor-pointer disabled:cursor-not-allowed"
-          >
+          <button className="w-[74px] h-12 bg-[#27AE60] text-white rounded-r-3xl">
             Search
           </button>
         </form>
 
-        <div className="flex items-center md:gap-12 gap-4">
+        {/* RIGHT ACTIONS */}
+        <div className="flex items-center gap-4 md:gap-12">
+          {/* MOBILE SEARCH ICON */}
           <Image
             src={search}
-            alt={search}
-            className="w-6 h-6 md:w-5 md:h-5 block md:hidden"
+            alt="search"
+            className="w-6 h-6 block md:hidden cursor-pointer"
+            onClick={() => setOpenMobileSearch((p) => !p)}
           />
 
+          {/* PROFILE / LOGIN */}
           {mounted && isAuthenticated ? (
-            <div className="flex items-center gap-2">
-              {/* Flag (always visible) */}
-              <Image
-                src={user}
-                alt={user}
-                className="w-6 h-6 md:w-5 md:h-5 block md:hidden"
-                onClick={() => setOpenProfile(true)}
-              />
-
-              <Image
-                src={user}
-                alt={user}
-                className="w-6 h-6 md:w-5 md:h-5 hidden md:block"
-                // onClick={() => setOpenProfile(true)}
-              />
-
-              <DropdownMenu modal={false}>
-                {/* TRIGGER */}
-                <DropdownMenuTrigger className="md:flex hidden items-center gap-1 bg-transparent text-sm outline-none border-none">
-                  <span className="hidden md:inline">
-                    {isLoading ? (
-                      <span className="inline-block h-5 mt-1 w-[120px] animate-pulse rounded bg-gray-200" />
-                    ) : (
-                      <span className="max-w-[140px] truncate text-[#2A2A2A]">
-                        {`${profileData?.data.firstName} ${profileData?.data.lastName}`}
-                      </span>
-                    )}
-                  </span>
-
-                  <Image src={arrowDown} alt="arrow" width={18} height={18} />
-                </DropdownMenuTrigger>
-
-                {/* CONTENT */}
-                <DropdownMenuContent
-                  align="end"
-                  className="w-60 bg-white rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)] py-4 border-none"
-                >
-                  {/* Menu Items */}
-                  <div className="flex flex-col gap-4 px-6">
-                    {items.map((item) => (
-                      <DropdownMenuItem
-                        key={item.label}
-                        asChild
-                        className="flex items-center gap-3 text-[#6F6F6F] cursor-pointer focus:bg-transparent hover:opacity-70"
-                      >
-                        <Link href={item.to}>
-                          <Image
-                            src={item.icon}
-                            width={20}
-                            height={20}
-                            alt=""
-                          />
-                          <span>{item.label}</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </div>
-
-                  {/* Logout */}
-                  <DropdownMenuItem
-                    onSelect={(e) => {
-                      e.preventDefault(); // ⛔ prevents dropdown from closing
-                      handleLogout();
-                    }}
-                    disabled={isLoggingOut}
-                    className="flex items-center gap-3 text-[#EB3A3A] px-8 pt-4 mt-1 cursor-pointer focus:bg-transparent hover:opacity-70"
-                  >
-                    <Image src={logout} width={20} height={20} alt="" />
-                    <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <Image
+              src={user}
+              alt="user"
+              className="w-6 h-6 cursor-pointer"
+              onClick={() => setOpenProfile(true)}
+            />
           ) : (
             <Link
-              href={"/auth/login"}
-              className="py-2.5 px-5 bg-[#27AE60] rounded-md text-[#FFFFFF] text-[18px] leading-7 font-semibold cursor-pointer md:block hidden"
+              href="/auth/login"
+              className="hidden md:block px-5 py-2.5 bg-[#27AE60] text-white rounded-md"
             >
               Login / Signup
             </Link>
           )}
 
+          {/* CART */}
           <div
-            className="flex flex-nowrap items-center gap-2 cursor-pointer"
             onClick={() => setOpenCart(true)}
+            className="relative cursor-pointer"
           >
-            <div className="relative w-6 h-6">
-              {numberOfItemsInCart >= 1 && (
-                <p className="absolute w-4 h-4 bg-[#27AE60] rounded-2xl text-center flex items-center justify-center text-[12px] leading-[18px] font-semibold text-[#FFFFFF] left-2.5 -top-1">
-                  {numberOfItemsInCart}
-                </p>
-              )}
-              <Image src={cart} alt="cart" width={24} height={24} />
-            </div>
-            <p className="text-nowrap md:block hidden">My Cart</p>
+            {numberOfItemsInCart > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 text-xs bg-[#27AE60] text-white rounded-full flex items-center justify-center">
+                {numberOfItemsInCart}
+              </span>
+            )}
+            <Image src={cart} alt="cart" width={24} height={24} />
           </div>
 
+          {/* MENU */}
           <Image
             src={menu}
-            alt={menu}
-            className="w-6 h-6 md:w-5 md:h-5 block md:hidden"
+            alt="menu"
+            className="w-6 h-6 block md:hidden cursor-pointer"
             onClick={() => setOpenMenu(true)}
           />
         </div>
       </div>
 
+      {/* MOBILE SEARCH (BELOW HEADER) */}
+      {openMobileSearch && (
+        <div
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-out ${
+            openMobileSearch ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="px-6 pb-3">
+            <form
+              onSubmit={handleSubmit}
+              className="flex items-center bg-white rounded-md border overflow-hidden"
+            >
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                autoFocus={openMobileSearch}
+                placeholder="Search for grains, protein,  seafood, fruits etc....."
+                maxLength={50}
+                className="flex-1 h-12 px-4 outline-none"
+              />
+
+              {query && (
+                <Image
+                  src={close}
+                  alt="clear"
+                  className="w-5 h-5 mr-3 cursor-pointer"
+                  onClick={clearSearch}
+                />
+              )}
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* DRAWERS */}
       <RightDrawer
         isOpen={openCart}
         onClose={() => setOpenCart(false)}
@@ -327,3 +277,333 @@ export default function Header() {
     </section>
   );
 }
+
+// "use client";
+
+// import logo from "@/assets/icons/Logo.svg";
+// import cart from "@/assets/icons/cart.svg";
+// import user from "@/assets/icons/user.svg";
+// import arrowDown from "@/assets/icons/arrow-down-black.svg";
+// import usa from "@/assets/icons/flags/usa.svg";
+// import menu from "@/assets/icons/menu.svg";
+// import search from "@/assets/icons/search-normal.svg";
+// import box from "@/assets/icons/box.svg";
+// import location from "@/assets/icons/location.svg";
+// import logout from "@/assets/icons/logout.svg";
+
+// import {
+//   DropdownMenu,
+//   DropdownMenuTrigger,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+// } from "@/components/ui/dropdown-menu";
+
+// import Image from "next/image";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "./ui/select";
+// import greenArrowDown from "@/assets/icons/green-arrow-down.svg";
+// import { useEffect, useMemo, useState } from "react";
+// import RightDrawer from "./RightDrawer";
+// import MyCart from "./MyCart";
+// import MenuDrawer from "./MenuDrawer";
+// import MyAccountDrawer from "./MyAccountDrawer";
+// import { UICartItem } from "@/types/cart";
+// import { logOut, selectIsAuthenticated } from "@/lib/authSlice";
+// import { useAppSelector } from "./auth/AuthGuard";
+// import { useGetCartQuery } from "@/lib/api/cart";
+// import { getLocalCart } from "@/lib/cart/localCart";
+// import { useGetLocalCartQuery } from "@/lib/api/localCartApi";
+// import Link from "next/link";
+// import { useGetProfileQuery } from "@/lib/api/profile";
+// import { useLogoutMutation } from "@/lib/api/auth";
+// import { showErrorToast, showSuccessToast } from "@/app/utils/toastHelpers";
+// import { useDispatch } from "react-redux";
+// import { usePathname, useRouter, useSearchParams } from "next/navigation";
+// import close from "@/assets/icons/Close.svg";
+
+// const items = [
+//   { label: "My Order", icon: box, to: "/orders" },
+//   { label: "My Account", icon: user, to: "/account" },
+//   { label: "Address", icon: location, to: "/address" },
+// ];
+
+// export default function Header() {
+//   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+//   const dispatch = useDispatch();
+//   const router = useRouter();
+//   const searchParams = useSearchParams();
+//   const pathname = usePathname();
+
+//   const [query, setQuery] = useState("");
+
+//   const {
+//     data: profileData,
+//     isLoading: isLoadingProfileData,
+//     error,
+//   } = useGetProfileQuery(undefined, {
+//     skip: !isAuthenticated,
+//   });
+
+//   const { data, isLoading } = useGetCartQuery(undefined, {
+//     skip: !isAuthenticated,
+//   });
+
+//   const { data: localCart = [] } = useGetLocalCartQuery(undefined, {
+//     skip: isAuthenticated,
+//   });
+
+//   const [logoutUser, { isLoading: isLoggingOut }] = useLogoutMutation();
+
+//   const [openCart, setOpenCart] = useState(false);
+//   const [openProfile, setOpenProfile] = useState(false);
+//   const [openMenu, setOpenMenu] = useState(false);
+//   const [mounted, setMounted] = useState(false);
+
+//   const numberOfItemsInCart = useMemo(() => {
+//     if (isAuthenticated) {
+//       return (
+//         data?.data?.items?.reduce(
+//           (total: number, item: UICartItem) => total + item.quantity,
+//           0,
+//         ) ?? 0
+//       );
+//     }
+
+//     return localCart.reduce((total, item) => total + item.quantity, 0);
+//   }, [isAuthenticated, data, localCart]);
+
+//   const handleLogout = async (): Promise<boolean> => {
+//     try {
+//       await logoutUser().unwrap();
+//       dispatch(logOut());
+
+//       showSuccessToast("Logged out successfully");
+//       setOpenProfile(false);
+//       setOpenMenu(false);
+//       return true;
+//     } catch (err) {
+//       showErrorToast("Logout failed");
+//       return false;
+//     }
+//   };
+
+//   const handleSubmit = (e: React.FormEvent) => {
+//     e.preventDefault();
+
+//     if (query.trim().length < 1) return;
+
+//     router.push(`/shop?search=${encodeURIComponent(query.trim())}`);
+//   };
+
+//   const clearSearch = () => {
+//     const params = new URLSearchParams(searchParams);
+
+//     params.delete("search");
+//     setQuery("");
+
+//     router.replace(`${pathname}?${params.toString()}`);
+//   };
+
+//   useEffect(() => {
+//     if (query.trim().length < 1) return;
+
+//     const t = setTimeout(() => {
+//       router.push(`/shop?search=${query.trim()}`);
+//     }, 600);
+
+//     return () => clearTimeout(t);
+//   }, [query]);
+
+//   useEffect(() => {
+//     setMounted(true);
+//   }, []);
+
+//   return (
+//     <section className="bg-[#FAFAFA] w-full">
+//       <div className="max-w-[1440px] w-full mx-auto md:px-20 px-6 py-2 h-full flex items-center justify-between gap-4">
+//         <Image
+//           src={logo}
+//           alt={logo}
+//           className="md:w-[84px] md:h-[55px] w-12 h-8"
+//         />
+
+//         <form
+//           onSubmit={handleSubmit}
+//           className="max-w-[615px] w-full md:flex hidden items-center text-[14px] leading-5 "
+//         >
+//           <div className="relative w-full">
+//             <input
+//               value={query}
+//               onChange={(e) => setQuery(e.target.value)}
+//               className="w-full bg-white h-12 rounded-l-3xl px-6 border-[0.5px]"
+//               placeholder="Search for grains, protein,  seafood, fruits etc....."
+//               maxLength={50}
+//             />
+
+//             {query.trim().length > 1 && (
+//               <Image
+//                 src={close}
+//                 alt={close}
+//                 className="w-6 h-6 md:w-5 md:h-5 hidden md:block absolute top-3.5 right-1 cursor-pointer"
+//                 onClick={clearSearch}
+//               />
+//             )}
+//           </div>
+//           <button
+//             type="submit"
+//             disabled={query.trim().length < 1}
+//             className="w-[74px] h-12 bg-[#27AE60] rounded-r-3xl  font-semibold text-[#FFFFFF] cursor-pointer disabled:cursor-not-allowed"
+//           >
+//             Search
+//           </button>
+//         </form>
+
+//         <div className="flex items-center md:gap-12 gap-4">
+//           <Image
+//             src={search}
+//             alt={search}
+//             className="w-6 h-6 md:w-5 md:h-5 block md:hidden"
+//           />
+
+//           {mounted && isAuthenticated ? (
+//             <div className="flex items-center gap-2">
+//               {/* Flag (always visible) */}
+//               <Image
+//                 src={user}
+//                 alt={user}
+//                 className="w-6 h-6 md:w-5 md:h-5 block md:hidden"
+//                 onClick={() => setOpenProfile(true)}
+//               />
+
+//               <Image
+//                 src={user}
+//                 alt={user}
+//                 className="w-6 h-6 md:w-5 md:h-5 hidden md:block"
+//                 // onClick={() => setOpenProfile(true)}
+//               />
+
+//               <DropdownMenu modal={false}>
+//                 {/* TRIGGER */}
+//                 <DropdownMenuTrigger className="md:flex hidden items-center gap-1 bg-transparent text-sm outline-none border-none">
+//                   <span className="hidden md:inline">
+//                     {isLoading ? (
+//                       <span className="inline-block h-5 mt-1 w-[120px] animate-pulse rounded bg-gray-200" />
+//                     ) : (
+//                       <span className="max-w-[140px] truncate text-[#2A2A2A]">
+//                         {`${profileData?.data.firstName} ${profileData?.data.lastName}`}
+//                       </span>
+//                     )}
+//                   </span>
+
+//                   <Image src={arrowDown} alt="arrow" width={18} height={18} />
+//                 </DropdownMenuTrigger>
+
+//                 {/* CONTENT */}
+//                 <DropdownMenuContent
+//                   align="end"
+//                   className="w-60 bg-white rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)] py-4 border-none"
+//                 >
+//                   {/* Menu Items */}
+//                   <div className="flex flex-col gap-4 px-6">
+//                     {items.map((item) => (
+//                       <DropdownMenuItem
+//                         key={item.label}
+//                         asChild
+//                         className="flex items-center gap-3 text-[#6F6F6F] cursor-pointer focus:bg-transparent hover:opacity-70"
+//                       >
+//                         <Link href={item.to}>
+//                           <Image
+//                             src={item.icon}
+//                             width={20}
+//                             height={20}
+//                             alt=""
+//                           />
+//                           <span>{item.label}</span>
+//                         </Link>
+//                       </DropdownMenuItem>
+//                     ))}
+//                   </div>
+
+//                   {/* Logout */}
+//                   <DropdownMenuItem
+//                     onSelect={(e) => {
+//                       e.preventDefault(); // ⛔ prevents dropdown from closing
+//                       handleLogout();
+//                     }}
+//                     disabled={isLoggingOut}
+//                     className="flex items-center gap-3 text-[#EB3A3A] px-8 pt-4 mt-1 cursor-pointer focus:bg-transparent hover:opacity-70"
+//                   >
+//                     <Image src={logout} width={20} height={20} alt="" />
+//                     <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
+//                   </DropdownMenuItem>
+//                 </DropdownMenuContent>
+//               </DropdownMenu>
+//             </div>
+//           ) : (
+//             <Link
+//               href={"/auth/login"}
+//               className="py-2.5 px-5 bg-[#27AE60] rounded-md text-[#FFFFFF] text-[18px] leading-7 font-semibold cursor-pointer md:block hidden"
+//             >
+//               Login / Signup
+//             </Link>
+//           )}
+
+//           <div
+//             className="flex flex-nowrap items-center gap-2 cursor-pointer"
+//             onClick={() => setOpenCart(true)}
+//           >
+//             <div className="relative w-6 h-6">
+//               {numberOfItemsInCart >= 1 && (
+//                 <p className="absolute w-4 h-4 bg-[#27AE60] rounded-2xl text-center flex items-center justify-center text-[12px] leading-[18px] font-semibold text-[#FFFFFF] left-2.5 -top-1">
+//                   {numberOfItemsInCart}
+//                 </p>
+//               )}
+//               <Image src={cart} alt="cart" width={24} height={24} />
+//             </div>
+//             <p className="text-nowrap md:block hidden">My Cart</p>
+//           </div>
+
+//           <Image
+//             src={menu}
+//             alt={menu}
+//             className="w-6 h-6 md:w-5 md:h-5 block md:hidden"
+//             onClick={() => setOpenMenu(true)}
+//           />
+//         </div>
+//       </div>
+
+//       <RightDrawer
+//         isOpen={openCart}
+//         onClose={() => setOpenCart(false)}
+//         widthClass="w-full md:w-[600px]"
+//       >
+//         <MyCart onClose={() => setOpenCart(false)} />
+//       </RightDrawer>
+
+//       <RightDrawer
+//         isOpen={openMenu}
+//         onClose={() => setOpenMenu(false)}
+//         widthClass="max-w-[380px] w-full"
+//       >
+//         <MenuDrawer onClose={() => setOpenMenu(false)} />
+//       </RightDrawer>
+
+//       <RightDrawer
+//         isOpen={openProfile}
+//         onClose={() => setOpenProfile(false)}
+//         widthClass="max-w-[380px] w-full"
+//       >
+//         <MyAccountDrawer
+//           onClose={() => setOpenProfile(false)}
+//           onlogout={handleLogout}
+//           isLoggingOut={isLoggingOut}
+//         />
+//       </RightDrawer>
+//     </section>
+//   );
+// }

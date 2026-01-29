@@ -10,6 +10,7 @@ import AuthSliderDesktop from "@/components/auth/AuthSliderDesktop";
 import LoginForm from "@/components/auth/LoginForm";
 import useLogin from "@/hooks/form-hooks/useLogin";
 import useRedirectIfAuthenticated from "@/hooks/useRedirectIfAuthenticated";
+import Spinner from "../loaders/Spinner";
 
 const LoginClient = () => {
   const { loading } = useRedirectIfAuthenticated();
@@ -20,11 +21,7 @@ const LoginClient = () => {
   const backgroundImages = [authImage, authImage2];
 
   if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (

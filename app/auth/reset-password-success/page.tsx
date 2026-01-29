@@ -3,6 +3,7 @@
 import back from "@/assets/icons/back.svg";
 import emailIcon from "@/assets/icons/mail.svg";
 import verifyImg from "@/assets/images/verify.png";
+import Spinner from "@/components/loaders/Spinner";
 import useRedirectIfAuthenticated from "@/hooks/useRedirectIfAuthenticated";
 import { Mail } from "lucide-react";
 import Image from "next/image";
@@ -14,11 +15,7 @@ export default function Page() {
   const router = useRouter();
 
   if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (

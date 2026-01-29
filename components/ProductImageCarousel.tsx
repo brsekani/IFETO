@@ -30,6 +30,9 @@ export default function ProductImageCarousel({
                   height={274}
                   alt="Product image"
                   className="object-contain rounded-2xl"
+                  placeholder="blur"
+                  blurDataURL="/images/placeholder.png"
+                  loading="lazy"
                 />
               </div>
             </CarouselItem>

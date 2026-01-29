@@ -20,6 +20,7 @@ import RightDrawer from "@/components/RightDrawer";
 import { useGetCollectionWithProductsQuery } from "@/lib/api/collections";
 import ProductSectionSkeleton from "@/components/loaders/ProductSectionSkeleton";
 import { Collection, Product } from "@/types/product";
+import Spinner from "@/components/loaders/Spinner";
 
 export interface Category {
   id: string;
@@ -71,11 +72,7 @@ export default function Home() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="w-full h-screen flex justify-center items-center">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (

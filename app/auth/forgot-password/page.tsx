@@ -10,6 +10,7 @@ import { ForgotPasswordSchema } from "@/lib/schema";
 import useRedirectIfAuthenticated from "@/hooks/useRedirectIfAuthenticated";
 import { showErrorToast, showSuccessToast } from "@/app/utils/toastHelpers";
 import { useForgotPasswordMutation } from "@/lib/api/auth";
+import Spinner from "@/components/loaders/Spinner";
 
 export default function Page() {
   const { loading } = useRedirectIfAuthenticated();
@@ -46,11 +47,7 @@ export default function Page() {
   });
 
   if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (
