@@ -171,37 +171,104 @@ export default function Header() {
             className="w-6 h-6 block md:hidden cursor-pointer"
             onClick={() => setOpenMobileSearch((p) => !p)}
           />
-
           {/* PROFILE / LOGIN */}
           {mounted && isAuthenticated ? (
-            <Image
-              src={user}
-              alt="user"
-              className="w-6 h-6 cursor-pointer"
-              onClick={() => setOpenProfile(true)}
-            />
+            <div className="flex items-center gap-2">
+              {/* Flag (always visible) */}
+              <Image
+                src={user}
+                alt={user}
+                className="w-6 h-6 md:w-5 md:h-5 block md:hidden"
+                onClick={() => setOpenProfile(true)}
+              />
+
+              <Image
+                src={user}
+                alt={user}
+                className="w-6 h-6 md:w-5 md:h-5 hidden md:block"
+                // onClick={() => setOpenProfile(true)}
+              />
+
+              <DropdownMenu modal={false}>
+                {/* TRIGGER */}
+                <DropdownMenuTrigger className="md:flex hidden items-center gap-1 bg-transparent text-sm outline-none border-none">
+                  <span className="hidden md:inline">
+                    {isLoading ? (
+                      <span className="inline-block h-5 mt-1 w-[120px] animate-pulse rounded bg-gray-200" />
+                    ) : (
+                      <span className="max-w-[140px] truncate text-[#2A2A2A]">
+                        {`${profileData?.data.firstName} ${profileData?.data.lastName}`}
+                      </span>
+                    )}
+                  </span>
+
+                  <Image src={arrowDown} alt="arrow" width={18} height={18} />
+                </DropdownMenuTrigger>
+
+                {/* CONTENT */}
+                <DropdownMenuContent
+                  align="end"
+                  className="w-60 bg-white rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)] py-4 border-none"
+                >
+                  {/* Menu Items */}
+                  <div className="flex flex-col gap-4 px-6">
+                    {items.map((item) => (
+                      <DropdownMenuItem
+                        key={item.label}
+                        asChild
+                        className="flex items-center gap-3 text-[#6F6F6F] cursor-pointer focus:bg-transparent hover:opacity-70"
+                      >
+                        <Link href={item.to}>
+                          <Image
+                            src={item.icon}
+                            width={20}
+                            height={20}
+                            alt=""
+                          />
+                          <span>{item.label}</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+
+                  {/* Logout */}
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault(); // ⛔ prevents dropdown from closing
+                      handleLogout();
+                    }}
+                    disabled={isLoggingOut}
+                    className="flex items-center gap-3 text-[#EB3A3A] px-8 pt-4 mt-1 cursor-pointer focus:bg-transparent hover:opacity-70"
+                  >
+                    <Image src={logout} width={20} height={20} alt="" />
+                    <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ) : (
             <Link
-              href="/auth/login"
-              className="hidden md:block px-5 py-2.5 bg-[#27AE60] text-white rounded-md"
+              href={"/auth/login"}
+              className="py-2.5 px-5 bg-[#27AE60] rounded-md text-[#FFFFFF] text-[18px] leading-7 font-semibold cursor-pointer md:block hidden"
             >
               Login / Signup
             </Link>
           )}
-
-          {/* CART */}
+          {/* CART */}{" "}
           <div
+            className="flex flex-nowrap items-center gap-2 cursor-pointer"
             onClick={() => setOpenCart(true)}
-            className="relative cursor-pointer"
           >
-            {numberOfItemsInCart > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 text-xs bg-[#27AE60] text-white rounded-full flex items-center justify-center">
-                {numberOfItemsInCart}
-              </span>
-            )}
-            <Image src={cart} alt="cart" width={24} height={24} />
+            <div className="relative w-6 h-6">
+              {numberOfItemsInCart >= 1 && (
+                <p className="absolute w-4 h-4 bg-[#27AE60] rounded-2xl text-center flex items-center justify-center text-[12px] leading-[18px] font-semibold text-[#FFFFFF] left-2.5 -top-1">
+                  {numberOfItemsInCart}
+                </p>
+              )}
+              <Image src={cart} alt="cart" width={24} height={24} />
+            </div>
+            <p className="text-nowrap md:block hidden">My Cart</p>
           </div>
-
           {/* MENU */}
           <Image
             src={menu}
