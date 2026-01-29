@@ -70,18 +70,18 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
     const currency = getCurrency(localItems[0].price);
     const total = localItems.reduce(
       (sum, item) => sum + getNumericPrice(item.price) * item.quantity,
-      0
+      0,
     );
 
     return formatSubtotal(currency, total);
   }, [localItems]);
 
   const cartItems: UICartItem[] = isAuthenticated
-    ? data?.data?.items ?? []
+    ? (data?.data?.items ?? [])
     : localItems;
 
   const subtotalPrice = isAuthenticated
-    ? data?.data?.subtotalPrice ?? "₦0.00"
+    ? (data?.data?.subtotalPrice ?? "₦0.00")
     : guestSubtotalPrice;
 
   const allChecked =
@@ -89,7 +89,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
 
   const toggleItem = (id: string) => {
     setCheckedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
   };
 
@@ -137,7 +137,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     setCheckedIds((prev) => {
       const next = prev.filter((id) =>
-        cartItems.some((item) => item.id === id)
+        cartItems.some((item) => item.id === id),
       );
 
       // 🔑 Prevent unnecessary state updates
@@ -200,7 +200,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
                         onClick={() =>
                           handleUpdateQty(
                             isAuthenticated ? item.id : item.productId,
-                            item.quantity - 1
+                            item.quantity - 1,
                           )
                         }
                         disabled={item.quantity === 1}
@@ -230,7 +230,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
                         onClick={() =>
                           handleUpdateQty(
                             isAuthenticated ? item.id : item.productId,
-                            item.quantity + 1
+                            item.quantity + 1,
                           )
                         }
                         className="bg-[#EFEEEE] w-6 h-6 flex items-center justify-center rounded cursor-pointer transition active:scale-90 disabled:opacity-40"
@@ -283,27 +283,25 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
             </div>
 
             <div className="p-4 flex flex-col gap-2">
+              {isAuthenticated && (
+                <button
+                  onClick={() => {
+                    onClose();
+                    router.push("/cart");
+                  }}
+                  className="w-full h-12 border border-[#27AE60] rounded-[6px] text-[18px] leading-7 font-semibold text-[#27AE60] cursor-pointer"
+                >
+                  View Cart
+                </button>
+              )}
+
               <button
                 onClick={() => {
                   onClose();
-                  router.push("/cart");
-                }}
-                className="w-full h-12 border border-[#27AE60] rounded-[6px] text-[18px] leading-7 font-semibold text-[#27AE60] cursor-pointer"
-              >
-                View Cart
-              </button>
-              <button
-                onClick={() => {
-                  if (!isAuthenticated) {
-                    onClose();
-                    router.push("/auth/login");
-                  } else {
-                    onClose();
-                    router.push("/checkout");
-                  }
+                  router.push(isAuthenticated ? "/checkout" : "/auth/login");
                 }}
                 className="w-full h-12 bg-[#27AE60] rounded-[6px]
-  text-[18px] leading-7 font-semibold text-white cursor-pointer"
+      text-[18px] leading-7 font-semibold text-white cursor-pointer"
               >
                 {isAuthenticated ? "Checkout" : "Login"}
               </button>

@@ -11,6 +11,7 @@ import SignupForm from "@/components/auth/SignupForm";
 import CreatePasswordForm from "@/components/auth/CreatePasswordForm";
 import useSignup from "@/hooks/form-hooks/useSignup";
 import useRedirectIfAuthenticated from "@/hooks/useRedirectIfAuthenticated";
+import Spinner from "@/components/loaders/Spinner";
 
 const signup = () => {
   const { loading } = useRedirectIfAuthenticated();
@@ -18,11 +19,7 @@ const signup = () => {
   const [backgroundIndex, setBackgroundIndex] = useState(0);
 
   if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
+    return <Spinner />;
   }
 
   const backgroundImages = [authImage, authImage2];

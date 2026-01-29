@@ -10,6 +10,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { ResetPasswordSchema } from "@/lib/schema";
 import { useRouter } from "next/navigation";
 import useRedirectIfAuthenticated from "@/hooks/useRedirectIfAuthenticated";
+import Spinner from "@/components/loaders/Spinner";
 
 export default function Page() {
   const { loading } = useRedirectIfAuthenticated();
@@ -31,11 +32,7 @@ export default function Page() {
   });
 
   if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (

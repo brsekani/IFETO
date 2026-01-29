@@ -12,6 +12,7 @@ import useVerify from "@/hooks/form-hooks/useVerify";
 import verifyImg from "@/assets/images/verify.png";
 import { useRouter, useSearchParams } from "next/navigation";
 import useRedirectIfAuthenticated from "@/hooks/useRedirectIfAuthenticated";
+import Spinner from "../loaders/Spinner";
 
 const VerifyComponent = () => {
   const { loading } = useRedirectIfAuthenticated();
@@ -43,11 +44,7 @@ const VerifyComponent = () => {
   const backgroundImages = [authImage, authImage2];
 
   if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (
