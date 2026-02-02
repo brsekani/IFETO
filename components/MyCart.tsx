@@ -298,12 +298,17 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
               <button
                 onClick={() => {
                   onClose();
-                  router.push(isAuthenticated ? "/checkout" : "/auth/login");
+
+                  router.push(
+                    isAuthenticated
+                      ? "/checkout"
+                      : "/auth/login?redirect=/checkout",
+                  );
                 }}
                 className="w-full h-12 bg-[#27AE60] rounded-[6px]
-      text-[18px] leading-7 font-semibold text-white cursor-pointer"
+    text-[18px] leading-7 font-semibold text-white cursor-pointer"
               >
-                {isAuthenticated ? "Checkout" : "Login"}
+                {isAuthenticated ? "Checkout" : "Login to Checkout"}
               </button>
             </div>
           </div>

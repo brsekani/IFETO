@@ -248,7 +248,7 @@ export default function Header() {
             </div>
           ) : (
             <Link
-              href={"/auth/login"}
+              href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
               className="py-2.5 px-5 bg-[#27AE60] rounded-md text-[#FFFFFF] text-[18px] leading-7 font-semibold cursor-pointer md:block hidden"
             >
               Login / Signup

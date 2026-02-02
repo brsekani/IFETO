@@ -12,7 +12,10 @@ const useLogin = () => {
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
 
-  const redirectPath = searchParams.get("redirect");
+  // ✅ SAFE redirect path
+  const rawRedirect = searchParams.get("redirect");
+  const redirectPath =
+    rawRedirect && rawRedirect.startsWith("/") ? rawRedirect : "/checkout";
 
   const formik = useFormik({
     initialValues: {
@@ -22,9 +25,7 @@ const useLogin = () => {
     validationSchema: LoginSchema,
     onSubmit: async (values) => {
       try {
-        console.log(values);
         const result = await login(values).unwrap();
-        console.log(result);
 
         if (result.success) {
           showSuccessToast(result.message);
@@ -33,18 +34,13 @@ const useLogin = () => {
           dispatch(
             setCredentials({
               accessToken: result.data.accessToken,
-            })
+            }),
           );
 
-          // Redirect to protected page or home
-          if (redirectPath) {
-            router.replace(redirectPath);
-          } else {
-            router.replace("/");
-          }
+          // ✅ Redirect AFTER successful login
+          router.replace(redirectPath);
         }
       } catch (err: any) {
-        console.log(err);
         const errorMessage =
           err?.data?.message ||
           err?.error ||
