@@ -150,14 +150,14 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row w-full md:gap-10 gap-6 md:mt-[50px] mt-6">
+        <div className="flex flex-col-reverse md:flex-row w-full md:gap-10 gap-6 md:mt-[50px] mt-6">
           <div className="w-full">
             <div className="p-4 md:p-6 bg-[#FAFAFA] rounded-2xl shadow-custom2 md:space-y-4 space-y-2.5 w-full">
               <div className="md:text-[24px] text-[16px] md:leading-8 leading-6 font-semibold text-[#2A2A2A]">
                 Product Summary
               </div>
 
-              <div className="w-full h-screen overflow-y-scroll scrollbar scrollbar-thin">
+              <div className="w-full max-h-screen overflow-y-scroll scrollbar scrollbar-thin">
                 {isLoading ? (
                   <>
                     <CartItemLoader />
