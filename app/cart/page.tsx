@@ -53,7 +53,7 @@ export default function Page() {
   const [removeLocalItem] = useRemoveLocalItemMutation();
 
   const cartItems: UICartItem[] = isAuthenticated
-    ? data?.data?.items ?? []
+    ? (data?.data?.items ?? [])
     : localItems;
 
   const subtotalPrice = data?.data?.subtotalPrice;
@@ -165,7 +165,7 @@ export default function Page() {
                           onClick={() =>
                             handleUpdateQty(
                               isAuthenticated ? item.id : item.productId,
-                              item.quantity - 1
+                              item.quantity - 1,
                             )
                           }
                           disabled={item.quantity === 1}
@@ -195,7 +195,7 @@ export default function Page() {
                           onClick={() =>
                             handleUpdateQty(
                               isAuthenticated ? item.id : item.productId,
-                              item.quantity + 1
+                              item.quantity + 1,
                             )
                           }
                           className="bg-[#EFEEEE] w-6 h-6 flex items-center justify-center rounded cursor-pointer transition active:scale-90 disabled:opacity-40"
@@ -323,7 +323,7 @@ export default function Page() {
               </div>
 
               <div className="space-y-4 text-[14px] leading-5 text-[#787878]">
-                <p>Exchange rate locked: 1 USD = 1250 NGN</p>
+                {/* <p>Exchange rate locked: 1 USD = 1250 NGN</p> */}
 
                 <div className="flex items-center gap-2">
                   <input
