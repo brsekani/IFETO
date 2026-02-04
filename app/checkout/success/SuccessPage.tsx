@@ -14,6 +14,8 @@ import { format } from "date-fns";
 import OrderReceiptSkeleton from "@/components/loaders/OrderReceiptSkeleton";
 import OrderItemsSkeleton from "@/components/loaders/OrderItemsSkeleton";
 import RoutineOrderCard from "@/components/RoutineOrderCard";
+import OrderTrackingSteps from "@/components/OrderTrackingSteps";
+import { getTrackingSteps } from "@/lib/utils";
 
 export default function SuccessPage() {
   const params = useSearchParams();
@@ -26,90 +28,7 @@ export default function SuccessPage() {
     isError: productsError,
   } = useGetSessionByIdQuery(sessionId || skipToken);
 
-  console.log(productsRes);
-  console.log(typeof sessionId);
-
-  const order = {
-    id: "789012",
-    date: "Dec 15, 2025",
-    status: "Processing",
-    weightCategory: "Air Cargo – 1kg to 5kg",
-    totalWeight: "4.8kg",
-    shippingRate: "$9.00/kg",
-    totalWeightFee: "4.8 kg × 9$ = $43.2",
-    items: [
-      {
-        name: "Garri",
-        image: garriImg,
-        price: 50.0,
-        quantity: 2,
-        weight: "2.5kg",
-      },
-      {
-        name: "Cabbage",
-        image: cabbageImg,
-        price: 25.5,
-        quantity: 1,
-        weight: "1.0kg",
-      },
-    ],
-    weightBreakdown: "Weight calculated based on volumetric weight of items.",
-    shipping: {
-      recipient: "Alex Johnson",
-      address: "123, Main Street, Lagos, Nigeria",
-      phoneNumber: "+234 812 345 6789",
-      emailAddress: "alex.j@example.com",
-      method: "Standard Shipping",
-      deliveryMethod: "Door Delivery",
-      trackingNumber: "TRK-890123456",
-      estimatedDelivery: "Dec 22, 2025",
-    },
-    payment: {
-      subtotal: 125.5,
-      shippingFee: 15.0,
-      tax: 7.5,
-      total: 148.0,
-      method: "Credit Card (**** 1234)",
-    },
-    trackingSteps: [
-      {
-        status: "Order Placed",
-        date: "Dec 15, 2025",
-        time: "10:30 AM",
-        completed: true,
-      },
-      {
-        status: "Verified & Packed",
-        date: "Dec 16, 2025",
-        time: "02:15 PM",
-        completed: true,
-      },
-      {
-        status: "Shipped from warehouse",
-        date: "Dec 17, 2025",
-        time: "09:45 AM",
-        completed: false,
-      },
-      {
-        status: "Arrived US Sorting Centre",
-        date: "Pending",
-        time: "--:--",
-        completed: false,
-      },
-      {
-        status: "Out for delivery",
-        date: "Pending",
-        time: "--:--",
-        completed: false,
-      },
-      {
-        status: "Delivered",
-        date: "Pending",
-        time: "--:--",
-        completed: false,
-      },
-    ],
-  };
+  const trackingSteps = getTrackingSteps(productsRes?.data || {});
 
   return (
     <div className="bg-[#FAFAFA]">
@@ -184,14 +103,7 @@ export default function SuccessPage() {
                         </span>
                       )}
                     </div>
-                    <div className="flex gap-3 items-center mt-2">
-                      <span className="text-light text-xs lg:text-lg">
-                        Email:
-                      </span>
-                      <span className="text-[#363636] text-xs lg:text-lg font-medium">
-                        Halimah.balogun@gmail.com
-                      </span>
-                    </div>
+
                     <div className="flex gap-3 items-center mt-2">
                       <span className="text-light text-xs lg:text-lg">
                         Payment Status:
@@ -240,81 +152,7 @@ export default function SuccessPage() {
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    {/* Container for the steps */}
-                    <div className="flex flex-col lg:flex-row items-stretch lg:items-start lg:justify-between gap-0 lg:gap-4 min-w-fit mx-auto">
-                      {order.trackingSteps.map((step, index) => {
-                        const nextStep = order.trackingSteps[index + 1];
-                        const isConnectorActive = nextStep?.completed;
-
-                        return (
-                          <Fragment key={index}>
-                            {/* Step Container */}
-                            <div className="flex flex-row lg:flex-col items-stretch lg:items-center gap-4 lg:gap-3 relative z-10 w-full lg:w-max lg:max-w-[120px]">
-                              {/* Circle + Mobile Connector Column */}
-                              <div className="flex flex-col items-center">
-                                {/* Circle */}
-                                <div
-                                  className={`w-8 lg:w-14 h-8 lg:h-14 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300 border-2 z-10 relative ${
-                                    step.completed
-                                      ? "bg-[#34C759] border-[#34C759] text-white"
-                                      : "bg-[#CFCFCF] text-gray-400"
-                                  }`}
-                                >
-                                  {step.completed ? (
-                                    <CircleCheck className="w-4 h-4 lg:w-8 lg:h-8" />
-                                  ) : (
-                                    <div className="w-3 h-3 lg:w-6 lg:h-6 rounded-full bg-white" />
-                                  )}
-                                </div>
-
-                                {/* Mobile Connector (Vertical) - Grows to fill space to next step */}
-                                {index !== order.trackingSteps.length - 1 && (
-                                  <div
-                                    className={`lg:hidden w-[2px] flex-grow -my-1 pb-2 transition-colors duration-300 ${
-                                      isConnectorActive
-                                        ? "bg-[#34C759]"
-                                        : "bg-light"
-                                    }`}
-                                  />
-                                )}
-                              </div>
-
-                              {/* Text Details */}
-                              <div className="flex flex-col items-start lg:items-center text-left lg:text-center w-max pb-8 lg:pb-0">
-                                <p
-                                  className={`font-semibold text-base ${
-                                    step.completed ? "text-dark" : "text-light"
-                                  } `}
-                                >
-                                  {step.status}
-                                </p>
-                                <p className="text-sm text-light mt-0.5">
-                                  {step.date}
-                                </p>
-                                {step.time && (
-                                  <p className="text-xs text-light/80">
-                                    {step.time}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Desktop Connector Line (Sibling) */}
-                            {index !== order.trackingSteps.length - 1 && (
-                              <div
-                                className={`hidden lg:block w-[40px] h-[2px] mt-7 shrink-0 transition-colors duration-300 ${
-                                  isConnectorActive
-                                    ? "bg-[#34C759]"
-                                    : "bg-light"
-                                }`}
-                              />
-                            )}
-                          </Fragment>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  <OrderTrackingSteps steps={trackingSteps} />
                 </div>
 
                 {/* Card 2: Product Summary */}

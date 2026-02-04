@@ -184,6 +184,9 @@ export interface Order {
   shippingCarrier: string | null;
   status: string;
   createdAt: string;
+  deliveredAt: string;
+  shippedAt: string;
+  processedAt: string;
   updatedAt: string;
   stripeSessionId: string | null;
   stripePaymentIntentId: string | null;

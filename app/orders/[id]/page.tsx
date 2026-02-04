@@ -1,12 +1,14 @@
 "use client";
 
 import { Fragment } from "react";
-import { ChevronLeft, CircleCheck, MapPin, CreditCard } from "lucide-react";
+import { ChevronLeft, MapPin, CreditCard } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useGetOrderByIdQuery } from "@/lib/api/orders";
 import { format } from "date-fns";
+import OrderTrackingSteps from "@/components/OrderTrackingSteps";
+import { getTrackingSteps } from "@/lib/utils";
 
 const OrderDetails = () => {
   const { id } = useParams();
@@ -49,56 +51,7 @@ const OrderDetails = () => {
 
   const order = orderResponse.data;
 
-  // Derive tracking steps from status
-  const getTrackingSteps = (statusKey: string) => {
-    const status = statusKey?.toUpperCase();
-    const isCancelled = status === "CANCELED" || status === "CANCELLED";
-
-    const steps = [
-      {
-        status: "Order Placed",
-        date: order.createdAt
-          ? format(new Date(order.createdAt), "MMM d, yyyy")
-          : "N/A",
-        completed:
-          !isCancelled &&
-          [
-            "PENDING",
-            "PROCESSING",
-            "INTRANSIT",
-            "DELIVERED",
-            "SHIPPED",
-          ].includes(status),
-      },
-      {
-        status: "Verified & Packed",
-        date: "Pending",
-        completed:
-          !isCancelled &&
-          ["PROCESSING", "INTRANSIT", "DELIVERED", "SHIPPED"].includes(status),
-      },
-      {
-        status: "Shipped from warehouse",
-        date: "Pending",
-        completed:
-          !isCancelled &&
-          ["INTRANSIT", "DELIVERED", "SHIPPED"].includes(status),
-      },
-      {
-        status: "Out for delivery",
-        date: "Pending",
-        completed: !isCancelled && ["INTRANSIT", "DELIVERED"].includes(status),
-      },
-      {
-        status: "Delivered",
-        date: "Pending",
-        completed: !isCancelled && ["DELIVERED"].includes(status),
-      },
-    ];
-    return steps;
-  };
-
-  const trackingSteps = getTrackingSteps(order.status || "");
+  const trackingSteps = getTrackingSteps(order || {});
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -158,65 +111,7 @@ const OrderDetails = () => {
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              <div className="flex flex-col lg:flex-row items-stretch lg:items-start lg:justify-between gap-0 lg:gap-4 min-w-fit mx-auto">
-                {trackingSteps.map((step, index) => {
-                  const nextStep = trackingSteps[index + 1];
-                  const isConnectorActive = nextStep?.completed;
-
-                  return (
-                    <Fragment key={index}>
-                      <div className="flex flex-row lg:flex-col items-stretch lg:items-center gap-4 lg:gap-3 relative z-10 w-full lg:w-max lg:max-w-[120px]">
-                        <div className="flex flex-col items-center">
-                          <div
-                            className={`w-8 lg:w-14 h-8 lg:h-14 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300 border-2 z-10 relative ${
-                              step.completed
-                                ? "bg-primary border-primary text-white"
-                                : "bg-[#CFCFCF] text-gray-400"
-                            }`}
-                          >
-                            {step.completed ? (
-                              <CircleCheck className="w-4 h-4 lg:w-8 lg:h-8" />
-                            ) : (
-                              <div className="w-3 h-3 lg:w-6 lg:h-6 rounded-full bg-white" />
-                            )}
-                          </div>
-
-                          {index !== trackingSteps.length - 1 && (
-                            <div
-                              className={`lg:hidden w-[2px] flex-grow -my-1 pb-2 transition-colors duration-300 ${
-                                isConnectorActive ? "bg-primary" : "bg-light"
-                              }`}
-                            />
-                          )}
-                        </div>
-
-                        <div className="flex flex-col items-start lg:items-center text-left lg:text-center w-max pb-8 lg:pb-0 font-nunito">
-                          <p
-                            className={`font-semibold text-base ${
-                              step.completed ? "text-dark" : "text-light"
-                            }`}
-                          >
-                            {step.status}
-                          </p>
-                          <p className="text-sm text-light mt-0.5 whitespace-nowrap">
-                            {step.date}
-                          </p>
-                        </div>
-                      </div>
-
-                      {index !== trackingSteps.length - 1 && (
-                        <div
-                          className={`hidden lg:block w-[40px] h-[2px] mt-7 shrink-0 transition-colors duration-300 ${
-                            isConnectorActive ? "bg-primary" : "bg-light"
-                          }`}
-                        />
-                      )}
-                    </Fragment>
-                  );
-                })}
-              </div>
-            </div>
+            <OrderTrackingSteps steps={trackingSteps} />
           </div>
 
           {/* Card 2: Product Summary */}
