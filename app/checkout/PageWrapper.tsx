@@ -29,6 +29,7 @@ export default function Page() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [agreed, setAgreed] = useState(false);
+  const [tempAddress, setTempAddress] = useState<any>(null);
   const searchParams = useSearchParams();
   const urlAddressId = searchParams.get("addressId");
 
@@ -80,7 +81,7 @@ export default function Page() {
 
   console.log(defaultAddress);
 
-  const effectiveAddress = selectedAddress ?? defaultAddress;
+  const effectiveAddress = tempAddress ?? selectedAddress ?? defaultAddress;
 
   const cartItems: UICartItem[] = data?.data?.items;
   const subtotalPrice = data?.data?.subtotalPrice;
@@ -110,6 +111,13 @@ export default function Page() {
       console.error("Failed to create checkout session", err);
     }
   };
+
+  const isPayDisabled =
+    isLoading ||
+    creatingSession ||
+    !effectiveAddress ||
+    !data?.data?.items?.length ||
+    !agreed;
 
   useEffect(() => {
     if (urlAddressId) {
@@ -351,20 +359,14 @@ export default function Page() {
                     </p>
                   </div>
                   <button
-                    disabled={
-                      isLoading ||
-                      creatingSession ||
-                      !effectiveAddress ||
-                      !data?.data?.items?.length ||
-                      !agreed
-                    }
+                    disabled={isPayDisabled}
                     onClick={handlePay}
-                    className={`h-12 w-full rounded-md text-[18px] font-semibold transition disabled:bg-[#C7D3CC]
-    ${
-      creatingSession || !effectiveAddress
-        ? "bg-gray-300 cursor-not-allowed"
-        : "bg-primary text-white hover:bg-green-700"
-    }`}
+                    className={`h-12 w-full rounded-md text-[18px] font-semibold transition
+  ${
+    isPayDisabled
+      ? "bg-gray-300 cursor-not-allowed"
+      : "bg-primary text-white hover:bg-green-700 cursor-pointer"
+  }`}
                   >
                     {creatingSession
                       ? "Redirecting to payment..."
@@ -382,7 +384,10 @@ export default function Page() {
         onClose={() => setOpenAddress(false)}
         widthClass="w-full md:w-[640px]"
       >
-        <AddAddress onClose={() => setOpenAddress(false)} />
+        <AddAddress
+          onClose={() => setOpenAddress(false)}
+          onAddressAdded={(address) => setTempAddress(address)}
+        />
       </RightDrawer>
 
       <RightDrawer

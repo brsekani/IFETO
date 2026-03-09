@@ -152,7 +152,7 @@ export default function MyCart({ onClose }: { onClose: () => void }) {
   if (!cartItems.length) return <EmptyCart onClose={onClose} />;
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-dvh">
       {/* HEADER */}
       <div className="flex items-center justify-between px-6 py-4">
         <h5 className="text-[24px] font-semibold text-[#2A2A2A]">My Cart</h5>

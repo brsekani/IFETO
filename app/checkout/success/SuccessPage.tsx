@@ -67,7 +67,7 @@ export default function SuccessPage() {
             </p>
 
             <p className="text-[#606060] md:text-[24px] md:leading-2.5 text-[16px] leading-6 text-center">
-              Thank you for your. Your order has been confirmed and will soon be
+              Thank you for your order has been confirmed and will soon be
               shipped.
             </p>
           </div>

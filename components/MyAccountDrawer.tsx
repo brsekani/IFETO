@@ -86,7 +86,7 @@ export default function MyAccountDrawer({
   ];
 
   return (
-    <div className="flex flex-col h-screen gap-6 p-6">
+    <div className="flex flex-col h-dvh gap-6 p-6">
       <div className="space-y-6">
         <div className="flex items-center justify-between py-4">
           <Image src={logo} alt="logo" className="w-12 h-8" />
