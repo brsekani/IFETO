@@ -18,10 +18,13 @@ import { useGetMyCountryQuery } from "@/lib/api/countries";
 
 type AddAddressProps = {
   onClose: () => void;
+  onAddressAdded: (address: any) => void;
 };
 
-export default function AddAddress({ onClose }: AddAddressProps) {
-  const [addAddress, { isLoading: isAdding }] = useAddAddressesMutation();
+export default function AddAddress({
+  onClose,
+  onAddressAdded,
+}: AddAddressProps) {
   const { data, isLoading, error } = useGetMyCountryQuery();
 
   const mapAddressToApi = (values: any) => ({
@@ -66,21 +69,11 @@ export default function AddAddress({ onClose }: AddAddressProps) {
           zipCode: "",
         }}
         validationSchema={addAddressSchema}
-        onSubmit={async (values, { resetForm }) => {
+        onSubmit={(values, { resetForm }) => {
           const payload = mapAddressToApi(values);
           console.log(payload);
 
-          try {
-            await addAddress({
-              ...payload,
-              isDefault: true,
-            }).unwrap();
-            showSuccessToast("Address added successfuly");
-          } catch (error: any) {
-            console.error("Failed to change password", error);
-            const message = error?.data?.message || "Failed to add address";
-            showErrorToast(message);
-          }
+          onAddressAdded(payload);
 
           resetForm();
           onClose();
@@ -284,14 +277,14 @@ export default function AddAddress({ onClose }: AddAddressProps) {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isAdding || isLoading}
+              disabled={isLoading}
               className={`w-full h-[52px] mt-6 rounded-md
     bg-[#2DB463] text-white text-[18px] font-semibold
     transition
-    ${isAdding ? "opacity-60 cursor-not-allowed" : "hover:bg-[#249B54]"}
+   
   `}
             >
-              {isAdding ? "Adding Address..." : "Add Address"}
+              {"Add Address"}
             </button>
           </Form>
         )}

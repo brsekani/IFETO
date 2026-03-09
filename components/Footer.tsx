@@ -53,7 +53,7 @@ export default function Footer() {
 
                 {/* 🔹 Real categories */}
                 {!isLoading &&
-                  categories.map((cat: Category) => (
+                  categories?.map((cat: Category) => (
                     <li key={cat.id}>
                       <Link
                         href={`/shop?filters=${encodeURIComponent(cat.id)}`}
@@ -72,19 +72,13 @@ export default function Footer() {
               </h6>
               <ul className="text-[14px] leading-5 text-[#FAFAFA] space-y-4">
                 <li>
-                  <Link href="/policy/terms">
-                    Terms & Condition
-                  </Link>
+                  <Link href="/policy/terms">Terms & Condition</Link>
                 </li>
                 <li>
-                  <Link href="/policy/return">
-                    Return Policy
-                  </Link>
+                  <Link href="/policy/return">Return Policy</Link>
                 </li>
                 <li>
-                  <Link href="/policy/privacy">
-                    Privacy Policy
-                  </Link>
+                  <Link href="/policy/privacy">Privacy Policy</Link>
                 </li>
               </ul>
             </div>
