@@ -29,7 +29,7 @@ export default function MenuDrawer({ onClose }: { onClose: () => void }) {
   ];
 
   return (
-    <div className="flex flex-col h-screen justify-between p-6">
+    <div className="flex flex-col h-dvh justify-between p-6">
       <div className="space-y-6">
         <div className="flex items-center justify-between py-4">
           <Image src={logo} alt="logo" className="w-12 h-8" />
