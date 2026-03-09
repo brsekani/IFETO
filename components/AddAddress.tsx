@@ -40,6 +40,8 @@ export default function AddAddress({
     zipCode: values.zipCode,
   });
 
+  console.log(`data:${data}`);
+
   return (
     <div className="w-full bg-white overflow-y-scroll py-8 px-6 space-y-[30px] flex-1">
       {/* Header */}
